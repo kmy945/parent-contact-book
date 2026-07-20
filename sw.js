@@ -1,4 +1,4 @@
-const CACHE="pcb-v7-5-hero-20260720";
+const CACHE="pcb-v7-ocean-dawn-2026";
 const ASSETS=["./","./index.html","./preview.html","./manifest.webmanifest","./cover.jpg"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
