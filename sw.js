@@ -1,4 +1,4 @@
-const CACHE="pcb-v1";
+const CACHE="pcb-v6";
 const ASSETS=["./","./index.html","./preview.html","./manifest.webmanifest"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
 self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));

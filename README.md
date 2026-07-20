@@ -1,22 +1,17 @@
-# 親師聯絡簿完整可部署版
+# 親師聯絡簿 V6：資料匯出與家長問答版
 
-已連接 Firebase 專案 `parent-contact-book`。
+## 新增功能
+- 單筆新增學生只需座號、姓名
+- 自動產生家長帳號與 8 碼初始密碼
+- 家長可提出建議或問題，老師可直接回覆
+- 匯出學生單日資料
+- 匯出學生指定日期區間完整資料
+- 匯出整班指定日期區間資料
+- 訪客可儲存在目前裝置，但不會同步至 Firestore
 
-## 主要功能
-- 教師 Google 登入
-- Cloud Firestore 雲端同步
-- 班級與學生管理
-- 聯絡事項、出缺席、重要表現
-- 家長閱覽與回覆
-- Excel 匯入與匯出
-- 訪客預覽模式
-- PWA 安裝支援
-
-## Firebase Hosting 部署
-在 Cloud Shell 執行：
-
+## 部署
 ```bash
-firebase deploy --only hosting,firestore:rules --project parent-contact-book
+cd ~/parent-contact-book
+git pull
+firebase deploy --only hosting,firestore:rules
 ```
-
-> 部署前請確認 Authentication 的授權網域包含 `parent-contact-book.web.app`。

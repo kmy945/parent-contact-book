@@ -32,13 +32,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 label{display:grid;gap:6px;margin:14px 0;font-weight:600}input,select,textarea{width:100%;padding:12px;border:1px solid #527d6e33;border-radius:12px;background:#ffffffd9;color:var(--dark)}textarea{resize:vertical}
 .btn{border:0;border-radius:12px;padding:11px 15px;background:var(--green);color:#fff;display:inline-flex;gap:7px;align-items:center;justify-content:center}.btn.soft{background:#ffffffb5;color:var(--dark)}.btn.danger{background:#a94f48}.btn.full{width:100%}
 .modebar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;padding:12px 15px;border-radius:14px;background:#fff3ce;color:#725d26}.modebar.cloud{background:#eaf5ed;color:#37694b}
-.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}.toolbar select{max-width:430px}.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:15px}.nav button{border:0;border-radius:14px;padding:13px;background:#fffdf4cc;color:#416658}.nav button.on{background:var(--green);color:#fff}
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}.toolbar select{max-width:430px}.nav{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:15px}.nav button{border:0;border-radius:14px;padding:13px;background:#fffdf4cc;color:#416658}.nav button.on{background:var(--green);color:#fff}
 .panelhead{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted{color:#6c7f77}.success{background:#edf8ef;color:#376c49;padding:11px 14px;border-radius:12px;margin:10px 0}.error{background:#fff0ee;color:#9a4941;padding:11px 14px;border-radius:12px;margin:10px 0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.row{display:grid;grid-template-columns:100px 1.4fr 1.2fr 190px;gap:10px;align-items:center;padding:11px;border-bottom:1px solid var(--line)}.row.head{font-weight:700;color:#687d75}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{border:0;border-radius:9px;background:#527d6e18;padding:8px}
 .notice{padding:20px;margin:13px 0}.date{font-size:13px;color:#74877f}.body{line-height:1.9;white-space:pre-wrap}.attach{display:inline-block;background:var(--soft);padding:8px 11px;border-radius:9px;margin-top:8px}.comment-box{margin-top:14px;padding-top:13px;border-top:1px dashed #6c8d8044}.comment-list{margin-top:10px;background:#f4f7f1;padding:10px 12px;border-radius:10px}.comment-item{padding:8px 0;border-bottom:1px solid #527d6e18}.final-read-box{margin-top:18px;padding:16px;border-radius:16px;background:#eef8f8;border:1px solid #b9d9de}.final-read-box label{display:flex;align-items:flex-start;gap:10px}.final-read-box input{width:20px;height:20px;margin-top:2px}.signed-time{color:#4f7561;font-weight:700}
 .option-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.option-grid label{display:flex;align-items:flex-start;gap:8px;margin:0;padding:10px;border:1px solid var(--line);border-radius:12px;background:#ffffff9c;font-weight:400}.option-grid input{width:auto;margin-top:4px}.section-label{font-size:17px;margin:20px 0 8px;font-weight:700}
 .sign{background:#ffffffa1;padding:15px;border-radius:14px;margin:10px 0}.sign progress{width:100%;accent-color:var(--green)}
-.modal{position:fixed;inset:0;background:rgba(35,63,68,.48);display:grid;place-items:center;padding:18px;z-index:100}.dialog{background:rgba(255,253,244,.98);border-radius:22px;padding:24px;box-shadow:0 18px 48px rgba(25,55,63,.25)}
+.modal{position:fixed;inset:0;background:rgba(35,63,68,.48);display:grid;place-items:center;padding:18px;z-index:100}.dialog{background:rgba(255,253,244,.98);border-radius:22px;padding:24px;box-shadow:0 18px 48px rgba(25,55,63,.25);width:min(720px,100%);max-height:90vh;overflow:auto}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}.credential-box{padding:14px;border-radius:14px;background:#eef8f4;border:1px solid #b9d9cc;margin-top:12px}.question-card{padding:16px;margin:12px 0;border-radius:16px;background:#fffdf7;border:1px solid var(--line)}.question-card textarea{margin-top:8px}.reply-teacher{margin-top:8px;padding:10px 12px;border-left:4px solid #527d6e;background:#edf6f1;border-radius:8px}.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:650px){.export-grid{grid-template-columns:1fr}}
 @media(max-width:800px){.login{grid-template-columns:1fr}.nav{grid-template-columns:1fr 1fr}.grid2,.option-grid{grid-template-columns:1fr}.row{grid-template-columns:70px 1fr}.row>*:nth-child(n+3){grid-column:2/-1}.panelhead{align-items:flex-start;flex-direction:column}}
 @media(max-width:480px){.hero-title{font-size:clamp(.98rem,5.1vw,1.55rem);line-height:1.5;letter-spacing:0}.top{align-items:flex-start}.brand small{max-width:190px}.nav{grid-template-columns:1fr 1fr}}
 
@@ -81,7 +81,7 @@ label{display:grid;gap:6px;margin:14px 0;font-weight:600}input,select,textarea{w
       <button id="ttab" onclick="loginTab('teacher')">教師登入</button>
       <button id="ptab" onclick="loginTab('parent')">家長登入</button>
     </div>
-    <div id="visitorLogin"><h2>訪客預覽入口</h2><p class="muted">資料只保存在目前瀏覽器。</p><button class="btn full" onclick="visitorMode()">進入預覽版</button></div>
+    <div id="visitorLogin"><h2>訪客入口</h2><p class="muted">可在此裝置建立與保存資料。</p><button class="btn full" onclick="visitorMode()">以訪客身分進入</button></div>
     <div id="teacherLogin" class="hidden"><h2>教師管理入口</h2><p class="muted" id="teacherLoginDesc"></p><button class="btn full" onclick="teacherMode()">使用 Google 帳號登入</button></div>
     <div id="parentLogin" class="hidden"><h2>家長專屬入口</h2><label>帳號<input id="puser" value="70101"></label><label>密碼<input id="ppass" type="password" value="123456"></label><button class="btn full" onclick="parentMode()">登入</button><p class="muted">示範：70101 / 123456</p></div>
   </div>
@@ -89,13 +89,13 @@ label{display:grid;gap:6px;margin:14px 0;font-weight:600}input,select,textarea{w
 
 <section id="teacherScreen" class="hidden">
   <div id="modeBar" class="modebar"><div><b id="modeTitle"></b><small id="modeDesc"></small></div><span id="syncBadge"></span></div>
-  <div class="toolbar"><select id="classSelect" onchange="changeCurrentClass()"></select><button class="btn soft" onclick="addClass()">＋ 新增班級</button><button class="btn soft" onclick="exportAllDataExcel()">📚 匯出全部資料 Excel</button></div>
+  <div class="toolbar"><select id="classSelect" onchange="changeCurrentClass()"></select><button class="btn soft" onclick="addClass()">＋ 新增班級</button><button class="btn soft" onclick="openExportDialog()">📤 匯出資料</button></div>
   <nav class="nav">
     <button class="on" data-tab="publish" onclick="openTab('publish',this)">發布聯絡</button>
     <button data-tab="classes" onclick="openTab('classes',this)">班級管理</button>
     <button data-tab="students" onclick="openTab('students',this)">學生帳號</button>
     <button data-tab="preview" onclick="openTab('preview',this)">個別預覽</button>
-    <button data-tab="sign" onclick="openTab('sign',this)">簽閱統計</button>
+    <button data-tab="questions" onclick="openTab('questions',this)">家長提問</button><button data-tab="sign" onclick="openTab('sign',this)">簽閱統計</button>
   </nav>
   <div id="msg"></div>
 
@@ -259,10 +259,42 @@ label{display:grid;gap:6px;margin:14px 0;font-weight:600}input,select,textarea{w
   </section>
 
   <section id="preview" class="panel card hidden"><label>選擇學生<select id="previewStudent" onchange="renderPreview()"></select></label><h2 id="previewTitle"></h2><div id="previewList"></div></section>
+  <section id="questions" class="panel card hidden"><div class="panelhead"><div><h2>家長建議與提問</h2><p class="muted">老師可在此直接回覆家長，回覆會顯示在同一則聯絡內容下。</p></div><select id="questionFilter" onchange="renderQuestions()"><option value="pending">尚未回覆</option><option value="all">全部提問</option></select></div><div id="questionList"></div></section>
   <section id="sign" class="panel card hidden"><h2>簽閱統計</h2><div id="signList"></div></section>
 </section>
 
 <section id="parentScreen" class="hidden"><h2 id="parentName"></h2><div id="parentNotices"></div></section>
+</div>
+
+<div id="studentModal" class="modal hidden">
+  <div class="dialog">
+    <h2>新增學生</h2>
+    <p class="muted">只需輸入座號與姓名，系統會自動建立家長帳號與初始密碼。</p>
+    <div class="grid2">
+      <label>座號<input id="newStudentSeat" type="number" min="1" max="99" inputmode="numeric"></label>
+      <label>學生姓名<input id="newStudentName" maxlength="30"></label>
+    </div>
+    <div id="credentialPreview" class="credential-box muted">輸入座號後會預覽家長帳號。</div>
+    <div class="dialog-actions"><button class="btn soft" onclick="closeStudentModal()">取消</button><button class="btn" onclick="confirmAddStudent()">建立學生與帳密</button></div>
+  </div>
+</div>
+<div id="exportModal" class="modal hidden">
+  <div class="dialog">
+    <h2>匯出資料</h2>
+    <p class="muted">可匯出單日個別紀錄、學生日期區間完整資料，或整班日期區間資料。</p>
+    <div class="export-grid">
+      <label>學生<select id="exportStudent"></select></label>
+      <label>單日日期<input id="exportSingleDate" type="date"></label>
+      <label>開始日期<input id="exportStartDate" type="date"></label>
+      <label>結束日期<input id="exportEndDate" type="date"></label>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn soft" onclick="exportSingleStudentDay()">匯出學生單日</button>
+      <button class="btn soft" onclick="exportStudentRange()">匯出學生區間</button>
+      <button class="btn" onclick="exportClassRange()">匯出整班區間</button>
+      <button class="btn danger" onclick="closeExportDialog()">關閉</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -309,10 +341,10 @@ function loginTab(m){
 }
 function updateModeBar(){
   const cloud=appMode==="cloud";modeBar.className="modebar "+(cloud?"cloud":"");
-  modeTitle.textContent=cloud?"教師雲端模式":"訪客預覽模式";modeDesc.textContent=cloud?"Firebase 即時同步中":"資料只保存在目前瀏覽器";syncBadge.textContent=cloud?"☁ 已同步":"☁ 未同步";
+  modeTitle.textContent=cloud?"教師雲端模式":"訪客模式";modeDesc.textContent=cloud?"Firebase 即時同步中":"資料可儲存在此裝置，但不進行雲端同步";syncBadge.textContent=cloud?"☁ 已同步":"💾 本機已儲存";
 }
 function enterTeacher(mode){appMode=mode;hideAll();teacherScreen.classList.remove("hidden");updateModeBar();renderAll()}
-function openTab(id,btn){["publish","classes","students","preview","sign"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("on"));btn?.classList.add("on");renderAll()}
+function openTab(id,btn){["publish","classes","students","preview","questions","sign"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("on"));btn?.classList.add("on");renderAll()}
 function audience(a){currentAudience=a;classBtn.classList.toggle("on",a==="class");studentBtn.classList.toggle("on",a==="student");studentFields.classList.toggle("hidden",a!=="student");generalNoticeWrap.classList.toggle("hidden",a==="student")}
 function renderClassSelect(){
   if(!classes.length){classSelect.innerHTML='<option value="">尚未建立班級</option>';return}
@@ -481,11 +513,51 @@ function exportStudentRoster(){
   XLSX.writeFile(wb,`${safeFileName(c?getClassDisplayName(c):"目前班級")}_學生名冊.xlsx`,{compression:true});
 }
 
-function addStudent(){const seat=Number(prompt("座號"));const name=prompt("姓名");const account=prompt("家長帳號");const password=prompt("家長密碼");if(!seat||!name||!account||!password)return;students.push({id:"s_"+Date.now(),classId:currentClassId,seat,name,account,password,active:true});persistAll();renderAll()}
-function renderStudents(){const list=classStudents();studentTable.innerHTML='<div class="row head"><span>座號</span><span>姓名</span><span>家長帳號</span><span>操作</span></div>'+list.map(s=>`<div class="row"><span>${s.seat}</span><strong>${esc(s.name)}</strong><span>${esc(s.account)}${s.active?"":"（停用）"}</span><div class="actions"><button onclick="editStudent('${s.id}')">✎</button><button onclick="resetPwd('${s.id}')">🔑</button><button onclick="toggleStudent('${s.id}')">${s.active?"停用":"啟用"}</button><button title="匯出個別聯絡與家長回覆" onclick="exportStudentExcel('${s.id}')">📊 個別</button><button title="只匯出家長回覆" onclick="exportParentRepliesExcel('${s.id}')">💬 回覆</button><button onclick="deleteStudent('${s.id}')">🗑</button></div></div>`).join("")}
+function classAccountPrefix(){
+  const c=classes.find(x=>String(x.id)===String(currentClassId));
+  if(!c)return "700";
+  const grade=Math.min(9,Math.max(7,getClassCurrentGrade(c)));
+  return `${grade}${String(c.classNo||1).padStart(2,"0")}`;
+}
+function generateParentAccount(seat){return `${classAccountPrefix()}${String(Number(seat)||0).padStart(2,"0")}`}
+function generatePassword(length=8){
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+  const values=new Uint32Array(length);
+  if(window.crypto?.getRandomValues)crypto.getRandomValues(values);else for(let i=0;i<length;i++)values[i]=Math.floor(Math.random()*chars.length);
+  return [...values].map(v=>chars[v%chars.length]).join("");
+}
+function updateCredentialPreview(){
+  const seat=Number(newStudentSeat.value);
+  credentialPreview.innerHTML=seat?`預計家長帳號：<b>${esc(generateParentAccount(seat))}</b><br>初始密碼會在建立時自動產生。`:"輸入座號後會預覽家長帳號。";
+}
+function addStudent(){newStudentSeat.value="";newStudentName.value="";updateCredentialPreview();studentModal.classList.remove("hidden");setTimeout(()=>newStudentSeat.focus(),50)}
+function closeStudentModal(){studentModal.classList.add("hidden")}
+async function confirmAddStudent(){
+  const seat=Number(newStudentSeat.value),name=newStudentName.value.trim();
+  if(!Number.isInteger(seat)||seat<1||seat>99)return alert("請輸入 1～99 的有效座號。");
+  if(!name)return alert("請輸入學生姓名。");
+  if(students.some(s=>String(s.classId)===String(currentClassId)&&Number(s.seat)===seat))return alert("這個座號已經存在。");
+  let account=generateParentAccount(seat),suffix=1;
+  while(students.some(s=>String(s.account)===String(account)))account=`${generateParentAccount(seat)}${suffix++}`;
+  const password=generatePassword();
+  students.push({id:"s_"+Date.now(),classId:currentClassId,seat,name,account,password,active:true,createdAt:new Date().toISOString()});
+  students.sort((a,b)=>Number(a.seat)-Number(b.seat));
+  await persistAll();renderAll();closeStudentModal();
+  alert(`學生建立完成
+
+${seat}號 ${name}
+家長帳號：${account}
+初始密碼：${password}
+
+請立即將帳密提供給家長。`);
+}
+function renderStudents(){const list=classStudents();studentTable.innerHTML='<div class="row head"><span>座號</span><span>姓名</span><span>家長帳號</span><span>操作</span></div>'+list.map(s=>`<div class="row"><span>${s.seat}</span><strong>${esc(s.name)}</strong><span>${esc(s.account)}${s.active?"":"（停用）"}</span><div class="actions"><button onclick="editStudent('${s.id}')">✎</button><button onclick="showCredentials('${s.id}')">🔐 帳密</button><button onclick="resetPwd('${s.id}')">🔑</button><button onclick="toggleStudent('${s.id}')">${s.active?"停用":"啟用"}</button><button onclick="openExportForStudent('${s.id}')">📤 匯出</button><button onclick="deleteStudent('${s.id}')">🗑</button></div></div>`).join("")}
+function showCredentials(id){const s=students.find(x=>String(x.id)===String(id));if(s)alert(`${s.seat}號 ${s.name}
+家長帳號：${s.account}
+目前密碼：${s.password}`)}
 function editStudent(id){const s=students.find(x=>String(x.id)===String(id));if(!s)return;const seat=Number(prompt("座號",s.seat));const name=prompt("姓名",s.name);const account=prompt("家長帳號",s.account);if(!seat||!name||!account)return;const clash=students.find(x=>String(x.classId)===String(currentClassId)&&Number(x.seat)===seat&&String(x.id)!==String(id));if(clash)return alert("此座號已被使用。");Object.assign(s,{seat,name,account});persistAll();renderAll()}
 function deleteStudent(id){const s=students.find(x=>String(x.id)===String(id));if(!s||!confirm(`確定刪除 ${s.name}？相關聯絡紀錄仍會保留。`))return;students=students.filter(x=>String(x.id)!==String(id));persistAll();renderAll()}
-function resetPwd(id){const s=students.find(x=>x.id===id),p=prompt("新密碼");if(p){s.password=p;persistAll();renderAll()}}
+function resetPwd(id){const s=students.find(x=>String(x.id)===String(id));if(!s)return;const generated=generatePassword();const p=(prompt("輸入新密碼，或直接使用系統產生的密碼",generated)||"").trim();if(p){s.password=p;persistAll();renderAll();alert(`已更新 ${s.name} 的家長密碼：${p}`)}}
 function toggleStudent(id){const s=students.find(x=>x.id===id);s.active=!s.active;persistAll();renderAll()}
 function publishNotice(){
   let body=noticeBody.value.trim();
@@ -496,17 +568,46 @@ function publishNotice(){
 }
 function visibleNotices(sid){return notices.filter(n=>n.classId===currentClassId&&(n.audience==="class"||n.studentId===sid))}
 function noticeCard(n,sid,preview=false){
-  const signed=(n.signed||[]).includes(sid), comments=(n.comments||[]).filter(c=>c.studentId===sid);
-  return `<article class="notice card"><div class="date">${esc(n.date)}</div><div class="body">${esc(n.body)}</div>${n.file?`<span class="attach">📎 ${esc(n.file)}</span>`:""}
-  <div class="comment-box"><label>家長留言<textarea id="comment-${n.id}" ${preview?"disabled":""}></textarea></label><button class="btn soft" ${preview?"disabled":""} onclick="sendComment('${n.id}','${sid}')">送出留言</button><div class="comment-list">${comments.map(c=>`<div class="comment-item">${esc(c.text)}<br><small>${esc(c.date)}</small></div>`).join("")}</div></div>
+  const signed=(n.signed||[]).includes(sid), comments=(n.comments||[]).filter(c=>String(c.studentId)===String(sid));
+  return `<article class="notice card"><div class="date">${esc(n.date)}・${n.audience==="class"?"班級公告":"個別聯絡"}</div><div class="body">${esc(n.body)}</div>${n.file?`<span class="attach">📎 ${esc(n.file)}</span>`:""}
+  <div class="comment-box"><label>家長建議或提問<textarea id="comment-${n.id}" ${preview?"disabled":""}></textarea></label><button class="btn soft" ${preview?"disabled":""} onclick="sendComment('${n.id}','${sid}')">送出</button><div class="comment-list">${comments.map(c=>`<div class="comment-item"><b>家長：</b>${esc(c.text)}<br><small>${esc(c.date)}</small>${c.teacherReply?`<div class="reply-teacher"><b>老師回覆：</b>${esc(c.teacherReply)}<br><small>${esc(c.teacherReplyDate||"")}</small></div>`:""}</div>`).join("")}</div></div>
   <div class="final-read-box">${signed?'<div class="signed-time">✅ 已完成閱覽確認</div>':preview?'<div class="muted">家長可在此完成整篇一次簽閱</div>':`<label><input id="read-${n.id}" type="checkbox"><span>我已完整閱讀並了解以上聯絡內容</span></label><button class="btn full" onclick="completeRead('${n.id}')">完成閱覽</button>`}</div></article>`;
 }
 function renderPreviewSelect(){const list=classStudents().filter(s=>s.active);previewStudent.innerHTML=list.map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("");targetStudent.innerHTML=previewStudent.innerHTML}
 function renderPreview(){const sid=previewStudent.value||classStudents()[0]?.id;if(!sid){previewList.innerHTML="目前無學生";return}const s=students.find(x=>x.id===sid);previewTitle.textContent=`${s.seat}號 ${s.name} 的家長畫面`;previewList.innerHTML=visibleNotices(sid).map(n=>noticeCard(n,sid,true)).join("")}
 function parentMode(){const s=students.find(x=>x.account===puser.value.trim()&&x.password===ppass.value&&x.active);if(!s)return alert("帳號或密碼錯誤");currentParent=s.id;currentClassId=s.classId;hideAll();parentScreen.classList.remove("hidden");renderParent()}
 function renderParent(){const s=students.find(x=>x.id===currentParent);if(!s)return;parentName.textContent=`${getClassDisplayName(classes.find(c=>c.id===s.classId))}・${s.seat}號 ${s.name}`;parentNotices.innerHTML=visibleNotices(s.id).map(n=>noticeCard(n,s.id,false)).join("")||'<div class="card panel">目前尚無聯絡內容。</div>'}
-function sendComment(id,sid){const input=document.getElementById(`comment-${id}`);if(!input?.value.trim())return;const n=notices.find(x=>x.id===id);n.comments=n.comments||[];n.comments.push({studentId:sid,text:input.value.trim(),date:new Date().toLocaleString("zh-TW")});persistAll();renderParent()}
+function sendComment(id,sid){const input=document.getElementById(`comment-${id}`);if(!input?.value.trim())return;const n=notices.find(x=>x.id===id);n.comments=n.comments||[];n.comments.push({id:"c_"+Date.now(),studentId:sid,text:input.value.trim(),date:new Date().toLocaleString("zh-TW"),teacherReply:"",teacherReplyDate:""});persistAll();renderParent();renderQuestions()}
 function completeRead(id){const ck=document.getElementById("read-"+id);if(!ck?.checked)return alert("請先勾選確認");const n=notices.find(x=>x.id===id);n.signed=n.signed||[];if(!n.signed.includes(currentParent))n.signed.push(currentParent);persistAll();renderParent()}
+
+function allParentQuestions(){
+  const rows=[];
+  notices.forEach(n=>(Array.isArray(n.comments)?n.comments:[]).forEach((c,index)=>{
+    const s=students.find(x=>String(x.id)===String(c.studentId));
+    if(!c.id)c.id=`legacy_${n.id}_${index}`;
+    rows.push({notice:n,comment:c,student:s});
+  }));
+  return rows.sort((a,b)=>new Date(b.comment.date)-new Date(a.comment.date));
+}
+function renderQuestions(){
+  if(!document.getElementById("questionList"))return;
+  const filter=questionFilter?.value||"pending";
+  const rows=allParentQuestions().filter(x=>String(x.notice.classId)===String(currentClassId)&&(filter==="all"||!x.comment.teacherReply));
+  questionList.innerHTML=rows.length?rows.map(({notice,comment,student})=>`<div class="question-card">
+    <div class="date">${student?`${student.seat}號 ${esc(student.name)}`:"未知學生"}・${esc(comment.date||"")}</div>
+    <p><b>相關聯絡：</b>${esc(notice.body||"")}</p>
+    <p><b>家長提問：</b>${esc(comment.text||"")}</p>
+    ${comment.teacherReply?`<div class="reply-teacher"><b>老師已回覆：</b>${esc(comment.teacherReply)}<br><small>${esc(comment.teacherReplyDate||"")}</small></div>`:`<textarea id="teacherReply-${comment.id}" rows="3" placeholder="輸入老師回覆"></textarea><button class="btn" onclick="replyToParent('${notice.id}','${comment.id}')">送出回覆</button>`}
+  </div>`).join(""):'<div class="success">目前沒有需要處理的家長提問。</div>';
+}
+async function replyToParent(noticeId,commentId){
+  const n=notices.find(x=>String(x.id)===String(noticeId));if(!n)return;
+  const c=(n.comments||[]).find(x=>String(x.id)===String(commentId));if(!c)return;
+  const input=document.getElementById(`teacherReply-${commentId}`),text=input?.value.trim();
+  if(!text)return alert("請先輸入回覆內容。");
+  c.teacherReply=text;c.teacherReplyDate=new Date().toLocaleString("zh-TW");
+  await persistAll();renderQuestions();renderParent();renderPreview();
+}
 function renderSign(){const active=classStudents().filter(s=>s.active);signList.innerHTML=notices.filter(n=>n.classId===currentClassId).map(n=>{const targets=n.audience==="class"?active:active.filter(s=>s.id===n.studentId);const signed=targets.filter(s=>(n.signed||[]).includes(s.id));const missing=targets.filter(s=>!(n.signed||[]).includes(s.id)).map(s=>`${s.seat}號 ${s.name}`).join("、")||"無";return `<div class="sign"><p>${esc(n.body)}</p><b>${signed.length} / ${targets.length} 已簽閱</b><progress value="${signed.length}" max="${Math.max(targets.length,1)}"></progress><small>未簽閱：${esc(missing)}</small></div>`}).join("")}
 
 function ensureXlsxReady(){
@@ -565,6 +666,8 @@ function buildStudentReplyRows(studentId){
         "聯絡內容":n.body||n.content||n.text||"",
         "家長回覆":c.text||"",
         "回覆時間":excelDate(c.date),
+        "老師回覆":c.teacherReply||"",
+        "老師回覆時間":excelDate(c.teacherReplyDate),
         "閱覽狀態":Array.isArray(n.signed)&&n.signed.map(String).includes(String(studentId))?"已閱覽":"未閱覽"
       }));
   });
@@ -574,6 +677,78 @@ function appendJsonSheet(wb,name,rows,headers){
   const ws=XLSX.utils.json_to_sheet(rows,{header:headers});
   autoWidth(ws,rows,headers);
   XLSX.utils.book_append_sheet(wb,ws,name);
+}
+
+function toJsDate(value){
+  if(value instanceof Date)return value;
+  const d=new Date(value);
+  if(!Number.isNaN(d.getTime()))return d;
+  const m=String(value||"").match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+  return m?new Date(Number(m[1]),Number(m[2])-1,Number(m[3])):null;
+}
+function dateKey(value){
+  const d=toJsDate(value);if(!d)return "";
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function inDateRange(value,start,end){const key=dateKey(value);return !!key&&(!start||key>=start)&&(!end||key<=end)}
+function selectedStudentForExport(){return students.find(s=>String(s.id)===String(exportStudent.value))}
+function openExportDialog(){
+  const list=classStudents().slice().sort((a,b)=>Number(a.seat)-Number(b.seat));
+  exportStudent.innerHTML=list.map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("");
+  const today=new Date().toISOString().slice(0,10);
+  exportSingleDate.value=today;exportStartDate.value=`${today.slice(0,8)}01`;exportEndDate.value=today;
+  exportModal.classList.remove("hidden");
+}
+function openExportForStudent(id){openExportDialog();exportStudent.value=id}
+function closeExportDialog(){exportModal.classList.add("hidden")}
+function studentNoticeRows(studentId,start,end){
+  return relatedNoticesForStudent(studentId).filter(n=>inDateRange(n.date,start,end)).map(n=>({
+    "日期":excelDate(n.date),"聯絡類型":n.audience==="class"?"班級公告":"個別聯絡",
+    "學生單日表現／聯絡家長事項":n.body||"","附件":n.file||"",
+    "閱覽狀態":(n.signed||[]).map(String).includes(String(studentId))?"已閱覽":"未閱覽"
+  }));
+}
+function studentConversationRows(studentId,start,end){
+  const rows=[];
+  relatedNoticesForStudent(studentId).filter(n=>inDateRange(n.date,start,end)).forEach(n=>(n.comments||[]).filter(c=>String(c.studentId)===String(studentId)).forEach(c=>rows.push({
+    "聯絡日期":excelDate(n.date),"聯絡內容":n.body||"","家長建議或提問":c.text||"","家長送出時間":excelDate(c.date),
+    "老師回覆":c.teacherReply||"","老師回覆時間":excelDate(c.teacherReplyDate)
+  })));
+  return rows;
+}
+function appendStudentInfoSheet(wb,s,start,end,title){
+  const c=classes.find(x=>String(x.id)===String(s.classId));
+  const ws=XLSX.utils.aoa_to_sheet([["匯出類型",title],["班級",c?getClassDisplayName(c):""],["座號",s.seat],["學生姓名",s.name],["家長帳號",s.account||""],["日期範圍",start===end?start:`${start||"不限"} ～ ${end||"不限"}`],["匯出時間",new Date()]]);
+  ws["!cols"]=[{wch:18},{wch:46}];XLSX.utils.book_append_sheet(wb,ws,"學生基本資料");
+}
+function exportSingleStudentDay(){
+  if(!ensureXlsxReady())return;const s=selectedStudentForExport(),day=exportSingleDate.value;
+  if(!s||!day)return alert("請選擇學生與日期。");
+  const wb=XLSX.utils.book_new();appendStudentInfoSheet(wb,s,day,day,"學生單日資料");
+  appendJsonSheet(wb,"單日表現與聯絡",studentNoticeRows(s.id,day,day),["日期","聯絡類型","學生單日表現／聯絡家長事項","附件","閱覽狀態"]);
+  appendJsonSheet(wb,"家長提問與老師回覆",studentConversationRows(s.id,day,day),["聯絡日期","聯絡內容","家長建議或提問","家長送出時間","老師回覆","老師回覆時間"]);
+  XLSX.writeFile(wb,`${day}_${String(s.seat).padStart(2,"0")}號_${safeFileName(s.name)}_單日資料.xlsx`,{compression:true,cellDates:true});
+}
+function exportStudentRange(){
+  if(!ensureXlsxReady())return;const s=selectedStudentForExport(),start=exportStartDate.value,end=exportEndDate.value;
+  if(!s||!start||!end)return alert("請選擇學生與日期區間。");if(start>end)return alert("開始日期不能晚於結束日期。");
+  const wb=XLSX.utils.book_new();appendStudentInfoSheet(wb,s,start,end,"學生個人完整資料");
+  appendJsonSheet(wb,"表現與聯絡紀錄",studentNoticeRows(s.id,start,end),["日期","聯絡類型","學生單日表現／聯絡家長事項","附件","閱覽狀態"]);
+  appendJsonSheet(wb,"家長提問與老師回覆",studentConversationRows(s.id,start,end),["聯絡日期","聯絡內容","家長建議或提問","家長送出時間","老師回覆","老師回覆時間"]);
+  XLSX.writeFile(wb,`${String(s.seat).padStart(2,"0")}號_${safeFileName(s.name)}_${start}_至_${end}_完整資料.xlsx`,{compression:true,cellDates:true});
+}
+function exportClassRange(){
+  if(!ensureXlsxReady())return;const start=exportStartDate.value,end=exportEndDate.value;
+  if(!start||!end)return alert("請選擇日期區間。");if(start>end)return alert("開始日期不能晚於結束日期。");
+  const c=classes.find(x=>String(x.id)===String(currentClassId)),list=classStudents().slice().sort((a,b)=>Number(a.seat)-Number(b.seat)),wb=XLSX.utils.book_new();
+  appendJsonSheet(wb,"班級名冊",list.map(s=>({"座號":s.seat,"學生姓名":s.name,"家長帳號":s.account,"帳號狀態":s.active===false?"停用":"啟用"})),["座號","學生姓名","家長帳號","帳號狀態"]);
+  const noticeRows=[],conversationRows=[];
+  list.forEach(s=>{studentNoticeRows(s.id,start,end).forEach(r=>noticeRows.push({"座號":s.seat,"學生姓名":s.name,...r}));studentConversationRows(s.id,start,end).forEach(r=>conversationRows.push({"座號":s.seat,"學生姓名":s.name,...r}));});
+  appendJsonSheet(wb,"全班表現與聯絡",noticeRows,["座號","學生姓名","日期","聯絡類型","學生單日表現／聯絡家長事項","附件","閱覽狀態"]);
+  appendJsonSheet(wb,"全班家長問答",conversationRows,["座號","學生姓名","聯絡日期","聯絡內容","家長建議或提問","家長送出時間","老師回覆","老師回覆時間"]);
+  const summary=XLSX.utils.aoa_to_sheet([["班級",c?getClassDisplayName(c):""],["日期區間",`${start} ～ ${end}`],["學生人數",list.length],["匯出時間",new Date()]]);
+  summary["!cols"]=[{wch:18},{wch:48}];XLSX.utils.book_append_sheet(wb,summary,"匯出摘要");
+  XLSX.writeFile(wb,`${safeFileName(c?getClassDisplayName(c):"整班")}_${start}_至_${end}_整班資料.xlsx`,{compression:true,cellDates:true});
 }
 function exportStudentExcel(id){
   if(!ensureXlsxReady())return;
@@ -603,7 +778,7 @@ function exportStudentExcel(id){
   const replies=buildStudentReplyRows(id);
   appendJsonSheet(
     wb,"家長回覆",replies,
-    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","閱覽狀態"]
+    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","老師回覆","老師回覆時間","閱覽狀態"]
   );
 
   XLSX.writeFile(
@@ -621,7 +796,7 @@ function exportParentRepliesExcel(id){
 
   appendJsonSheet(
     wb,"家長回覆",replies,
-    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","閱覽狀態"]
+    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","老師回覆","老師回覆時間","閱覽狀態"]
   );
 
   const summary=XLSX.utils.aoa_to_sheet([
@@ -761,9 +936,15 @@ function exportAllDataExcel(){
   );
 }
 
-function renderAll(){renderClassSelect();renderClasses();renderStudents();renderPreviewSelect();renderPreview();renderSign();if(!parentScreen.classList.contains("hidden"))renderParent()}
+function renderAll(){renderClassSelect();renderClasses();renderStudents();renderPreviewSelect();renderPreview();renderQuestions();renderSign();if(!parentScreen.classList.contains("hidden"))renderParent()}
 
-function localFallbackSave(){localStorage.setItem("pcb_full_classes",JSON.stringify(classes));localStorage.setItem("pcb_full_students",JSON.stringify(students));localStorage.setItem("pcb_full_notices",JSON.stringify(notices))}
+function localFallbackSave(){localStorage.setItem("pcb_full_classes",JSON.stringify(classes));localStorage.setItem("pcb_full_students",JSON.stringify(students));localStorage.setItem("pcb_full_notices",JSON.stringify(notices));localStorage.setItem("pcb_full_currentClassId",currentClassId)}
+function loadLocalData(){
+  try{
+    const c=JSON.parse(localStorage.getItem("pcb_full_classes")||"null"),s=JSON.parse(localStorage.getItem("pcb_full_students")||"null"),n=JSON.parse(localStorage.getItem("pcb_full_notices")||"null");
+    if(Array.isArray(c)&&c.length)classes=c;if(Array.isArray(s))students=s;if(Array.isArray(n))notices=n;currentClassId=localStorage.getItem("pcb_full_currentClassId")||currentClassId;
+  }catch(e){console.warn("讀取本機資料失敗",e)}
+}
 async function persistAll(){
   if(cloudReady&&teacherUid){
     await setDoc(doc(db,"teachers",teacherUid,"appData","contactBook"),{classes,students,notices,currentClassId,updatedAt:new Date().toISOString()},{merge:true});
@@ -780,7 +961,7 @@ function bindCloud(uid){
     alert("Firestore 連線失敗："+err.message);
   });
 }
-window.visitorMode=function(){appMode="visitor";enterTeacher("visitor")}
+window.visitorMode=function(){cloudReady=false;teacherUid=null;loadLocalData();appMode="visitor";enterTeacher("visitor")}
 window.teacherMode=async function(){
   if(!auth)return alert("Firebase 設定尚未完成");
   try{const result=await signInWithPopup(auth,new GoogleAuthProvider());teacherUid=result.user.uid;cloudReady=true;appMode="cloud";bindCloud(teacherUid);enterTeacher("cloud")}
@@ -793,8 +974,8 @@ try{
   fbApp=initializeApp(firebaseConfig);auth=getAuth(fbApp);db=getFirestore(fbApp);
   onAuthStateChanged(auth,user=>{if(user){teacherUid=user.uid;cloudReady=true;appMode="cloud";bindCloud(user.uid)}});
 }catch(e){console.warn(e);teacherLoginDesc.textContent="請先在程式中的 firebaseConfig 補上完整資料，否則只能使用訪客模式。"}
-renderAll();loginTab("visitor");
-Object.assign(window,{visitorMode,teacherMode,showLogin,loginTab,parentMode,openTab,audience,changeCurrentClass,addClass,editClass,deleteClass,addStudent,editStudent,deleteStudent,resetPwd,toggleStudent,publishNotice,renderPreview,sendComment,completeRead,exportStudentExcel,exportParentRepliesExcel,exportAllDataExcel,downloadStudentTemplate,importStudentsExcel,exportStudentRoster,applyAttendancePreset});
+newStudentSeat?.addEventListener("input",updateCredentialPreview);renderAll();loginTab("visitor");
+Object.assign(window,{visitorMode,teacherMode,showLogin,loginTab,parentMode,openTab,audience,changeCurrentClass,addClass,editClass,deleteClass,addStudent,closeStudentModal,confirmAddStudent,updateCredentialPreview,showCredentials,editStudent,deleteStudent,resetPwd,toggleStudent,publishNotice,renderPreview,sendComment,completeRead,renderQuestions,replyToParent,openExportDialog,openExportForStudent,closeExportDialog,exportSingleStudentDay,exportStudentRange,exportClassRange,exportStudentExcel,exportParentRepliesExcel,exportAllDataExcel,downloadStudentTemplate,importStudentsExcel,exportStudentRoster,applyAttendancePreset});
 </script>
 <script>
 if ("serviceWorker" in navigator) {
