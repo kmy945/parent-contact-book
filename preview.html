@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>親師聯絡簿</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+:root{--green:#527d6e;--dark:#29483e;--paper:rgba(255,253,244,.93);--soft:#edf4ec;--line:rgba(64,98,86,.16)}
+*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC",sans-serif;color:var(--dark);background:#dfe9dc;min-height:100vh}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.bg{position:fixed;inset:0;z-index:-2;overflow:hidden;background:linear-gradient(#b9dde5 0 36%,#f8dfaa 36% 55%,#78b7c4 55% 73%,#4b91a4 73% 100%)}
+.bg:after{content:"";position:absolute;inset:0;opacity:.1;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.sun{position:absolute;right:10%;top:9%;width:110px;height:110px;border-radius:50%;background:#ffd88a;box-shadow:0 0 70px #ffe8a8}
+.m1,.m2{position:absolute;left:-5%;width:110%;bottom:18%;height:18%;background:rgba(255,255,255,.62);clip-path:polygon(0 62%,8% 48%,16% 63%,24% 46%,33% 61%,42% 44%,52% 60%,62% 43%,72% 59%,82% 45%,92% 61%,100% 48%,100% 100%,0 100%)}
+.m2{bottom:0;height:24%;background:rgba(230,247,247,.42);clip-path:polygon(0 50%,10% 35%,20% 53%,30% 34%,40% 51%,50% 32%,60% 50%,70% 34%,80% 52%,90% 36%,100% 49%,100% 100%,0 100%)}
+.notes{position:absolute;color:rgba(35,84,99,.25);font-family:"Klee One";font-size:30px;letter-spacing:12px;animation:float 9s ease-in-out infinite}.n1{top:19%;left:10%}.n2{top:39%;right:7%;font-size:25px;animation-delay:-4s}
+@keyframes float{50%{transform:translateY(-24px) rotate(-4deg)}}
+.top{max-width:1200px;margin:auto;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#a9d3d8,#f0d6b4);font-size:25px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.7)}
+.brand b{font-family:"Klee One";font-size:21px}.brand small{display:block;opacity:.7}
+.wrap{max-width:1200px;margin:auto;padding:5px 20px 60px}.card{background:var(--paper);backdrop-filter:blur(12px);border:1px solid #ffffffaa;border-radius:24px;box-shadow:0 18px 45px #365a4c24}
+.login{display:grid;grid-template-columns:1.08fr .82fr;gap:36px;min-height:72vh;align-items:center}
+.hero{padding:28px;position:relative;overflow:hidden;background:linear-gradient(180deg,#dceff1 0%,#f9eee0 48%,#b9dce0 49%,#6da7b1 77%,#f1d7ae 78%,#f8ead4 100%);border:1px solid rgba(255,255,255,.75);box-shadow:0 16px 36px rgba(49,95,104,.15);border-radius:24px}
+.hero:before{content:"♪  ♫  ♩  𝄞  ♬";position:absolute;right:18px;top:16px;color:rgba(49,95,104,.2);font:34px Georgia;letter-spacing:14px;transform:rotate(-5deg)}
+.hero-title{position:relative;z-index:1;margin:14px 0;width:100%;font-family:"Klee One","Noto Sans TC",sans-serif;font-size:clamp(1rem,4.65vw,3.35rem);line-height:1.45;font-weight:600;letter-spacing:clamp(0em,.08vw,.06em);color:#1b3d2b}
+.hero-title span{display:block;white-space:normal;word-break:keep-all}.hero p{font-size:17px;line-height:1.8;position:relative;z-index:1}
+.badge,.chips span{display:inline-block;background:#ffffff99;border-radius:999px;padding:9px 14px}.chips{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
+.loginbox,.panel{padding:24px}.tabs,.seg{display:flex;background:#527d6e18;padding:5px;border-radius:15px;gap:5px}.tabs button,.seg button{flex:1;border:0;background:transparent;border-radius:11px;padding:11px;color:#4d6a60}.tabs .on,.seg .on{background:#fff;box-shadow:0 4px 15px #29483e1f;color:var(--dark);font-weight:700}
+label{display:grid;gap:6px;margin:14px 0;font-weight:600}input,select,textarea{width:100%;padding:12px;border:1px solid #527d6e33;border-radius:12px;background:#ffffffd9;color:var(--dark)}textarea{resize:vertical}
+.btn{border:0;border-radius:12px;padding:11px 15px;background:var(--green);color:#fff;display:inline-flex;gap:7px;align-items:center;justify-content:center}.btn.soft{background:#ffffffb5;color:var(--dark)}.btn.danger{background:#a94f48}.btn.full{width:100%}
+.modebar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;padding:12px 15px;border-radius:14px;background:#fff3ce;color:#725d26}.modebar.cloud{background:#eaf5ed;color:#37694b}
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}.toolbar select{max-width:430px}.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:15px}.nav button{border:0;border-radius:14px;padding:13px;background:#fffdf4cc;color:#416658}.nav button.on{background:var(--green);color:#fff}
+.panelhead{display:flex;justify-content:space-between;gap:12px;align-items:center}.muted{color:#6c7f77}.success{background:#edf8ef;color:#376c49;padding:11px 14px;border-radius:12px;margin:10px 0}.error{background:#fff0ee;color:#9a4941;padding:11px 14px;border-radius:12px;margin:10px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.row{display:grid;grid-template-columns:100px 1.4fr 1.2fr 190px;gap:10px;align-items:center;padding:11px;border-bottom:1px solid var(--line)}.row.head{font-weight:700;color:#687d75}.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{border:0;border-radius:9px;background:#527d6e18;padding:8px}
+.notice{padding:20px;margin:13px 0}.date{font-size:13px;color:#74877f}.body{line-height:1.9;white-space:pre-wrap}.attach{display:inline-block;background:var(--soft);padding:8px 11px;border-radius:9px;margin-top:8px}.comment-box{margin-top:14px;padding-top:13px;border-top:1px dashed #6c8d8044}.comment-list{margin-top:10px;background:#f4f7f1;padding:10px 12px;border-radius:10px}.comment-item{padding:8px 0;border-bottom:1px solid #527d6e18}.final-read-box{margin-top:18px;padding:16px;border-radius:16px;background:#eef8f8;border:1px solid #b9d9de}.final-read-box label{display:flex;align-items:flex-start;gap:10px}.final-read-box input{width:20px;height:20px;margin-top:2px}.signed-time{color:#4f7561;font-weight:700}
+.option-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.option-grid label{display:flex;align-items:flex-start;gap:8px;margin:0;padding:10px;border:1px solid var(--line);border-radius:12px;background:#ffffff9c;font-weight:400}.option-grid input{width:auto;margin-top:4px}.section-label{font-size:17px;margin:20px 0 8px;font-weight:700}
+.sign{background:#ffffffa1;padding:15px;border-radius:14px;margin:10px 0}.sign progress{width:100%;accent-color:var(--green)}
+.modal{position:fixed;inset:0;background:rgba(35,63,68,.48);display:grid;place-items:center;padding:18px;z-index:100}.dialog{background:rgba(255,253,244,.98);border-radius:22px;padding:24px;box-shadow:0 18px 48px rgba(25,55,63,.25)}
+@media(max-width:800px){.login{grid-template-columns:1fr}.nav{grid-template-columns:1fr 1fr}.grid2,.option-grid{grid-template-columns:1fr}.row{grid-template-columns:70px 1fr}.row>*:nth-child(n+3){grid-column:2/-1}.panelhead{align-items:flex-start;flex-direction:column}}
+@media(max-width:480px){.hero-title{font-size:clamp(.98rem,5.1vw,1.55rem);line-height:1.5;letter-spacing:0}.top{align-items:flex-start}.brand small{max-width:190px}.nav{grid-template-columns:1fr 1fr}}
+
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.section-label.minor{font-size:15px;margin-top:14px}
+.option-grid.compact{grid-template-columns:repeat(4,1fr)}
+.quick-row{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 14px}
+.quick{border:1px solid #527d6e33;background:#fffdf4;border-radius:999px;padding:8px 11px;color:var(--dark)}
+.quick:hover{background:#edf4ec}
+.notice-summary{padding:12px;border-radius:13px;background:#f7faf5;border:1px solid var(--line);margin:8px 0}
+@media(max-width:900px){
+  .grid3{grid-template-columns:1fr}
+  .option-grid.compact{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .option-grid,.option-grid.compact{grid-template-columns:1fr}
+  .panelhead{align-items:flex-start}
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="bg"><div class="sun"></div><div class="m1"></div><div class="m2"></div><div class="notes n1">♪　♫　♩　♬</div><div class="notes n2">♬　♪　♫</div></div>
+<header class="top">
+  <div class="brand"><div class="logo">♫</div><div><b>親師聯絡簿</b><small>讓每一則關心，都能被好好看見</small></div></div>
+  <button class="btn soft" onclick="showLogin()">登出／返回登入</button>
+</header>
+<div class="wrap">
+<section id="loginScreen" class="login">
+  <div class="hero">
+    <span class="badge">海洋音符・粉彩手繪</span>
+    <h1 class="hero-title"><span>在海風、浪光與校園日常之間，</span><span>記錄孩子成長的每一天。</span></h1>
+    
+    <div class="chips"><span>🤝 親師聯絡</span><span>🌱 一起陪伴孩子成長</span></div>
+  </div>
+  <div class="loginbox card">
+    <div class="tabs">
+      <button id="vtab" class="on" onclick="loginTab('visitor')">訪客預覽</button>
+      <button id="ttab" onclick="loginTab('teacher')">教師登入</button>
+      <button id="ptab" onclick="loginTab('parent')">家長登入</button>
+    </div>
+    <div id="visitorLogin"><h2>訪客預覽入口</h2><p class="muted">資料只保存在目前瀏覽器。</p><button class="btn full" onclick="visitorMode()">進入預覽版</button></div>
+    <div id="teacherLogin" class="hidden"><h2>教師管理入口</h2><p class="muted" id="teacherLoginDesc"></p><button class="btn full" onclick="teacherMode()">使用 Google 帳號登入</button></div>
+    <div id="parentLogin" class="hidden"><h2>家長專屬入口</h2><label>帳號<input id="puser" value="70101"></label><label>密碼<input id="ppass" type="password" value="123456"></label><button class="btn full" onclick="parentMode()">登入</button><p class="muted">示範：70101 / 123456</p></div>
+  </div>
+</section>
+
+<section id="teacherScreen" class="hidden">
+  <div id="modeBar" class="modebar"><div><b id="modeTitle"></b><small id="modeDesc"></small></div><span id="syncBadge"></span></div>
+  <div class="toolbar"><select id="classSelect" onchange="changeCurrentClass()"></select><button class="btn soft" onclick="addClass()">＋ 新增班級</button><button class="btn soft" onclick="exportAllDataExcel()">📚 匯出全部資料 Excel</button></div>
+  <nav class="nav">
+    <button class="on" data-tab="publish" onclick="openTab('publish',this)">發布聯絡</button>
+    <button data-tab="classes" onclick="openTab('classes',this)">班級管理</button>
+    <button data-tab="students" onclick="openTab('students',this)">學生帳號</button>
+    <button data-tab="preview" onclick="openTab('preview',this)">個別預覽</button>
+    <button data-tab="sign" onclick="openTab('sign',this)">簽閱統計</button>
+  </nav>
+  <div id="msg"></div>
+
+  <section id="publish" class="panel card">
+    <div class="seg"><button id="classBtn" class="on" onclick="audience('class')">班級公告</button><button id="studentBtn" onclick="audience('student')">學生個別聯絡</button></div>
+
+    <div id="studentFields" class="hidden">
+      <label>聯絡學生<select id="targetStudent"></select></label>
+
+      <div class="section-label">今日出缺勤</div>
+      <div class="grid3">
+        <label>主要狀態
+          <select id="attendanceStatus">
+            <option>正常到校</option><option>遲到</option><option>早退</option>
+            <option>病假</option><option>事假</option><option>公假</option>
+            <option>喪假</option><option>今日未到校</option>
+            <option>請假手續未完成</option><option>請假手續已完成</option>
+          </select>
+        </label>
+        <label>到校時間（選填）<input id="arrivalTime" type="time"></label>
+        <label>離校時間（選填）<input id="departureTime" type="time"></label>
+      </div>
+
+      <div class="section-label minor">請假／缺勤時段（可複選）</div>
+      <div class="option-grid compact" id="attendancePeriods">
+        <label><input type="checkbox" value="上午">上午</label>
+        <label><input type="checkbox" value="下午">下午</label>
+        <label><input type="checkbox" value="第1節">第1節</label>
+        <label><input type="checkbox" value="第2節">第2節</label>
+        <label><input type="checkbox" value="第3節">第3節</label>
+        <label><input type="checkbox" value="第4節">第4節</label>
+        <label><input type="checkbox" value="第5節">第5節</label>
+        <label><input type="checkbox" value="第6節">第6節</label>
+        <label><input type="checkbox" value="第7節">第7節</label>
+        <label><input type="checkbox" value="第8節">第8節</label>
+      </div>
+
+      <div class="section-label minor">請假原因（選填）</div>
+      <div class="option-grid compact" id="attendanceReasons">
+        <label><input type="checkbox" value="身體不適">身體不適</label>
+        <label><input type="checkbox" value="就醫">就醫</label>
+        <label><input type="checkbox" value="家庭因素">家庭因素</label>
+        <label><input type="checkbox" value="校隊活動">校隊活動</label>
+        <label><input type="checkbox" value="校外競賽">校外競賽</label>
+        <label><input type="checkbox" value="公務">公務</label>
+      </div>
+
+      <div class="quick-row">
+        <button type="button" class="quick" onclick="applyAttendancePreset('上午請假，下午返校。')">上午請假，下午返校</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('上午就醫，下午到校。')">上午就醫，下午到校</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('第一節課後到校。')">第一節課後到校</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('第二節課後到校。')">第二節課後到校</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('午休後返校。')">午休後返校</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('下午請假。')">下午請假</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('下午提早離校。')">下午早退</button>
+        <button type="button" class="quick" onclick="applyAttendancePreset('全天請假。')">全天請假</button>
+      </div>
+      <label>出缺勤補充說明（老師可自行輸入）
+        <textarea id="attendanceNote" rows="3" placeholder="例如：第一節課後到校，已完成請假程序。"></textarea>
+      </label>
+
+      <div class="section-label">今日在校情形</div>
+      <p class="muted">可複選；文字採客觀、正向及中性的描述，避免對學生貼標籤。</p>
+      <div class="option-grid" id="performanceOptions">
+        <label><input type="checkbox" name="performance" value="今日能專心參與大部分課堂活動。">今日能專心參與大部分課堂活動。</label>
+<label><input type="checkbox" name="performance" value="今日能依照老師引導完成學習任務。">今日能依照老師引導完成學習任務。</label>
+<label><input type="checkbox" name="performance" value="今日願意嘗試較具挑戰性的學習內容，值得肯定。">今日願意嘗試較具挑戰性的學習內容，值得肯定。</label>
+<label><input type="checkbox" name="performance" value="今日能主動提出問題或表達想法。">今日能主動提出問題或表達想法。</label>
+<label><input type="checkbox" name="performance" value="今日作業完成情形良好。">今日作業完成情形良好。</label>
+<label><input type="checkbox" name="performance" value="今日學習投入程度較平時略有起伏，經提醒後已逐漸進入狀況。">今日學習投入程度較平時略有起伏，經提醒後已逐漸進入狀況。</label>
+<label><input type="checkbox" name="performance" value="今日課堂中偶有交談情形，經提醒後已能配合調整。">今日課堂中偶有交談情形，經提醒後已能配合調整。</label>
+<label><input type="checkbox" name="performance" value="今日曾需要老師適時提醒，目前已能回到學習活動。">今日曾需要老師適時提醒，目前已能回到學習活動。</label>
+<label><input type="checkbox" name="performance" value="今日課堂用品準備大致完整。">今日課堂用品準備大致完整。</label>
+<label><input type="checkbox" name="performance" value="今日課堂用品準備仍可再加強，已提醒留意。">今日課堂用品準備仍可再加強，已提醒留意。</label>
+<label><input type="checkbox" name="performance" value="今日能遵守班級生活規範。">今日能遵守班級生活規範。</label>
+<label><input type="checkbox" name="performance" value="今日偶有需要提醒生活常規，經提醒後已能配合。">今日偶有需要提醒生活常規，經提醒後已能配合。</label>
+<label><input type="checkbox" name="performance" value="今日能依照作息完成各項活動。">今日能依照作息完成各項活動。</label>
+<label><input type="checkbox" name="performance" value="今日個人物品整理能力持續進步。">今日個人物品整理能力持續進步。</label>
+<label><input type="checkbox" name="performance" value="今日整體生活表現大致穩定。">今日整體生活表現大致穩定。</label>
+<label><input type="checkbox" name="performance" value="今日能與同學友善互動。">今日能與同學友善互動。</label>
+<label><input type="checkbox" name="performance" value="今日能主動協助同學或參與團隊合作。">今日能主動協助同學或參與團隊合作。</label>
+<label><input type="checkbox" name="performance" value="今日與同學互動時曾有意見不同，經引導後已能調整。">今日與同學互動時曾有意見不同，經引導後已能調整。</label>
+<label><input type="checkbox" name="performance" value="今日在人際互動上持續學習合宜的表達方式。">今日在人際互動上持續學習合宜的表達方式。</label>
+<label><input type="checkbox" name="performance" value="今日能接受老師協助，並調整與同學互動的方式。">今日能接受老師協助，並調整與同學互動的方式。</label>
+<label><input type="checkbox" name="performance" value="今日情緒表現大致穩定。">今日情緒表現大致穩定。</label>
+<label><input type="checkbox" name="performance" value="今日情緒反應較明顯，經陪伴與引導後已恢復平穩。">今日情緒反應較明顯，經陪伴與引導後已恢復平穩。</label>
+<label><input type="checkbox" name="performance" value="今日願意表達自己的感受與需求。">今日願意表達自己的感受與需求。</label>
+<label><input type="checkbox" name="performance" value="今日能接受老師提醒並逐步調整行為。">今日能接受老師提醒並逐步調整行為。</label>
+<label><input type="checkbox" name="performance" value="今日已展現自我管理能力，值得肯定。">今日已展現自我管理能力，值得肯定。</label>
+<label><input type="checkbox" name="performance" value="今日精神狀況良好。">今日精神狀況良好。</label>
+<label><input type="checkbox" name="performance" value="今日精神較為疲倦，請協助留意作息。">今日精神較為疲倦，請協助留意作息。</label>
+<label><input type="checkbox" name="performance" value="今日能主動完成班級分配工作。">今日能主動完成班級分配工作。</label>
+<label><input type="checkbox" name="performance" value="今日參與班級活動態度積極。">今日參與班級活動態度積極。</label>
+<label><input type="checkbox" name="performance" value="今日持續累積良好的學習與生活習慣，請家長一起鼓勵。">今日持續累積良好的學習與生活習慣，請家長一起鼓勵。</label>
+      </div>
+
+      <div class="section-label">未攜帶提醒</div>
+      <div class="option-grid compact" id="missingCarryOptions">
+        <label><input type="checkbox" name="missingCarry" value="國文課本／講義">國文課本／講義</label>
+<label><input type="checkbox" name="missingCarry" value="英文課本／講義">英文課本／講義</label>
+<label><input type="checkbox" name="missingCarry" value="數學課本／講義">數學課本／講義</label>
+<label><input type="checkbox" name="missingCarry" value="自然課本／講義">自然課本／講義</label>
+<label><input type="checkbox" name="missingCarry" value="社會課本／講義">社會課本／講義</label>
+<label><input type="checkbox" name="missingCarry" value="習作／作業簿">習作／作業簿</label>
+<label><input type="checkbox" name="missingCarry" value="文具用品">文具用品</label>
+<label><input type="checkbox" name="missingCarry" value="計算機（依課程需要）">計算機（依課程需要）</label>
+<label><input type="checkbox" name="missingCarry" value="體育服／運動服">體育服／運動服</label>
+<label><input type="checkbox" name="missingCarry" value="室內鞋">室內鞋</label>
+<label><input type="checkbox" name="missingCarry" value="社團用品">社團用品</label>
+<label><input type="checkbox" name="missingCarry" value="樂器／表演器材">樂器／表演器材</label>
+<label><input type="checkbox" name="missingCarry" value="水壺">水壺</label>
+<label><input type="checkbox" name="missingCarry" value="學生證／識別證">學生證／識別證</label>
+      </div>
+      <label>其他未攜帶項目<input id="missingCarryOther" placeholder="可自行輸入"></label>
+
+      <div class="section-label">未繳交提醒</div>
+      <div class="option-grid compact" id="missingSubmitOptions">
+        <label><input type="checkbox" name="missingSubmit" value="國文作業">國文作業</label>
+<label><input type="checkbox" name="missingSubmit" value="英文作業">英文作業</label>
+<label><input type="checkbox" name="missingSubmit" value="數學作業">數學作業</label>
+<label><input type="checkbox" name="missingSubmit" value="自然作業">自然作業</label>
+<label><input type="checkbox" name="missingSubmit" value="社會作業">社會作業</label>
+<label><input type="checkbox" name="missingSubmit" value="作文／閱讀心得">作文／閱讀心得</label>
+<label><input type="checkbox" name="missingSubmit" value="學習單">學習單</label>
+<label><input type="checkbox" name="missingSubmit" value="實驗報告">實驗報告</label>
+<label><input type="checkbox" name="missingSubmit" value="訂正作業">訂正作業</label>
+<label><input type="checkbox" name="missingSubmit" value="回條">回條</label>
+<label><input type="checkbox" name="missingSubmit" value="家長簽名文件">家長簽名文件</label>
+<label><input type="checkbox" name="missingSubmit" value="補考／補交資料">補考／補交資料</label>
+      </div>
+      <label>其他未繳交項目<input id="missingSubmitOther" placeholder="可自行輸入"></label>
+
+      <label>教師補充說明／需要家長協助
+        <textarea id="parentSupport" rows="4" placeholder="請以具體事實與可協助事項說明。"></textarea>
+      </label>
+    </div>
+
+    <label id="generalNoticeWrap">聯絡內容<textarea id="noticeBody" rows="6"></textarea></label>
+    <label>📎 附件<input id="fileInput" type="file" multiple></label>
+    <button class="btn" onclick="publishNotice()">發布聯絡事項</button>
+  </section>
+
+  <section id="classes" class="panel card hidden"><div class="panelhead"><div><h2>班級管理</h2><p class="muted">班級名稱會依每年 8 月 1 日自動升級。</p></div><button class="btn" onclick="addClass()">＋ 新增班級</button></div><div id="classTable"></div></section>
+
+  <section id="students" class="panel card hidden">
+    <div class="panelhead">
+      <div>
+        <h2>學生與家長帳號</h2>
+        <p class="muted">支援 Excel 批次匯入、範本下載、名冊匯出及學生個別資料匯出。</p>
+      </div>
+      <div class="actions">
+        <button class="btn soft" onclick="downloadStudentTemplate()">⬇ 下載匯入範本</button>
+        <button class="btn soft" onclick="studentImportFile.click()">⬆ Excel 批次匯入</button>
+        <input id="studentImportFile" class="hidden" type="file" accept=".xlsx,.xls,.csv" onchange="importStudentsExcel(event)">
+        <button class="btn soft" onclick="exportStudentRoster()">📋 匯出學生名冊</button>
+        <button class="btn" onclick="addStudent()">＋ 新增學生</button>
+      </div>
+    </div>
+    <div id="importResult"></div>
+    <div id="studentTable"></div>
+  </section>
+
+  <section id="preview" class="panel card hidden"><label>選擇學生<select id="previewStudent" onchange="renderPreview()"></select></label><h2 id="previewTitle"></h2><div id="previewList"></div></section>
+  <section id="sign" class="panel card hidden"><h2>簽閱統計</h2><div id="signList"></div></section>
+</section>
+
+<section id="parentScreen" class="hidden"><h2 id="parentName"></h2><div id="parentNotices"></div></section>
+</div>
+
+<script>
+
+let classes=[{id:"class_1",entrySchoolYear:114,entryGrade:7,classNo:1,customName:"海洋班",teacher:"示範教師"}];
+let students=[
+{id:"1",classId:"class_1",seat:1,name:"王小明",account:"70101",password:"123456",active:true},
+{id:"2",classId:"class_1",seat:2,name:"林佳怡",account:"70102",password:"234567",active:true},
+{id:"3",classId:"class_1",seat:3,name:"陳冠宇",account:"70103",password:"345678",active:true}
+];
+let notices=[{id:"n1",classId:"class_1",audience:"class",studentId:null,body:"明日請穿著學校運動服，並於7：30前到校。",date:new Date().toLocaleString("zh-TW"),file:"",signed:["2"],comments:[]}];
+let currentClassId="class_1",currentAudience="class",currentParent="1",appMode="visitor";
+
+function getCurrentSchoolYear(date=new Date()){return (date.getMonth()+1)>=8?date.getFullYear()-1911:date.getFullYear()-1912}
+function getClassCurrentGrade(c){return Number(c.entryGrade)+(getCurrentSchoolYear()-Number(c.entrySchoolYear))}
+function getClassDisplayName(c){
+  const grade=getClassCurrentGrade(c), sy=getCurrentSchoolYear(), no=String(c.classNo).padStart(2,"0");
+  if(grade>9)return `${c.entrySchoolYear}學年度入學・已畢業`;
+  if(grade<7)return `${sy}學年度・尚未入學`;
+  return `${sy}學年度・${grade}${no}班${c.customName?`（${c.customName}）`:""}`;
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function hideAll(){["loginScreen","teacherScreen","parentScreen"].forEach(id=>document.getElementById(id).classList.add("hidden"))}
+function showLogin(){hideAll();loginScreen.classList.remove("hidden")}
+function loginTab(m){
+  visitorLogin.classList.toggle("hidden",m!=="visitor");teacherLogin.classList.toggle("hidden",m!=="teacher");parentLogin.classList.toggle("hidden",m!=="parent");
+  vtab.classList.toggle("on",m==="visitor");ttab.classList.toggle("on",m==="teacher");ptab.classList.toggle("on",m==="parent");
+}
+function updateModeBar(){
+  const cloud=appMode==="cloud";modeBar.className="modebar "+(cloud?"cloud":"");
+  modeTitle.textContent=cloud?"教師雲端模式":"訪客預覽模式";modeDesc.textContent=cloud?"Firebase 即時同步中":"資料只保存在目前瀏覽器";syncBadge.textContent=cloud?"☁ 已同步":"☁ 未同步";
+}
+function enterTeacher(mode){appMode=mode;hideAll();teacherScreen.classList.remove("hidden");updateModeBar();renderAll()}
+function openTab(id,btn){["publish","classes","students","preview","sign"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id));document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("on"));btn?.classList.add("on");renderAll()}
+function audience(a){currentAudience=a;classBtn.classList.toggle("on",a==="class");studentBtn.classList.toggle("on",a==="student");studentFields.classList.toggle("hidden",a!=="student");generalNoticeWrap.classList.toggle("hidden",a==="student")}
+function renderClassSelect(){
+  if(!classes.length){classSelect.innerHTML='<option value="">尚未建立班級</option>';return}
+  if(!classes.some(c=>c.id===currentClassId))currentClassId=classes[0].id;
+  classSelect.innerHTML=classes.map(c=>`<option value="${c.id}">${esc(getClassDisplayName(c))}</option>`).join("");classSelect.value=currentClassId;
+}
+function changeCurrentClass(){currentClassId=classSelect.value;renderAll()}
+function classStudents(){return students.filter(s=>s.classId===currentClassId)}
+function addClass(){
+  const sy=Number(prompt("入學學年度（例如 115）",getCurrentSchoolYear()));if(!Number.isInteger(sy))return;
+  const grade=Number(prompt("建立時年級（7、8、9）","7"));if(![7,8,9].includes(grade))return alert("年級只能是 7、8、9");
+  const no=Number(prompt("班級序號（1 代表 01 班）","1"));if(!Number.isInteger(no)||no<1||no>99)return;
+  const c={id:"class_"+Date.now(),entrySchoolYear:sy,entryGrade:grade,classNo:no,customName:(prompt("班級暱稱，可留白","")||"").trim(),teacher:(prompt("導師姓名","")||"").trim()};
+  classes.push(c);currentClassId=c.id;persistAll();renderAll();
+}
+function editClass(id){const c=classes.find(x=>x.id===id);if(!c)return;c.classNo=Number(prompt("班級序號",c.classNo))||c.classNo;c.customName=(prompt("班級暱稱",c.customName||"")??c.customName).trim();c.teacher=(prompt("導師姓名",c.teacher||"")??c.teacher).trim();persistAll();renderAll()}
+function deleteClass(id){if(classes.length===1)return alert("至少保留一個班級");const c=classes.find(x=>x.id===id);if(!confirm(`刪除「${getClassDisplayName(c)}」？`))return;classes=classes.filter(x=>x.id!==id);currentClassId=classes[0].id;persistAll();renderAll()}
+function renderClasses(){classTable.innerHTML='<div class="row head"><span>班級</span><span>入學資料</span><span>導師</span><span>操作</span></div>'+classes.map(c=>`<div class="row"><strong>${esc(getClassDisplayName(c))}</strong><span>${c.entrySchoolYear}學年度・起始${c.entryGrade}年級</span><span>${esc(c.teacher||"—")}</span><div class="actions"><button onclick="editClass('${c.id}')">✎ 修改</button><button onclick="deleteClass('${c.id}')">🗑 刪除</button></div></div>`).join("")}
+
+function checkedValues(containerId){
+  const el=document.getElementById(containerId);
+  return el?[...el.querySelectorAll("input:checked")].map(x=>x.value):[];
+}
+function applyAttendancePreset(text){
+  const el=document.getElementById("attendanceNote");
+  if(!el)return;
+  el.value=el.value.trim()?`${el.value.trim()} ${text}`:text;
+  el.focus();
+}
+function resetStudentContactForm(){
+  ["arrivalTime","departureTime","attendanceNote","missingCarryOther","missingSubmitOther","parentSupport"].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value="";
+  });
+  ["attendancePeriods","attendanceReasons","performanceOptions","missingCarryOptions","missingSubmitOptions"].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.querySelectorAll("input").forEach(x=>x.checked=false);
+  });
+  const status=document.getElementById("attendanceStatus");if(status)status.value="正常到校";
+}
+function buildStudentNoticeBody(){
+  const parts=[];
+  const status=attendanceStatus.value;
+  const periods=checkedValues("attendancePeriods");
+  const reasons=checkedValues("attendanceReasons");
+  const arrival=arrivalTime.value;
+  const departure=departureTime.value;
+  const note=attendanceNote.value.trim();
+
+  let attendance=`【今日出缺勤】${status}`;
+  if(periods.length)attendance+=`；時段：${periods.join("、")}`;
+  if(reasons.length)attendance+=`；原因：${reasons.join("、")}`;
+  if(arrival)attendance+=`；到校時間：${arrival}`;
+  if(departure)attendance+=`；離校時間：${departure}`;
+  if(note)attendance+=`；補充：${note}`;
+  parts.push(attendance+"。");
+
+  const performance=checkedValues("performanceOptions");
+  if(performance.length)parts.push("【今日在校情形】\n"+performance.map(x=>`• ${x}`).join("\n"));
+
+  const carry=checkedValues("missingCarryOptions");
+  if(missingCarryOther.value.trim())carry.push(missingCarryOther.value.trim());
+  if(carry.length){
+    parts.push(`【未攜帶提醒】今日未攜帶：${carry.join("、")}。老師已提醒學生留意，請家長協助確認明日所需用品，謝謝。`);
+  }
+
+  const submit=checkedValues("missingSubmitOptions");
+  if(missingSubmitOther.value.trim())submit.push(missingSubmitOther.value.trim());
+  if(submit.length){
+    parts.push(`【未繳交提醒】今日尚未繳交：${submit.join("、")}。請協助提醒學生依教師指定期限補交，謝謝。`);
+  }
+
+  if(parentSupport.value.trim())parts.push("【教師補充說明】\n"+parentSupport.value.trim());
+  return parts.join("\n\n");
+}
+function normalizeImportHeader(value){
+  return String(value??"").trim().replace(/\s+/g,"");
+}
+function downloadStudentTemplate(){
+  if(!ensureXlsxReady())return;
+  const rows=[
+    {"座號":1,"學生姓名":"王小明","家長帳號":"70101","家長密碼":"123456","帳號狀態":"啟用"},
+    {"座號":2,"學生姓名":"林佳怡","家長帳號":"70102","家長密碼":"234567","帳號狀態":"啟用"}
+  ];
+  const ws=XLSX.utils.json_to_sheet(rows);
+  ws["!cols"]=[{wch:10},{wch:16},{wch:18},{wch:18},{wch:12}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"學生匯入範本");
+  const note=XLSX.utils.aoa_to_sheet([
+    ["欄位說明","座號、學生姓名、家長帳號、家長密碼為必要欄位。"],
+    ["更新規則","同一班級中如家長帳號已存在，會更新該筆學生資料；否則新增。"],
+    ["安全提醒","正式環境建議由後端建立帳號並儲存密碼雜湊，不要長期保存明文密碼。"]
+  ]);
+  note["!cols"]=[{wch:16},{wch:72}];
+  XLSX.utils.book_append_sheet(wb,note,"使用說明");
+  XLSX.writeFile(wb,"學生名冊_批次匯入範本.xlsx",{compression:true});
+}
+async function importStudentsExcel(event){
+  const file=event.target.files?.[0];
+  if(!file)return;
+  if(!ensureXlsxReady())return;
+  try{
+    const data=await file.arrayBuffer();
+    const wb=XLSX.read(data,{type:"array"});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const raw=XLSX.utils.sheet_to_json(ws,{defval:""});
+    if(!raw.length)throw new Error("檔案中沒有可匯入的資料。");
+
+    let added=0,updated=0,skipped=0;
+    const errors=[];
+    raw.forEach((source,index)=>{
+      const row={};
+      Object.entries(source).forEach(([k,v])=>row[normalizeImportHeader(k)]=v);
+      const seat=Number(row["座號"]);
+      const name=String(row["學生姓名"]||row["姓名"]||"").trim();
+      const account=String(row["家長帳號"]||"").trim();
+      const password=String(row["家長密碼"]||row["密碼"]||"").trim();
+      const activeText=String(row["帳號狀態"]||"啟用").trim();
+
+      if(!seat||!name||!account||!password){
+        skipped++;
+        errors.push(`第 ${index+2} 列：必要欄位不完整`);
+        return;
+      }
+      const duplicatedSeat=students.find(s=>String(s.classId)===String(currentClassId)&&Number(s.seat)===seat&&String(s.account)!==account);
+      if(duplicatedSeat){
+        skipped++;
+        errors.push(`第 ${index+2} 列：座號 ${seat} 已由其他學生使用`);
+        return;
+      }
+      const existing=students.find(s=>String(s.classId)===String(currentClassId)&&String(s.account)===account);
+      if(existing){
+        Object.assign(existing,{seat,name,password,active:!["停用","否","false","0"].includes(activeText.toLowerCase())});
+        updated++;
+      }else{
+        students.push({
+          id:"s_"+Date.now()+"_"+index,
+          classId:currentClassId,
+          seat,name,account,password,
+          active:!["停用","否","false","0"].includes(activeText.toLowerCase())
+        });
+        added++;
+      }
+    });
+    students.sort((a,b)=>String(a.classId).localeCompare(String(b.classId))||Number(a.seat)-Number(b.seat));
+    await persistAll();
+    renderAll();
+    importResult.innerHTML=`<div class="${skipped?"error":"success"}">匯入完成：新增 ${added} 筆、更新 ${updated} 筆、略過 ${skipped} 筆。${errors.length?`<br>${errors.slice(0,8).map(esc).join("<br>")}`:""}</div>`;
+  }catch(err){
+    importResult.innerHTML=`<div class="error">匯入失敗：${esc(err.message||String(err))}</div>`;
+  }finally{
+    event.target.value="";
+  }
+}
+function exportStudentRoster(){
+  if(!ensureXlsxReady())return;
+  const rows=classStudents().map(s=>({
+    "座號":s.seat,
+    "學生姓名":s.name,
+    "家長帳號":s.account,
+    "帳號狀態":s.active===false?"停用":"啟用"
+  }));
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.json_to_sheet(rows,{header:["座號","學生姓名","家長帳號","帳號狀態"]});
+  autoWidth(ws,rows,["座號","學生姓名","家長帳號","帳號狀態"]);
+  XLSX.utils.book_append_sheet(wb,ws,"學生名冊");
+  const c=classes.find(x=>String(x.id)===String(currentClassId));
+  XLSX.writeFile(wb,`${safeFileName(c?getClassDisplayName(c):"目前班級")}_學生名冊.xlsx`,{compression:true});
+}
+
+function addStudent(){const seat=Number(prompt("座號"));const name=prompt("姓名");const account=prompt("家長帳號");const password=prompt("家長密碼");if(!seat||!name||!account||!password)return;students.push({id:"s_"+Date.now(),classId:currentClassId,seat,name,account,password,active:true});persistAll();renderAll()}
+function renderStudents(){const list=classStudents();studentTable.innerHTML='<div class="row head"><span>座號</span><span>姓名</span><span>家長帳號</span><span>操作</span></div>'+list.map(s=>`<div class="row"><span>${s.seat}</span><strong>${esc(s.name)}</strong><span>${esc(s.account)}${s.active?"":"（停用）"}</span><div class="actions"><button onclick="editStudent('${s.id}')">✎</button><button onclick="resetPwd('${s.id}')">🔑</button><button onclick="toggleStudent('${s.id}')">${s.active?"停用":"啟用"}</button><button title="匯出個別聯絡與家長回覆" onclick="exportStudentExcel('${s.id}')">📊 個別</button><button title="只匯出家長回覆" onclick="exportParentRepliesExcel('${s.id}')">💬 回覆</button><button onclick="deleteStudent('${s.id}')">🗑</button></div></div>`).join("")}
+function editStudent(id){const s=students.find(x=>String(x.id)===String(id));if(!s)return;const seat=Number(prompt("座號",s.seat));const name=prompt("姓名",s.name);const account=prompt("家長帳號",s.account);if(!seat||!name||!account)return;const clash=students.find(x=>String(x.classId)===String(currentClassId)&&Number(x.seat)===seat&&String(x.id)!==String(id));if(clash)return alert("此座號已被使用。");Object.assign(s,{seat,name,account});persistAll();renderAll()}
+function deleteStudent(id){const s=students.find(x=>String(x.id)===String(id));if(!s||!confirm(`確定刪除 ${s.name}？相關聯絡紀錄仍會保留。`))return;students=students.filter(x=>String(x.id)!==String(id));persistAll();renderAll()}
+function resetPwd(id){const s=students.find(x=>x.id===id),p=prompt("新密碼");if(p){s.password=p;persistAll();renderAll()}}
+function toggleStudent(id){const s=students.find(x=>x.id===id);s.active=!s.active;persistAll();renderAll()}
+function publishNotice(){
+  let body=noticeBody.value.trim();
+  if(currentAudience==="student")body=buildStudentNoticeBody();
+  if(!body)return alert("請輸入聯絡內容");
+  notices.unshift({id:"n_"+Date.now(),classId:currentClassId,audience:currentAudience,studentId:currentAudience==="student"?targetStudent.value:null,body,date:new Date().toLocaleString("zh-TW"),file:[...fileInput.files].map(f=>f.name).join("、"),signed:[],comments:[]});
+  noticeBody.value="";attendanceNote.value="";parentSupport.value="";fileInput.value="";performanceOptions.querySelectorAll("input").forEach(x=>x.checked=false);persistAll();msg.innerHTML='<div class="success">已發布聯絡事項。</div>';renderAll();
+}
+function visibleNotices(sid){return notices.filter(n=>n.classId===currentClassId&&(n.audience==="class"||n.studentId===sid))}
+function noticeCard(n,sid,preview=false){
+  const signed=(n.signed||[]).includes(sid), comments=(n.comments||[]).filter(c=>c.studentId===sid);
+  return `<article class="notice card"><div class="date">${esc(n.date)}</div><div class="body">${esc(n.body)}</div>${n.file?`<span class="attach">📎 ${esc(n.file)}</span>`:""}
+  <div class="comment-box"><label>家長留言<textarea id="comment-${n.id}" ${preview?"disabled":""}></textarea></label><button class="btn soft" ${preview?"disabled":""} onclick="sendComment('${n.id}','${sid}')">送出留言</button><div class="comment-list">${comments.map(c=>`<div class="comment-item">${esc(c.text)}<br><small>${esc(c.date)}</small></div>`).join("")}</div></div>
+  <div class="final-read-box">${signed?'<div class="signed-time">✅ 已完成閱覽確認</div>':preview?'<div class="muted">家長可在此完成整篇一次簽閱</div>':`<label><input id="read-${n.id}" type="checkbox"><span>我已完整閱讀並了解以上聯絡內容</span></label><button class="btn full" onclick="completeRead('${n.id}')">完成閱覽</button>`}</div></article>`;
+}
+function renderPreviewSelect(){const list=classStudents().filter(s=>s.active);previewStudent.innerHTML=list.map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("");targetStudent.innerHTML=previewStudent.innerHTML}
+function renderPreview(){const sid=previewStudent.value||classStudents()[0]?.id;if(!sid){previewList.innerHTML="目前無學生";return}const s=students.find(x=>x.id===sid);previewTitle.textContent=`${s.seat}號 ${s.name} 的家長畫面`;previewList.innerHTML=visibleNotices(sid).map(n=>noticeCard(n,sid,true)).join("")}
+function parentMode(){const s=students.find(x=>x.account===puser.value.trim()&&x.password===ppass.value&&x.active);if(!s)return alert("帳號或密碼錯誤");currentParent=s.id;currentClassId=s.classId;hideAll();parentScreen.classList.remove("hidden");renderParent()}
+function renderParent(){const s=students.find(x=>x.id===currentParent);if(!s)return;parentName.textContent=`${getClassDisplayName(classes.find(c=>c.id===s.classId))}・${s.seat}號 ${s.name}`;parentNotices.innerHTML=visibleNotices(s.id).map(n=>noticeCard(n,s.id,false)).join("")||'<div class="card panel">目前尚無聯絡內容。</div>'}
+function sendComment(id,sid){const input=document.getElementById(`comment-${id}`);if(!input?.value.trim())return;const n=notices.find(x=>x.id===id);n.comments=n.comments||[];n.comments.push({studentId:sid,text:input.value.trim(),date:new Date().toLocaleString("zh-TW")});persistAll();renderParent()}
+function completeRead(id){const ck=document.getElementById("read-"+id);if(!ck?.checked)return alert("請先勾選確認");const n=notices.find(x=>x.id===id);n.signed=n.signed||[];if(!n.signed.includes(currentParent))n.signed.push(currentParent);persistAll();renderParent()}
+function renderSign(){const active=classStudents().filter(s=>s.active);signList.innerHTML=notices.filter(n=>n.classId===currentClassId).map(n=>{const targets=n.audience==="class"?active:active.filter(s=>s.id===n.studentId);const signed=targets.filter(s=>(n.signed||[]).includes(s.id));const missing=targets.filter(s=>!(n.signed||[]).includes(s.id)).map(s=>`${s.seat}號 ${s.name}`).join("、")||"無";return `<div class="sign"><p>${esc(n.body)}</p><b>${signed.length} / ${targets.length} 已簽閱</b><progress value="${signed.length}" max="${Math.max(targets.length,1)}"></progress><small>未簽閱：${esc(missing)}</small></div>`}).join("")}
+
+function ensureXlsxReady(){
+  if(typeof XLSX==="undefined"){
+    alert("Excel 元件尚未載入，請確認網路連線後重新開啟頁面。");
+    return false;
+  }
+  return true;
+}
+function safeFileName(value){
+  return String(value||"資料").replace(/[\/:*?"<>|]/g,"_").trim();
+}
+function excelDate(value){
+  const d=new Date(value);
+  return Number.isNaN(d.getTime()) ? String(value||"") : d;
+}
+function autoWidth(ws,rows,headers){
+  ws["!cols"]=headers.map(header=>{
+    const width=Math.max(
+      String(header).length,
+      ...rows.map(row=>String(row[header]??"").split("\n").reduce((m,v)=>Math.max(m,v.length),0))
+    );
+    return {wch:Math.min(Math.max(width+2,10),42)};
+  });
+  if(rows.length) ws["!autofilter"]={ref:`A1:${XLSX.utils.encode_col(headers.length-1)}${rows.length+1}`};
+}
+function relatedNoticesForStudent(studentId){
+  const s=students.find(x=>String(x.id)===String(studentId));
+  if(!s)return [];
+  return notices
+    .filter(n=>String(n.classId)===String(s.classId) &&
+      (n.audience==="class" ||
+       String(n.studentId)===String(studentId) ||
+       (Array.isArray(n.studentIds)&&n.studentIds.map(String).includes(String(studentId)))))
+    .slice()
+    .sort((a,b)=>new Date(a.date)-new Date(b.date));
+}
+function buildStudentContactRows(studentId){
+  return relatedNoticesForStudent(studentId).map(n=>({
+    "日期":excelDate(n.date),
+    "聯絡類型":n.audience==="class"?"班級公告":"個別聯絡",
+    "聯絡內容":n.body||n.content||n.text||"",
+    "附件":n.file||n.attachment||"",
+    "家長閱覽狀態":Array.isArray(n.signed)&&n.signed.map(String).includes(String(studentId))?"已閱覽":"未閱覽",
+    "家長回覆數":(Array.isArray(n.comments)?n.comments:[]).filter(c=>String(c.studentId)===String(studentId)).length
+  }));
+}
+function buildStudentReplyRows(studentId){
+  const rows=[];
+  relatedNoticesForStudent(studentId).forEach(n=>{
+    (Array.isArray(n.comments)?n.comments:[])
+      .filter(c=>String(c.studentId)===String(studentId))
+      .forEach(c=>rows.push({
+        "聯絡日期":excelDate(n.date),
+        "聯絡類型":n.audience==="class"?"班級公告":"個別聯絡",
+        "聯絡內容":n.body||n.content||n.text||"",
+        "家長回覆":c.text||"",
+        "回覆時間":excelDate(c.date),
+        "閱覽狀態":Array.isArray(n.signed)&&n.signed.map(String).includes(String(studentId))?"已閱覽":"未閱覽"
+      }));
+  });
+  return rows;
+}
+function appendJsonSheet(wb,name,rows,headers){
+  const ws=XLSX.utils.json_to_sheet(rows,{header:headers});
+  autoWidth(ws,rows,headers);
+  XLSX.utils.book_append_sheet(wb,ws,name);
+}
+function exportStudentExcel(id){
+  if(!ensureXlsxReady())return;
+  const s=students.find(x=>String(x.id)===String(id));
+  if(!s)return alert("找不到學生資料。");
+  const c=classes.find(x=>String(x.id)===String(s.classId));
+  const wb=XLSX.utils.book_new();
+
+  const info=XLSX.utils.aoa_to_sheet([
+    ["學生姓名",s.name],
+    ["座號",s.seat],
+    ["班級",c?getClassDisplayName(c):""],
+    ["家長帳號",s.account||""],
+    ["帳號狀態",s.active===false?"停用":"啟用"],
+    ["匯出時間",new Date()],
+    ["說明","為保障帳號安全，本檔不匯出家長登入密碼。"]
+  ]);
+  info["!cols"]=[{wch:18},{wch:36}];
+  XLSX.utils.book_append_sheet(wb,info,"學生基本資料");
+
+  const contacts=buildStudentContactRows(id);
+  appendJsonSheet(
+    wb,"個別聯絡紀錄",contacts,
+    ["日期","聯絡類型","聯絡內容","附件","家長閱覽狀態","家長回覆數"]
+  );
+
+  const replies=buildStudentReplyRows(id);
+  appendJsonSheet(
+    wb,"家長回覆",replies,
+    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","閱覽狀態"]
+  );
+
+  XLSX.writeFile(
+    wb,
+    `${String(s.seat).padStart(2,"0")}號_${safeFileName(s.name)}_個別聯絡與家長回覆.xlsx`,
+    {compression:true,cellDates:true}
+  );
+}
+function exportParentRepliesExcel(id){
+  if(!ensureXlsxReady())return;
+  const s=students.find(x=>String(x.id)===String(id));
+  if(!s)return alert("找不到學生資料。");
+  const replies=buildStudentReplyRows(id);
+  const wb=XLSX.utils.book_new();
+
+  appendJsonSheet(
+    wb,"家長回覆",replies,
+    ["聯絡日期","聯絡類型","聯絡內容","家長回覆","回覆時間","閱覽狀態"]
+  );
+
+  const summary=XLSX.utils.aoa_to_sheet([
+    ["學生姓名",s.name],
+    ["座號",s.seat],
+    ["家長帳號",s.account||""],
+    ["回覆總數",replies.length],
+    ["匯出時間",new Date()]
+  ]);
+  summary["!cols"]=[{wch:18},{wch:32}];
+  XLSX.utils.book_append_sheet(wb,summary,"摘要");
+
+  XLSX.writeFile(
+    wb,
+    `${String(s.seat).padStart(2,"0")}號_${safeFileName(s.name)}_家長回覆.xlsx`,
+    {compression:true,cellDates:true}
+  );
+}
+function exportAllDataExcel(){
+  if(!ensureXlsxReady())return;
+  const wb=XLSX.utils.book_new();
+
+  const classRows=classes.map(c=>({
+    "班級ID":c.id,
+    "目前班級名稱":getClassDisplayName(c),
+    "入學學年度":c.entrySchoolYear,
+    "建立時年級":c.entryGrade,
+    "班級序號":c.classNo,
+    "班級暱稱":c.customName||"",
+    "導師":c.teacher||"",
+    "學生人數":students.filter(s=>String(s.classId)===String(c.id)).length
+  }));
+  appendJsonSheet(
+    wb,"班級資料",classRows,
+    ["班級ID","目前班級名稱","入學學年度","建立時年級","班級序號","班級暱稱","導師","學生人數"]
+  );
+
+  const studentRows=students.map(s=>{
+    const c=classes.find(x=>String(x.id)===String(s.classId));
+    return {
+      "學生ID":s.id,
+      "班級":c?getClassDisplayName(c):"",
+      "座號":s.seat,
+      "學生姓名":s.name,
+      "家長帳號":s.account||"",
+      "帳號狀態":s.active===false?"停用":"啟用",
+      "個別聯絡數":notices.filter(n=>String(n.studentId)===String(s.id)).length,
+      "全部可見聯絡數":relatedNoticesForStudent(s.id).length,
+      "家長回覆數":buildStudentReplyRows(s.id).length
+    };
+  });
+  appendJsonSheet(
+    wb,"學生資料",studentRows,
+    ["學生ID","班級","座號","學生姓名","家長帳號","帳號狀態","個別聯絡數","全部可見聯絡數","家長回覆數"]
+  );
+
+  const noticeRows=notices.map(n=>{
+    const c=classes.find(x=>String(x.id)===String(n.classId));
+    const s=students.find(x=>String(x.id)===String(n.studentId));
+    const targetStudents=n.audience==="class"
+      ? students.filter(x=>String(x.classId)===String(n.classId)&&x.active!==false)
+      : students.filter(x=>String(x.id)===String(n.studentId)&&x.active!==false);
+    const signedIds=Array.isArray(n.signed)?n.signed.map(String):[];
+    return {
+      "聯絡ID":n.id,
+      "班級":c?getClassDisplayName(c):"",
+      "日期":excelDate(n.date),
+      "聯絡類型":n.audience==="class"?"班級公告":"個別聯絡",
+      "聯絡學生":s?`${s.seat}號 ${s.name}`:"",
+      "聯絡內容":n.body||n.content||n.text||"",
+      "附件":n.file||n.attachment||"",
+      "應簽閱人數":targetStudents.length,
+      "已簽閱人數":targetStudents.filter(x=>signedIds.includes(String(x.id))).length,
+      "家長回覆數":Array.isArray(n.comments)?n.comments.length:0
+    };
+  });
+  appendJsonSheet(
+    wb,"全部聯絡紀錄",noticeRows,
+    ["聯絡ID","班級","日期","聯絡類型","聯絡學生","聯絡內容","附件","應簽閱人數","已簽閱人數","家長回覆數"]
+  );
+
+  const replyRows=[];
+  notices.forEach(n=>{
+    const c=classes.find(x=>String(x.id)===String(n.classId));
+    (Array.isArray(n.comments)?n.comments:[]).forEach(comment=>{
+      const s=students.find(x=>String(x.id)===String(comment.studentId));
+      replyRows.push({
+        "班級":c?getClassDisplayName(c):"",
+        "學生":s?`${s.seat}號 ${s.name}`:"",
+        "聯絡日期":excelDate(n.date),
+        "聯絡內容":n.body||n.content||n.text||"",
+        "家長回覆":comment.text||"",
+        "回覆時間":excelDate(comment.date),
+        "閱覽狀態":Array.isArray(n.signed)&&n.signed.map(String).includes(String(comment.studentId))?"已閱覽":"未閱覽"
+      });
+    });
+  });
+  appendJsonSheet(
+    wb,"全部家長回覆",replyRows,
+    ["班級","學生","聯絡日期","聯絡內容","家長回覆","回覆時間","閱覽狀態"]
+  );
+
+  const signRows=[];
+  notices.forEach(n=>{
+    const c=classes.find(x=>String(x.id)===String(n.classId));
+    const targets=n.audience==="class"
+      ? students.filter(s=>String(s.classId)===String(n.classId)&&s.active!==false)
+      : students.filter(s=>String(s.id)===String(n.studentId)&&s.active!==false);
+    targets.forEach(s=>{
+      signRows.push({
+        "班級":c?getClassDisplayName(c):"",
+        "學生":`${s.seat}號 ${s.name}`,
+        "聯絡日期":excelDate(n.date),
+        "聯絡類型":n.audience==="class"?"班級公告":"個別聯絡",
+        "聯絡內容":n.body||n.content||n.text||"",
+        "簽閱狀態":Array.isArray(n.signed)&&n.signed.map(String).includes(String(s.id))?"已簽閱":"未簽閱"
+      });
+    });
+  });
+  appendJsonSheet(
+    wb,"簽閱明細",signRows,
+    ["班級","學生","聯絡日期","聯絡類型","聯絡內容","簽閱狀態"]
+  );
+
+  const note=XLSX.utils.aoa_to_sheet([
+    ["匯出範圍","全部班級、學生、聯絡紀錄、家長回覆及簽閱明細"],
+    ["匯出時間",new Date()],
+    ["安全說明","為保障家長帳號安全，全部資料匯出不包含登入密碼。"]
+  ]);
+  note["!cols"]=[{wch:18},{wch:58}];
+  XLSX.utils.book_append_sheet(wb,note,"匯出說明");
+
+  XLSX.writeFile(
+    wb,
+    `親師聯絡簿_全部資料_${new Date().toISOString().slice(0,10)}.xlsx`,
+    {compression:true,cellDates:true}
+  );
+}
+
+function renderAll(){renderClassSelect();renderClasses();renderStudents();renderPreviewSelect();renderPreview();renderSign();if(!parentScreen.classList.contains("hidden"))renderParent()}
+
+function saveLocal(){localStorage.setItem("pcb_classes",JSON.stringify(classes));localStorage.setItem("pcb_students",JSON.stringify(students));localStorage.setItem("pcb_notices",JSON.stringify(notices));localStorage.setItem("pcb_currentClassId",currentClassId)}
+function loadLocal(){try{classes=JSON.parse(localStorage.getItem("pcb_classes"))||classes;students=JSON.parse(localStorage.getItem("pcb_students"))||students;notices=JSON.parse(localStorage.getItem("pcb_notices"))||notices;currentClassId=localStorage.getItem("pcb_currentClassId")||currentClassId}catch(e){}}
+function persistAll(){saveLocal()}
+function visitorMode(){enterTeacher("visitor")}
+function teacherMode(){alert("這是預覽版，教師按鈕會以本機模式開啟。");enterTeacher("visitor")}
+teacherLoginDesc.textContent="預覽版不連接 Firebase，所有操作都保存在目前瀏覽器。";
+loadLocal();renderAll();loginTab("visitor");
+</script>
+</body></html>

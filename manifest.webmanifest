@@ -1,0 +1,9 @@
+{
+  "name": "親師聯絡簿",
+  "short_name": "聯絡簿",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "lang": "zh-Hant"
+}
