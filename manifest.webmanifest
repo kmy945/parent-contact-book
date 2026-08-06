@@ -1,11 +1,11 @@
 {
-  "name": "親師聯絡簿",
+  "name": "親師聯絡簿 v9.0",
   "short_name": "聯絡簿",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f7fbff",
-  "theme_color": "#1557a8",
+  "background_color": "#eef8fd",
+  "theme_color": "#1587a8",
   "lang": "zh-Hant",
-  "description": "可分享部署的親師聯絡與學生輔導紀錄系統"
+  "description": "國中親師聯絡、科別管理與防禦性評語系統"
 }
