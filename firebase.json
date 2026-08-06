@@ -3,8 +3,7 @@
     "public": ".",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "**/.*"
     ],
     "rewrites": [
       {
@@ -12,8 +11,5 @@
         "destination": "/index.html"
       }
     ]
-  },
-  "firestore": {
-    "rules": "firestore.rules"
   }
 }
