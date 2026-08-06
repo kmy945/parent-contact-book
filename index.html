@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1587a8">
 <link rel="manifest" href="manifest.webmanifest">
-<title>親師聯絡簿 v9.0</title>
+<title>親師聯絡簿 v9.3</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <style>
 :root{
   --navy:#153653;--blue:#258aca;--aqua:#35b8c7;--mint:#49b99a;
@@ -24,10 +26,38 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:13px
 textarea{min-height:110px;resize:vertical}
 .card{background:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.9);border-radius:var(--radius);box-shadow:var(--shadow)}
 /* Original cover remains unchanged */
-.login-screen{min-height:100vh;display:grid;grid-template-columns:minmax(320px,45%) 1fr;background:#f6fbfe}
-.cover-pane{background:url("cover-clean.jpg") center/cover no-repeat;min-height:100vh}
-.login-pane{display:grid;place-items:center;padding:28px}
-.login-box{width:min(520px,100%);padding:30px}
+.login-screen{
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+  background:#eaf5fb;
+}
+.cover-pane{
+  position:absolute;
+  inset:0;
+  background-color:#eaf5fb;
+  background-image:url("cover-clean.jpg");
+  background-position:center center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  min-height:100vh;
+}
+.login-pane{
+  position:relative;
+  z-index:2;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:clamp(18px,4vw,56px);
+  background:linear-gradient(90deg,rgba(234,245,251,0) 0%,rgba(234,245,251,.16) 48%,rgba(234,245,251,.78) 70%,rgba(234,245,251,.94) 100%);
+}
+.login-box{
+  width:min(460px,100%);
+  padding:30px;
+  background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px);
+}
 .brand-title{font-size:32px;margin:0 0 8px}.login-tabs{display:flex;gap:8px;background:#eaf5fa;padding:5px;border-radius:15px;margin:20px 0}
 .login-tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:11px}
 .login-tabs button.on{background:white;box-shadow:0 5px 14px rgba(22,75,105,.1);font-weight:700}
@@ -78,14 +108,59 @@ th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left}
   .stats,.quick-grid{grid-template-columns:repeat(3,1fr)}
   .columns{grid-template-columns:1fr}
 }
+
+@media(min-width:801px) and (max-width:1200px){
+  .cover-pane{
+    background-size:contain;
+    background-position:left center;
+  }
+  .login-pane{
+    padding:28px;
+    background:linear-gradient(90deg,rgba(234,245,251,0) 0%,rgba(234,245,251,.08) 42%,rgba(234,245,251,.82) 66%,#eaf5fb 100%);
+  }
+  .login-box{width:min(430px,46vw)}
+}
+
 @media(max-width:800px){
-  .login-screen{grid-template-columns:1fr}.cover-pane{min-height:42vh}.login-pane{padding:16px}
+  .login-screen{min-height:100vh}
+  .cover-pane{
+    position:absolute;
+    inset:0;
+    min-height:100vh;
+    background-size:contain;
+    background-position:center top;
+  }
+  .login-pane{
+    min-height:100vh;
+    align-items:flex-end;
+    justify-content:center;
+    padding:16px 14px max(20px,env(safe-area-inset-bottom));
+    background:linear-gradient(180deg,rgba(234,245,251,0) 0%,rgba(234,245,251,.06) 48%,rgba(234,245,251,.88) 72%,#eaf5fb 100%);
+  }
+  .login-box{
+    width:min(520px,100%);
+    padding:22px;
+    margin-bottom:8px;
+  }
   .app{display:block}.sidebar{display:none}.content{padding:0 12px 90px}.ocean-header{min-height:190px;padding:18px}
   .class-title h1{font-size:28px}.stats,.quick-grid{grid-template-columns:repeat(2,1fr)}
   .form-grid,.check-grid{grid-template-columns:1fr}
   .bottom-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;background:white;border-top:1px solid var(--line);z-index:50}
   .bottom-nav button{border:0;background:#fff;padding:10px 4px;font-size:12px;color:var(--navy)}
 }
+
+.student-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}
+.student-card.active{outline:3px solid #9ddff1}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.notice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:800px){.notice-grid{grid-template-columns:1fr}}
+
+.file-preview{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfdff}
+.file-preview img{max-width:100%;max-height:520px;border-radius:10px;display:block;margin:auto}
+.file-preview iframe,.file-preview object{width:100%;height:560px;border:0;border-radius:10px;background:#fff}
+.docx-preview{max-height:560px;overflow:auto;background:#fff;padding:18px;border-radius:10px;color:#222}
+.attachment-row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}
+.attachment-row:last-child{border-bottom:0}
 </style>
 </head>
 <body>
@@ -117,10 +192,13 @@ th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left}
     <div class="side-brand">親師聯絡簿</div>
     <button class="nav-btn on" data-page="dashboard" onclick="go('dashboard',this)">首頁</button>
     <button class="nav-btn" data-page="contact" onclick="go('contact',this)">今日聯絡簿</button>
+    <button class="nav-btn" data-page="classes" onclick="go('classes',this)">班級／學年度</button>
     <button class="nav-btn" data-page="students" onclick="go('students',this)">學生資料</button>
+    <button class="nav-btn" data-page="studentDetail" onclick="go('studentDetail',this)">學生個別頁面</button>
     <button class="nav-btn" data-page="subjects" onclick="go('subjects',this)">科別管理</button>
     <button class="nav-btn" data-page="parents" onclick="go('parents',this)">家長留言</button>
-    <button class="nav-btn" data-page="announcements" onclick="go('announcements',this)">公告管理</button>
+    <button class="nav-btn" data-page="announcements" onclick="go('announcements',this)">統一／個別公告</button>
+    <button class="nav-btn" data-page="preview" onclick="go('preview',this)">家長預覽區</button>
     <button class="nav-btn" data-page="reports" onclick="go('reports',this)">統計與匯出</button>
     <button class="nav-btn" data-page="settings" onclick="go('settings',this)">設定</button>
     <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
@@ -148,10 +226,13 @@ th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left}
     <div class="content">
       <section id="dashboard" class="page"></section>
       <section id="contact" class="page hidden"></section>
+      <section id="classes" class="page hidden"></section>
       <section id="students" class="page hidden"></section>
+      <section id="studentDetail" class="page hidden"></section>
       <section id="subjects" class="page hidden"></section>
       <section id="parents" class="page hidden"></section>
       <section id="announcements" class="page hidden"></section>
+      <section id="preview" class="page hidden"></section>
       <section id="reports" class="page hidden"></section>
       <section id="settings" class="page hidden"></section>
       <section id="assistant" class="page hidden"></section>
@@ -176,6 +257,7 @@ th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyBNr-1S-xSeDvESdq3tYbWjIQ8pmgOjpd8",
@@ -185,28 +267,10 @@ const firebaseConfig={
   messagingSenderId:"241202878085",
   appId:"1:241202878085:web:fb598315e315aa33cbbbec"
 };
-let app,auth,db;
-try{app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app)}catch(e){console.warn(e)}
+let app,auth,db,storage;
+try{app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app)}catch(e){console.warn(e)}
 
 const defaultSubjects=["國文","英語","數學","自然","社會","健康與體育","音樂","視覺藝術","表演藝術","資訊科技","生活科技","輔導","家政","童軍","班級事務","導師時間"];
-const defaultData={
-  classes:[{id:"c706",schoolYear:115,grade:7,classNo:6,name:"六出奇技",teacher:"Meng"}],
-  currentClassId:"c706",
-  subjects:defaultSubjects.map((name,i)=>({id:"s"+i,name,enabled:true,custom:false})),
-  students:[
-    {id:"stu1",classId:"c706",seat:1,name:"王小明",account:"70601",password:"123456",status:"到校"},
-    {id:"stu2",classId:"c706",seat:2,name:"李小華",account:"70602",password:"123456",status:"到校"},
-    {id:"stu3",classId:"c706",seat:3,name:"張小美",account:"70603",password:"123456",status:"事假"}
-  ],
-  notices:[],
-  announcements:[],
-  parentMessages:[],
-  settings:{teacherName:"Meng",positiveReminder:true}
-};
-let data=JSON.parse(localStorage.getItem("pcb_v9_data")||"null")||structuredClone(defaultData);
-let mode="visitor",uid=null,currentParent=null;
-
-const riskyWords=["很懶","很皮","沒家教","故意","問題學生","態度很差","白目","愛找麻煩","很糟糕","不受教","沒禮貌","笨","散漫"];
 const safeTemplates={
  "課堂交談":"今日課堂中，孩子曾有與同學交談的情形，老師已於當下提醒；經提醒後，孩子已能逐步回到課程活動。",
  "作業未交":"今日尚未在規定時間內完成作業繳交，老師已提醒補交；敬請家長協助孩子確認後續完成情形。",
@@ -216,16 +280,41 @@ const safeTemplates={
  "人際互動":"今日與同學互動時曾出現意見不同的情形，老師已陪同釐清並引導合宜表達；目前雙方已能回到課程活動。",
  "優良表現":"孩子今日能主動參與課堂活動，並依照指示完成任務，值得肯定與鼓勵。"
 };
+const riskyWords=["很懶","很皮","沒家教","故意","問題學生","態度很差","白目","愛找麻煩","很糟糕","不受教","沒禮貌","笨","散漫"];
+
+const defaultData={
+ version:"9.2",
+ classes:[{id:"c706",schoolYear:115,grade:7,classNo:6,name:"六出奇技",teacher:"Meng",status:"active"}],
+ currentClassId:"c706",
+ subjects:defaultSubjects.map((name,i)=>({id:"s"+i,name,enabled:true,custom:false})),
+ students:[
+  {id:"stu1",classId:"c706",seat:1,name:"王小明",studentNo:"",gender:"",birthday:"",phone:"",address:"",parentName:"王媽媽",parentPhone:"",parentAddress:"",account:"70601",password:"123456",status:"到校",advancement:"高中",notes:""},
+  {id:"stu2",classId:"c706",seat:2,name:"李小華",studentNo:"",gender:"",birthday:"",phone:"",address:"",parentName:"李爸爸",parentPhone:"",parentAddress:"",account:"70602",password:"123456",status:"到校",advancement:"高職",notes:""}
+ ],
+ notices:[],
+ announcements:[],
+ attendance:[],
+ parentMessages:[],
+ settings:{teacherName:"Meng",positiveReminder:true}
+};
+
+let data=JSON.parse(localStorage.getItem("pcb_v9_2_data")||"null")||structuredClone(defaultData);
+data.classes ||= defaultData.classes; data.students ||= []; data.notices ||= []; data.announcements ||= [];
+data.attendance ||= []; data.parentMessages ||= []; data.subjects ||= defaultData.subjects; data.settings ||= defaultData.settings;
+let mode="visitor",uid=null,currentParent=null,selectedStudentId=null,announcementFiles=[];
 
 function save(){
- localStorage.setItem("pcb_v9_data",JSON.stringify(data));
- if(mode==="cloud"&&uid&&db) setDoc(doc(db,"teachers",uid,"appData","contactBookV9"),data,{merge:true}).catch(console.error);
+ localStorage.setItem("pcb_v9_2_data",JSON.stringify(data));
+ if(mode==="cloud"&&uid&&db) setDoc(doc(db,"teachers",uid,"appData","contactBookV92"),data,{merge:true}).catch(console.error);
  renderAll();
 }
-function currentClass(){return data.classes.find(c=>c.id===data.currentClassId)||data.classes[0]}
-function classStudents(){return data.students.filter(s=>s.classId===data.currentClassId)}
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function today(){return new Date().toLocaleDateString("zh-TW")}
+function currentClass(){return data.classes.find(c=>c.id===data.currentClassId)||data.classes[0]}
+function classStudents(){return data.students.filter(s=>s.classId===data.currentClassId).sort((a,b)=>Number(a.seat)-Number(b.seat))}
+function studentById(id){return data.students.find(s=>s.id===id)}
+function today(){return new Date().toISOString().slice(0,10)}
+function download(name,text,type="text/csv;charset=utf-8"){const blob=new Blob(["\ufeff"+text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function csvCell(v){return `"${String(v??"").replaceAll('"','""')}"`}
 function switchLogin(type){
  teacherLogin.classList.toggle("hidden",type!=="teacher");parentLogin.classList.toggle("hidden",type!=="parent");
  teacherTab.classList.toggle("on",type==="teacher");parentTab.classList.toggle("on",type==="parent");
@@ -234,16 +323,15 @@ window.switchLogin=switchLogin;
 window.visitorLogin=()=>{mode="visitor";enterTeacher()};
 window.googleLogin=async()=>{
  try{
-   const result=await signInWithPopup(auth,new GoogleAuthProvider());uid=result.user.uid;mode="cloud";
-   const snap=await getDoc(doc(db,"teachers",uid,"appData","contactBookV9"));
-   if(snap.exists())data=snap.data(); else await setDoc(doc(db,"teachers",uid,"appData","contactBookV9"),data);
-   enterTeacher();
+  const result=await signInWithPopup(auth,new GoogleAuthProvider());uid=result.user.uid;mode="cloud";
+  const snap=await getDoc(doc(db,"teachers",uid,"appData","contactBookV92"));
+  if(snap.exists())data=snap.data(); else await setDoc(doc(db,"teachers",uid,"appData","contactBookV92"),data);
+  enterTeacher();
  }catch(e){alert("Google 登入失敗："+e.message)}
 };
 function enterTeacher(){loginScreen.classList.add("hidden");parentApp.classList.add("hidden");teacherApp.classList.remove("hidden");renderAll()}
 window.parentSignIn=()=>{
- const a=parentAccount.value.trim(),p=parentPassword.value;
- const student=data.students.find(s=>s.account===a&&s.password===p);
+ const student=data.students.find(s=>s.account===parentAccount.value.trim()&&s.password===parentPassword.value);
  if(!student)return alert("帳號或密碼不正確");
  currentParent=student;loginScreen.classList.add("hidden");teacherApp.classList.add("hidden");parentApp.classList.remove("hidden");renderParent();
 };
@@ -253,159 +341,258 @@ window.go=(id,btn)=>{
  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.toggle("on",x.dataset.page===id));
  window.scrollTo({top:0,behavior:"smooth"});
 };
-window.changeClass=()=>{data.currentClassId=classSelect.value;save()};
-window.searchStudent=()=>{
- const q=prompt("輸入座號或姓名");if(!q)return;
- const s=classStudents().find(x=>String(x.seat)===q||x.name.includes(q));
- alert(s?`${s.seat}號 ${s.name}｜${s.status}`:"找不到學生");
-};
+window.changeClass=()=>{data.currentClassId=classSelect.value;selectedStudentId=null;save()};
+window.searchStudent=()=>{const q=prompt("輸入座號或姓名");if(!q)return;const s=classStudents().find(x=>String(x.seat)===q||x.name.includes(q));if(!s)return alert("找不到學生");selectedStudentId=s.id;go("studentDetail");renderStudentDetail()};
 
 function renderAll(){
- renderHeader();renderDashboard();renderContact();renderStudents();renderSubjects();renderParents();renderAnnouncements();renderReports();renderSettings();renderAssistant();
+ renderHeader();renderDashboard();renderClasses();renderStudents();renderStudentDetail();renderSubjects();
+ renderContact();renderParents();renderAnnouncements();renderPreview();renderReports();renderSettings();renderAssistant();
 }
 function renderHeader(){
- const c=currentClass();classSelect.innerHTML=data.classes.map(x=>`<option value="${x.id}">${x.schoolYear}學年度・${x.grade}${String(x.classNo).padStart(2,"0")}班（${esc(x.name)}）</option>`).join("");
+ const c=currentClass();classSelect.innerHTML=data.classes.filter(x=>x.status!=="graduated").map(x=>`<option value="${x.id}">${x.schoolYear}學年度・${x.grade}${String(x.classNo).padStart(2,"0")}班（${esc(x.name)}）</option>`).join("");
  classSelect.value=c.id;className.textContent=`${c.grade}${String(c.classNo).padStart(2,"0")}班（${c.name}）`;schoolYear.textContent=`${c.schoolYear}學年度`;
  greeting.textContent=`${data.settings.teacherName||c.teacher||"老師"}老師，您好！`;
  syncBadge.textContent=mode==="cloud"?"☁ 教師雲端模式・已同步":"💾 訪客模式・本機儲存";
 }
-function renderDashboard(){
- const ss=classStudents(),leave=ss.filter(s=>s.status!=="到校").length;
- const signed=data.notices.filter(n=>n.classId===data.currentClassId).reduce((a,n)=>a+(n.signed?.length||0),0);
- dashboard.innerHTML=`
- <div class="card panel">
-  <div class="panel-head"><h2>今日概況</h2><span class="muted">${today()}</span></div>
-  <div class="stats">
-   ${stat("學生人數",ss.length)}${stat("到校人數",ss.length-leave)}${stat("請假人數",leave)}${stat("家長留言",data.parentMessages.length)}${stat("未簽閱",Math.max(ss.length-signed,0))}
-  </div>
- </div>
- <div class="card panel"><div class="panel-head"><h2>快速功能</h2></div>
-  <div class="quick-grid">
-   ${quick("今日聯絡簿","contact")}${quick("學生資料","students")}${quick("科別管理","subjects")}${quick("統計分析","reports")}${quick("公告管理","announcements")}
-   ${quick("家長留言","parents")}${quick("AI通知助手","assistant")}${quick("匯出資料","reports")}${quick("設定","settings")}${quick("自訂科別","subjects")}
-  </div>
- </div>
- <div class="columns">
-  <div class="card panel"><div class="panel-head"><h2>最新聯絡事項</h2></div><div class="list">${
-    data.notices.slice(-5).reverse().map(n=>`<div class="list-item"><b>${esc(n.subject)}</b>｜${esc(n.body)}<div class="small muted">${esc(n.date)}</div></div>`).join("")||'<div class="muted">尚無聯絡事項</div>'
-  }</div></div>
-  <div class="card panel"><div class="panel-head"><h2>今日請假學生</h2></div><div class="list">${
-    ss.filter(s=>s.status!=="到校").map(s=>`<div class="list-item">${s.seat}號 ${esc(s.name)} <span class="badge warn">${esc(s.status)}</span></div>`).join("")||'<div class="muted">今日無請假紀錄</div>'
-  }</div></div>
- </div>`;
-}
 function stat(label,num){return `<div class="stat"><span>${label}</span><b>${num}</b></div>`}
 function quick(label,page){return `<button class="quick" onclick="go('${page}')"><span style="font-size:25px">◉</span><strong>${label}</strong></button>`}
-
-function renderContact(){
- const subjects=data.subjects.filter(s=>s.enabled);
- contact.innerHTML=`
- <div class="card panel"><div class="panel-head"><h2>發布今日聯絡簿</h2><span class="badge good">防禦性評語檢查已開啟</span></div>
- <div class="form-grid">
-  <div class="field"><label>科別</label><select id="noticeSubject">${subjects.map(s=>`<option>${esc(s.name)}</option>`).join("")}</select></div>
-  <div class="field"><label>對象</label><select id="noticeTarget"><option value="class">全班</option>${classStudents().map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div>
- </div>
- <div class="field"><label>快速情境</label><select id="templateSelect" onchange="useTemplate()"><option value="">請選擇</option>${Object.keys(safeTemplates).map(k=>`<option>${k}</option>`).join("")}</select></div>
- <div class="field"><label>聯絡內容</label><textarea id="noticeBody" oninput="checkRisk()"></textarea></div>
- <div id="riskResult" class="safe-box">目前未偵測到可能造成誤解的標籤或貶抑詞語。</div>
- <div class="field"><label>需要家長協助（選填）</label><input id="parentHelp" placeholder="例如：敬請協助提醒攜帶課本"></div>
- <button class="btn" onclick="publishNotice()">發布聯絡事項</button>
- </div>`;
+function renderDashboard(){
+ const ss=classStudents(), t=today(), att=data.attendance.filter(a=>a.classId===data.currentClassId&&a.date===t);
+ dashboard.innerHTML=`<div class="card panel"><div class="panel-head"><h2>今日概況</h2><span class="muted">${t}</span></div>
+ <div class="stats">${stat("學生人數",ss.length)}${stat("遲到",att.filter(a=>a.type==="遲到").length)}${stat("未到",att.filter(a=>a.type==="未到").length)}${stat("家長留言",data.parentMessages.length)}${stat("未閱覽",data.notices.reduce((n,x)=>n+Math.max(0,(x.target==="class"?ss.length:1)-(x.readBy?.length||0)),0))}</div></div>
+ <div class="card panel"><div class="panel-head"><h2>快速功能</h2></div><div class="quick-grid">
+ ${quick("班級／學年度","classes")}${quick("學生資料","students")}${quick("學生個別頁面","studentDetail")}${quick("今日聯絡簿","contact")}${quick("統一／個別公告","announcements")}
+ ${quick("家長預覽","preview")}${quick("科別管理","subjects")}${quick("統計與匯出","reports")}${quick("AI通知助手","assistant")}${quick("設定","settings")}
+ </div></div>`;
 }
-window.useTemplate=()=>{noticeBody.value=safeTemplates[templateSelect.value]||"";checkRisk()};
-window.checkRisk=()=>{
- const text=noticeBody.value;const hit=riskyWords.filter(w=>text.includes(w));
- riskResult.className=hit.length?"risk-box":"safe-box";
- riskResult.innerHTML=hit.length?`偵測到可能造成爭議的用語：<b>${hit.join("、")}</b><br>建議改為可觀察的行為、時間、老師已採取的處理及後續合作方式。`:"目前未偵測到可能造成誤解的標籤或貶抑詞語。";
-};
-window.publishNotice=()=>{
- const body=noticeBody.value.trim();if(!body)return alert("請輸入聯絡內容");
- const hit=riskyWords.filter(w=>body.includes(w));if(hit.length&&!confirm("仍含可能造成爭議的用語，確定發布嗎？"))return;
- data.notices.push({id:"n"+Date.now(),classId:data.currentClassId,subject:noticeSubject.value,target:noticeTarget.value,body:body+(parentHelp.value.trim()?`\n家校合作：${parentHelp.value.trim()}`:""),date:new Date().toLocaleString("zh-TW"),signed:[],comments:[]});
- save();alert("已發布");
-};
+
+function renderClasses(){
+ classes.innerHTML=`<div class="card panel"><div class="panel-head"><h2>班級與學年度管理</h2><button class="btn" onclick="addClass()">＋新增班級</button></div>
+ <p class="muted">每學年度可執行升級：七年級→八年級、八年級→九年級、九年級→畢業封存；學生資料會跟隨原班級升級。</p>
+ <div class="table-wrap"><table><thead><tr><th>學年度</th><th>年級／班級</th><th>班名</th><th>狀態</th><th>學生數</th><th>操作</th></tr></thead><tbody>
+ ${data.classes.map(c=>`<tr><td>${c.schoolYear}</td><td>${c.grade}${String(c.classNo).padStart(2,"0")}班</td><td>${esc(c.name)}</td><td>${c.status==="graduated"?"已畢業":"使用中"}</td><td>${data.students.filter(s=>s.classId===c.id).length}</td><td>
+ <button class="btn secondary" onclick="editClass('${c.id}')">修改</button>
+ ${c.status!=="graduated"?`<button class="btn" onclick="promoteClass('${c.id}')">${c.grade>=9?"畢業封存":"升級年段"}</button>`:""}
+ <button class="btn danger" onclick="deleteClass('${c.id}')">刪除</button></td></tr>`).join("")}
+ </tbody></table></div></div>`;
+}
+window.addClass=()=>{const sy=Number(prompt("學年度，例如 115"));if(!sy)return;const grade=Number(prompt("年級：7、8 或 9"));if(![7,8,9].includes(grade))return;const no=Number(prompt("班級，例如 6"));if(!no)return;const name=prompt("班名（可留空）")||"";const id="c"+Date.now();data.classes.push({id,schoolYear:sy,grade,classNo:no,name,teacher:data.settings.teacherName,status:"active"});data.currentClassId=id;save()};
+window.editClass=id=>{const c=data.classes.find(x=>x.id===id);if(!c)return;c.schoolYear=Number(prompt("學年度",c.schoolYear))||c.schoolYear;c.classNo=Number(prompt("班級",c.classNo))||c.classNo;c.name=prompt("班名",c.name)??c.name;save()};
+window.deleteClass=id=>{if(data.students.some(s=>s.classId===id)&&!confirm("此班仍有學生資料，刪除將一併刪除，確定嗎？"))return;if(data.classes.length===1)return alert("至少保留一個班級");data.students=data.students.filter(s=>s.classId!==id);data.classes=data.classes.filter(c=>c.id!==id);data.currentClassId=data.classes[0].id;save()};
+window.promoteClass=id=>{const c=data.classes.find(x=>x.id===id);if(!c)return;if(c.grade>=9){if(!confirm("確定將此班設為畢業封存？資料仍可匯出查閱。"))return;c.status="graduated"}else{c.grade+=1;c.schoolYear+=1}save()};
 
 function renderStudents(){
- students.innerHTML=`<div class="card panel"><div class="panel-head"><h2>學生資料</h2><button class="btn" onclick="addStudent()">＋新增學生</button></div>
- <div class="table-wrap"><table><thead><tr><th>座號</th><th>姓名</th><th>到校狀態</th><th>家長帳號</th><th>操作</th></tr></thead><tbody>${
- classStudents().map(s=>`<tr><td>${s.seat}</td><td>${esc(s.name)}</td><td><select onchange="setStatus('${s.id}',this.value)"><option ${s.status==="到校"?"selected":""}>到校</option><option ${s.status==="病假"?"selected":""}>病假</option><option ${s.status==="事假"?"selected":""}>事假</option><option ${s.status==="遲到"?"selected":""}>遲到</option><option ${s.status==="公假"?"selected":""}>公假</option></select></td><td>${esc(s.account)}</td><td><button class="btn danger" onclick="deleteStudent('${s.id}')">刪除</button></td></tr>`).join("")
- }</tbody></table></div></div>`;
+ students.innerHTML=`<div class="card panel"><div class="panel-head"><h2>學生與家長資料</h2><div class="toolbar"><button class="btn" onclick="addStudent()">＋新增學生</button><button class="btn secondary" onclick="studentImport.click()">匯入 Excel</button><button class="btn secondary" onclick="downloadStudentTemplate()">下載 Excel 範本</button><input id="studentImport" class="hidden" type="file" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" onchange="importStudentsExcel(event)"></div></div>
+ <p class="muted">Excel 欄位：座號、姓名、學號、性別、生日、學生電話、學生地址、家長姓名、家長電話、家長地址、升學意向。</p>
+ <div class="table-wrap"><table><thead><tr><th>選取</th><th>座號</th><th>姓名</th><th>家長</th><th>家長電話</th><th>升學意向</th><th>操作</th></tr></thead><tbody>
+ ${classStudents().map(s=>`<tr><td><input class="studentPick" type="checkbox" value="${s.id}"></td><td>${s.seat}</td><td>${esc(s.name)}</td><td>${esc(s.parentName)}</td><td>${esc(s.parentPhone)}</td><td>${esc(s.advancement||"未填")}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">修改</button><button class="btn" onclick="openStudent('${s.id}')">個別頁面</button><button class="btn danger" onclick="deleteStudent('${s.id}')">刪除</button></td></tr>`).join("")}
+ </tbody></table></div></div>`;
 }
-window.addStudent=()=>{
- const seat=prompt("座號");if(!seat)return;const name=prompt("姓名")||"";
- const c=currentClass(),account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(seat).padStart(2,"0")}`;
- data.students.push({id:"stu"+Date.now(),classId:c.id,seat:Number(seat),name,account,password:"123456",status:"到校"});save();
+function editStudentDialog(s){
+ const fields=[
+  ["座號","seat"],["姓名","name"],["學號","studentNo"],["性別","gender"],["生日","birthday"],["學生電話","phone"],["學生地址","address"],
+  ["家長姓名","parentName"],["家長電話","parentPhone"],["家長地址","parentAddress"]
+ ];
+ for(const [label,key] of fields){const v=prompt(label,s[key]||"");if(v===null)return;s[key]=key==="seat"?Number(v):v}
+ s.advancement=prompt("升學意向：高中／高職／五專／就業／未定",s.advancement||"未定")||"未定";
+}
+window.addStudent=()=>{const c=currentClass();const s={id:"stu"+Date.now(),classId:c.id,seat:classStudents().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parentName:"",parentPhone:"",parentAddress:"",status:"到校",advancement:"未定",notes:""};editStudentDialog(s);if(!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";data.students.push(s);save()};
+window.editStudent=id=>{const s=studentById(id);editStudentDialog(s);save()};
+window.deleteStudent=id=>{if(confirm("確定刪除學生及其個別紀錄？")){data.students=data.students.filter(s=>s.id!==id);data.notices=data.notices.filter(n=>n.target!==id);data.attendance=data.attendance.filter(a=>a.studentId!==id);save()}};
+window.openStudent=id=>{selectedStudentId=id;go("studentDetail");renderStudentDetail()};
+window.downloadStudentTemplate=()=>{
+ const ws=XLSX.utils.aoa_to_sheet([
+  ["座號","姓名","學號","性別","生日","學生電話","學生地址","家長姓名","家長電話","家長地址","升學意向"],
+  [1,"王小明","","","2013/01/01","","","王媽媽","","","高中"]
+ ]);
+ ws["!cols"]=[{wch:8},{wch:14},{wch:14},{wch:8},{wch:14},{wch:16},{wch:28},{wch:14},{wch:16},{wch:28},{wch:12}];
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生與家長資料");
+ XLSX.writeFile(wb,"學生家長資料匯入範本.xlsx");
 };
-window.deleteStudent=id=>{if(confirm("確定刪除？")){data.students=data.students.filter(s=>s.id!==id);save()}};
-window.setStatus=(id,v)=>{const s=data.students.find(x=>x.id===id);if(s)s.status=v;save()};
+window.importStudentsExcel=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{
+  const buffer=await f.arrayBuffer();const wb=XLSX.read(buffer,{type:"array",cellDates:true});
+  const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{defval:"",raw:false});
+  if(!rows.length)return alert("Excel 沒有可匯入的資料");
+  rows.forEach(r=>{
+   const seat=Number(r["座號"]);if(!seat)return;
+   const old=classStudents().find(s=>Number(s.seat)===seat);
+   const s=old||{id:"stu"+Date.now()+Math.random(),classId:data.currentClassId,status:"到校",password:"123456"};
+   Object.assign(s,{
+    seat,name:String(r["姓名"]||s.name||""),studentNo:String(r["學號"]||""),gender:String(r["性別"]||""),
+    birthday:String(r["生日"]||""),phone:String(r["學生電話"]||""),address:String(r["學生地址"]||""),
+    parentName:String(r["家長姓名"]||""),parentPhone:String(r["家長電話"]||""),parentAddress:String(r["家長地址"]||""),
+    advancement:String(r["升學意向"]||"未定")
+   });
+   if(!old){const c=currentClass();s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(seat).padStart(2,"0")}`;data.students.push(s)}
+  });
+  save();alert(`已匯入 ${rows.length} 筆 Excel 資料`);
+ }catch(err){console.error(err);alert("Excel 匯入失敗，請確認使用範本欄位")}
+ e.target.value="";
+};
 
-function renderSubjects(){
- subjects.innerHTML=`<div class="card panel"><div class="panel-head"><h2>科別管理</h2><button class="btn" onclick="addSubject()">＋自訂科別</button></div>
- <p class="muted">內建國中課程，可依班級需求啟用、停用並新增自訂科別。</p>
- <div class="subject-chips">${data.subjects.map(s=>`<span class="subject-chip">${esc(s.name)} ${s.custom?"（自訂）":""} <input type="checkbox" ${s.enabled?"checked":""} onchange="toggleSubject('${s.id}',this.checked)" style="width:auto"> ${s.custom?`<button onclick="deleteSubject('${s.id}')" style="border:0;background:transparent">×</button>`:""}</span>`).join("")}</div></div>`;
+function renderStudentDetail(){
+ const ss=classStudents();if(!selectedStudentId&&ss[0])selectedStudentId=ss[0].id;const s=studentById(selectedStudentId);
+ studentDetail.innerHTML=`<div class="card panel"><div class="panel-head"><h2>學生個別頁面</h2><select onchange="selectedStudentId=this.value;renderStudentDetail()">${ss.map(x=>`<option value="${x.id}" ${x.id===selectedStudentId?"selected":""}>${x.seat}號 ${esc(x.name)}</option>`).join("")}</select></div>
+ ${!s?'<div class="muted">請先建立學生資料。</div>':`
+ <div class="columns"><div>
+ <div class="student-card"><h3>${s.seat}號 ${esc(s.name)}</h3><p>家長：${esc(s.parentName||"未填")}｜電話：${esc(s.parentPhone||"未填")}</p><p>地址：${esc(s.parentAddress||"未填")}</p><p>升學意向：<b>${esc(s.advancement||"未定")}</b></p></div>
+ <div class="card panel" style="margin-top:14px"><h3>出缺勤／到離校紀錄</h3>
+ <div class="form-grid"><div class="field"><label>類型</label><select id="attType"><option>遲到</option><option>未到</option><option>到校</option><option>離校</option></select></div>
+ <div class="field"><label>請假別</label><select id="leaveType"><option>無</option><option>事假</option><option>病假</option><option>喪假</option><option>未請假</option></select></div>
+ <div class="field"><label>到校時間</label><input id="arrivalTime" type="time"></div><div class="field"><label>離校／請假時間</label><input id="leaveTime" type="time"></div>
+ <div class="field"><label>請假方式</label><select id="notifyMethod"><option>家長來電</option><option>家長用 LINE 通知</option><option>學生告知</option><option>因未到校聯繫告知</option><option>其他</option></select></div>
+ <div class="field"><label>日期</label><input id="attDate" type="date" value="${today()}"></div></div>
+ <button class="btn" onclick="saveAttendance('${s.id}')">儲存出缺勤紀錄</button></div></div>
+ <div><div class="card panel"><h3>個別聯絡／生活表現／提醒事項</h3>
+ <div class="field"><label>分類</label><select id="individualCategory"><option>生活表現－常規</option><option>生活表現－課堂表現</option><option>提醒事項</option><option>升學輔導</option><option>正向鼓勵</option></select></div>
+ <div class="field"><label>快速情境</label><select id="individualTemplate" onchange="individualText.value=safeTemplates[individualTemplate.value]||''"><option value="">自行輸入</option>${Object.keys(safeTemplates).map(k=>`<option>${k}</option>`).join("")}</select></div>
+ <div class="field"><label>客觀紀錄</label><textarea id="individualText"></textarea></div>
+ <button class="btn" onclick="saveIndividualNotice('${s.id}')">送給該生家長</button></div></div></div>
+ <div class="card panel" style="margin-top:18px"><h3>歷程紀錄</h3><div class="list">
+ ${data.attendance.filter(a=>a.studentId===s.id).slice().reverse().map(a=>`<div class="list-item"><b>${a.date}｜${a.type}</b> ${a.leaveType!=="無"?"｜"+a.leaveType:""}<div class="small muted">到校 ${a.arrivalTime||"—"}｜離校／請假 ${a.leaveTime||"—"}｜${a.notifyMethod}</div></div>`).join("")}
+ ${data.notices.filter(n=>n.target===s.id).slice().reverse().map(n=>`<div class="list-item"><b>${esc(n.subject)}</b><div>${esc(n.body)}</div><div class="small muted">${esc(n.date)}</div></div>`).join("")||'<div class="muted">尚無個別紀錄</div>'}
+ </div></div>`}</div>`;
 }
-window.addSubject=()=>{const name=(prompt("輸入自訂科別名稱")||"").trim();if(name){data.subjects.push({id:"s"+Date.now(),name,enabled:true,custom:true});save()}};
-window.toggleSubject=(id,on)=>{const s=data.subjects.find(x=>x.id===id);if(s)s.enabled=on;save()};
+window.renderStudentDetail=renderStudentDetail;
+window.saveAttendance=id=>{data.attendance.push({id:"att"+Date.now(),classId:data.currentClassId,studentId:id,date:attDate.value,type:attType.value,leaveType:leaveType.value,arrivalTime:arrivalTime.value,leaveTime:leaveTime.value,notifyMethod:notifyMethod.value});save();alert("已儲存")};
+window.saveIndividualNotice=id=>{const body=individualText.value.trim();if(!body)return alert("請輸入內容");const hit=riskyWords.filter(w=>body.includes(w));if(hit.length&&!confirm("內容含可能造成爭議的字詞："+hit.join("、")+"，仍要送出嗎？"))return;data.notices.push({id:"n"+Date.now(),classId:data.currentClassId,subject:individualCategory.value,target:id,body,date:new Date().toLocaleString("zh-TW"),readBy:[]});save();alert("已送給該生家長")};
+
+function renderContact(){
+ contact.innerHTML=`<div class="card panel"><div class="panel-head"><h2>今日聯絡簿</h2><span class="badge good">防禦性評語檢查</span></div>
+ <div class="form-grid"><div class="field"><label>科別</label><select id="noticeSubject">${data.subjects.filter(s=>s.enabled).map(s=>`<option>${esc(s.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>對象</label><select id="noticeTarget"><option value="class">全班</option>${classStudents().map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div></div>
+ <div class="field"><label>快速情境</label><select id="templateSelect" onchange="noticeBody.value=safeTemplates[templateSelect.value]||''"><option value="">自行輸入</option>${Object.keys(safeTemplates).map(k=>`<option>${k}</option>`).join("")}</select></div>
+ <div class="field"><label>聯絡內容</label><textarea id="noticeBody"></textarea></div><button class="btn" onclick="publishNotice()">發布</button></div>`;
+}
+window.publishNotice=()=>{const body=noticeBody.value.trim();if(!body)return;const hit=riskyWords.filter(w=>body.includes(w));if(hit.length&&!confirm("偵測到可能造成誤解的用語："+hit.join("、")+"，仍要發布嗎？"))return;data.notices.push({id:"n"+Date.now(),classId:data.currentClassId,subject:noticeSubject.value,target:noticeTarget.value,body,date:new Date().toLocaleString("zh-TW"),readBy:[]});save();alert("已發布")};
+
+function renderSubjects(){subjects.innerHTML=`<div class="card panel"><div class="panel-head"><h2>科別管理</h2><button class="btn" onclick="addSubject()">＋自訂科別</button></div><div class="subject-chips">${data.subjects.map(s=>`<span class="subject-chip">${esc(s.name)} ${s.custom?"（自訂）":""}<input type="checkbox" ${s.enabled?"checked":""} onchange="toggleSubject('${s.id}',this.checked)" style="width:auto">${s.custom?`<button onclick="deleteSubject('${s.id}')" style="border:0;background:transparent">×</button>`:""}</span>`).join("")}</div></div>`}
+window.addSubject=()=>{const name=(prompt("自訂科別名稱")||"").trim();if(name){data.subjects.push({id:"s"+Date.now(),name,enabled:true,custom:true});save()}};
+window.toggleSubject=(id,on)=>{data.subjects.find(s=>s.id===id).enabled=on;save()};
 window.deleteSubject=id=>{data.subjects=data.subjects.filter(s=>s.id!==id);save()};
 
-function renderParents(){
- parents.innerHTML=`<div class="card panel"><div class="panel-head"><h2>家長留言</h2></div><div class="list">${
- data.parentMessages.map(m=>`<div class="list-item"><b>${esc(m.studentName)}</b><div>${esc(m.text)}</div><div class="small muted">${esc(m.date)}</div></div>`).join("")||'<div class="muted">目前沒有家長留言</div>'
- }</div></div>`;
-}
+function renderParents(){parents.innerHTML=`<div class="card panel"><div class="panel-head"><h2>家長留言</h2></div><div class="list">${data.parentMessages.map(m=>`<div class="list-item"><b>${esc(m.studentName)}</b><div>${esc(m.text)}</div><div class="small muted">${esc(m.date)}</div></div>`).join("")||'<div class="muted">目前沒有留言</div>'}</div></div>`}
+
 function renderAnnouncements(){
- announcements.innerHTML=`<div class="card panel"><div class="panel-head"><h2>公告管理</h2></div>
+ announcements.innerHTML=`<div class="card panel"><div class="panel-head"><h2>統一公告與個別公告</h2></div>
+ <div class="form-grid"><div class="field"><label>公告範圍</label><select id="announcementTarget"><option value="all">統一公告（本班所有家長）</option>${classStudents().map(s=>`<option value="${s.id}">個別公告：${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>重要程度</label><select id="announcementLevel"><option>一般</option><option>重要</option><option>緊急</option></select></div></div>
  <div class="field"><label>公告內容</label><textarea id="announcementBody"></textarea></div>
+ <div class="field"><label>上傳附件（PDF、Word、圖片）</label>
+  <input id="announcementFileInput" type="file" multiple accept=".pdf,.doc,.docx,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleAnnouncementFiles(event)">
+  <div class="small muted">PDF、圖片與 DOCX 可直接線上預覽；舊式 DOC 檔可供下載，建議轉存為 DOCX 以獲得完整預覽。</div>
+  <div id="newAttachmentPreview"></div>
+ </div>
  <button class="btn" onclick="publishAnnouncement()">發布公告</button>
- <div class="list" style="margin-top:18px">${data.announcements.map(a=>`<div class="list-item"><b>${esc(a.date)}</b><div>${esc(a.text)}</div></div>`).join("")||'<div class="muted">尚無公告</div>'}</div></div>`;
+ <div class="list" style="margin-top:18px">${data.announcements.map(a=>`<div class="list-item"><b>${a.target==="all"?"統一公告":"個別公告"}｜${esc(a.level)}</b><div>${esc(a.text)}</div><div class="small muted">${esc(a.date)}</div>${renderAttachmentList(a.attachments||[],a.id,"teacher")}</div>`).join("")||'<div class="muted">尚無公告</div>'}</div></div>`;
+ setTimeout(()=>hydrateAttachmentPreviews("teacher"),0);
 }
-window.publishAnnouncement=()=>{const t=announcementBody.value.trim();if(!t)return;data.announcements.unshift({id:"a"+Date.now(),classId:data.currentClassId,text:t,date:today()});save()};
+window.handleAnnouncementFiles=async e=>{
+ const files=[...e.target.files];
+ const max=15*1024*1024;
+ announcementFiles=[];
+ for(const file of files){
+  if(file.size>max){alert(`${file.name} 超過 15MB，未加入`);continue}
+  const item={name:file.name,type:file.type||guessMime(file.name),file,localUrl:URL.createObjectURL(file)};
+  announcementFiles.push(item);
+ }
+ newAttachmentPreview.innerHTML=announcementFiles.map((f,i)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><button class="btn danger" onclick="removePendingAttachment(${i})">移除</button></div><div id="pendingPreview${i}"></div></div>`).join("");
+ announcementFiles.forEach((f,i)=>previewRawFile(f.file,document.getElementById(`pendingPreview${i}`)));
+};
+window.removePendingAttachment=i=>{announcementFiles.splice(i,1);announcementFileInput.value="";newAttachmentPreview.innerHTML=announcementFiles.map((f,j)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><button class="btn danger" onclick="removePendingAttachment(${j})">移除</button></div><div id="pendingPreview${j}"></div></div>`).join("");announcementFiles.forEach((f,j)=>previewRawFile(f.file,document.getElementById(`pendingPreview${j}`)))};
+function guessMime(name){const n=name.toLowerCase();if(n.endsWith(".pdf"))return"application/pdf";if(n.endsWith(".docx"))return"application/vnd.openxmlformats-officedocument.wordprocessingml.document";if(n.endsWith(".doc"))return"application/msword";if(/\.(png|jpg|jpeg|gif|webp)$/i.test(n))return"image/"+n.split(".").pop().replace("jpg","jpeg");return"application/octet-stream"}
+async function previewRawFile(file,box){
+ if(!box)return;const type=file.type||guessMime(file.name);const url=URL.createObjectURL(file);
+ if(type.startsWith("image/"))box.innerHTML=`<img src="${url}" alt="${esc(file.name)}">`;
+ else if(type==="application/pdf")box.innerHTML=`<iframe src="${url}" title="${esc(file.name)}"></iframe>`;
+ else if(file.name.toLowerCase().endsWith(".docx")){
+  try{const result=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});box.innerHTML=`<div class="docx-preview">${result.value}</div>`}
+  catch(e){box.innerHTML='<div class="risk-box">Word 預覽失敗，但仍可上傳與下載。</div>'}
+ }else box.innerHTML='<div class="muted">此 Word 格式無法在瀏覽器直接預覽，發布後仍可下載查看。</div>';
+}
+async function persistAttachment(item){
+ if(mode==="cloud"&&uid&&storage){
+  const safeName=item.name.replace(/[^\w.\-\u4e00-\u9fff]/g,"_");
+  const storageRef=ref(storage,`announcements/${uid}/${Date.now()}_${safeName}`);
+  await uploadBytes(storageRef,item.file,{contentType:item.type});const url=await getDownloadURL(storageRef);
+  return{name:item.name,type:item.type,url};
+ }
+ const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(item.file)});
+ return{name:item.name,type:item.type,url:dataUrl};
+}
+window.publishAnnouncement=async()=>{
+ const t=announcementBody.value.trim();if(!t&&!announcementFiles.length)return alert("請輸入公告內容或上傳附件");
+ const btn=event?.target;try{
+  if(btn){btn.disabled=true;btn.textContent="上傳中…"}
+  const attachments=[];
+  for(const item of announcementFiles)attachments.push(await persistAttachment(item));
+  data.announcements.unshift({id:"a"+Date.now(),classId:data.currentClassId,target:announcementTarget.value,level:announcementLevel.value,text:t,date:new Date().toLocaleString("zh-TW"),readBy:[],attachments});
+  announcementFiles=[];save();alert("公告與附件已發布");
+ }catch(err){console.error(err);alert("附件上傳失敗，請檢查 Firebase Storage 設定或網路連線")}
+ finally{if(btn){btn.disabled=false;btn.textContent="發布公告"}}
+};
+function renderAttachmentList(files,announcementId,scope){
+ if(!files.length)return"";
+ return `<div style="margin-top:10px">${files.map((f,i)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><a class="btn secondary" href="${f.url}" target="_blank" rel="noopener">另開／下載</a></div><div class="attachment-preview-target" data-url="${esc(f.url)}" data-name="${esc(f.name)}" data-type="${esc(f.type||"")}" data-key="${scope}-${announcementId}-${i}"></div></div>`).join("")}</div>`;
+}
+async function hydrateAttachmentPreviews(scope){
+ const nodes=[...document.querySelectorAll(`.attachment-preview-target[data-key^="${scope}-"]`)];
+ for(const box of nodes){
+  const url=box.dataset.url,name=box.dataset.name,type=box.dataset.type||guessMime(name);
+  if(type.startsWith("image/"))box.innerHTML=`<img src="${url}" alt="${esc(name)}">`;
+  else if(type==="application/pdf"||name.toLowerCase().endsWith(".pdf"))box.innerHTML=`<iframe src="${url}" title="${esc(name)}"></iframe>`;
+  else if(name.toLowerCase().endsWith(".docx")){
+   try{const buf=await fetch(url).then(r=>r.arrayBuffer());const result=await mammoth.convertToHtml({arrayBuffer:buf});box.innerHTML=`<div class="docx-preview">${result.value}</div>`}
+   catch(e){box.innerHTML='<div class="risk-box">目前無法載入 Word 線上預覽，請使用「另開／下載」。</div>'}
+  }else box.innerHTML='<div class="muted">舊式 DOC 檔請使用「另開／下載」查看。</div>';
+ }
+}
+
+function renderPreview(){
+ preview.innerHTML=`<div class="card panel"><div class="panel-head"><h2>家長預覽區</h2><select id="previewStudent" onchange="renderPreviewCard(this.value)">${classStudents().map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div><div id="previewCard"></div></div>`;
+ const first=classStudents()[0];if(first)setTimeout(()=>renderPreviewCard(first.id),0);
+}
+window.renderPreviewCard=id=>{const s=studentById(id);if(!s)return;const announcements=data.announcements.filter(a=>a.classId===s.classId&&(a.target==="all"||a.target===s.id));const notices=data.notices.filter(n=>n.classId===s.classId&&(n.target==="class"||n.target===s.id));previewCard.innerHTML=`<div class="safe-box"><b>這是家長登入後會看到的畫面預覽，不會改動實際閱覽狀態。</b></div><h3>${s.seat}號 ${esc(s.name)}家長</h3><h4>公告</h4><div class="list">${announcements.map(a=>`<div class="list-item"><b>${esc(a.level)}</b>｜${esc(a.text)}${renderAttachmentList(a.attachments||[],a.id,"preview")}</div>`).join("")||'<div class="muted">無公告</div>'}</div><h4>聯絡事項</h4><div class="list">${notices.map(n=>`<div class="list-item"><span class="badge">${esc(n.subject)}</span><div>${esc(n.body)}</div><label><input type="checkbox" disabled> 家長閱覽勾選</label></div>`).join("")||'<div class="muted">無聯絡事項</div>'}</div>`;setTimeout(()=>hydrateAttachmentPreviews("preview"),0)};
 
 function renderReports(){
- reports.innerHTML=`<div class="card panel"><div class="panel-head"><h2>統計與匯出</h2></div>
- <div class="stats">${stat("學生",classStudents().length)}${stat("聯絡事項",data.notices.length)}${stat("公告",data.announcements.length)}${stat("家長留言",data.parentMessages.length)}${stat("自訂科別",data.subjects.filter(s=>s.custom).length)}</div>
- <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px"><button class="btn" onclick="exportCSV('students')">匯出學生名冊 CSV</button><button class="btn" onclick="exportCSV('notices')">匯出聯絡紀錄 CSV</button><button class="btn secondary" onclick="backupJSON()">完整備份 JSON</button></div>
- </div>`;
+ reports.innerHTML=`<div class="card panel"><div class="panel-head"><h2>個別／選取／全班 Excel 匯出</h2></div><p class="muted">Excel 匯出內容包含基本資料、家長資料、升學意向、出缺勤、聯絡事項及家長留言，可作為輔導或晤談紀錄。</p>
+ <div class="toolbar"><select id="reportStudent">${classStudents().map(s=>`<option value="${s.id}">${s.seat}號 ${esc(s.name)}</option>`).join("")}</select><button class="btn" onclick="exportStudent(reportStudent.value)">匯出個別學生</button><button class="btn secondary" onclick="exportSelected()">匯出學生頁已選取者</button><button class="btn" onclick="exportClass()">匯出全班</button><button class="btn secondary" onclick="backupJSON()">完整備份 JSON</button></div></div>`;
 }
-function download(name,text,type="text/csv;charset=utf-8"){
- const blob=new Blob(["\ufeff"+text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href);
+function studentExportRows(ids){
+ return ids.map(id=>{const s=studentById(id);const at=data.attendance.filter(a=>a.studentId===id).map(a=>`${a.date} ${a.type}/${a.leaveType} 到${a.arrivalTime||"-"} 離${a.leaveTime||"-"} ${a.notifyMethod}`).join("；");const ns=data.notices.filter(n=>n.target===id||n.target==="class").map(n=>`${n.date} ${n.subject}:${n.body}`).join("；");const pm=data.parentMessages.filter(m=>m.studentId===id).map(m=>`${m.date}:${m.text}`).join("；");return {"座號":s.seat,"姓名":s.name,"學號":s.studentNo,"性別":s.gender,"生日":s.birthday,"學生電話":s.phone,"學生地址":s.address,"家長姓名":s.parentName,"家長電話":s.parentPhone,"家長地址":s.parentAddress,"升學意向":s.advancement,"出缺勤紀錄":at,"聯絡紀錄":ns,"家長留言":pm}})
 }
-window.exportCSV=type=>{
- if(type==="students"){download("學生名冊.csv","班級,座號,姓名,狀態,家長帳號\n"+classStudents().map(s=>[currentClass().name,s.seat,s.name,s.status,s.account].join(",")).join("\n"))}
- else{download("聯絡紀錄.csv","日期,科別,對象,內容\n"+data.notices.map(n=>[n.date,n.subject,n.target,JSON.stringify(n.body)].join(",")).join("\n"))}
-};
+function exportIdsExcel(ids,name){
+ const wb=XLSX.utils.book_new();
+ const ws=XLSX.utils.json_to_sheet(studentExportRows(ids));
+ ws["!cols"]=[{wch:8},{wch:12},{wch:14},{wch:8},{wch:14},{wch:16},{wch:28},{wch:14},{wch:16},{wch:28},{wch:12},{wch:48},{wch:55},{wch:45}];
+ XLSX.utils.book_append_sheet(wb,ws,"學生綜合資料");
+ const attendanceRows=data.attendance.filter(a=>ids.includes(a.studentId)).map(a=>{const s=studentById(a.studentId)||{};return {"日期":a.date,"座號":s.seat,"姓名":s.name,"類型":a.type,"請假別":a.leaveType,"到校時間":a.arrivalTime,"離校／請假時間":a.leaveTime,"請假方式":a.notifyMethod}});
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(attendanceRows),"出缺勤明細");
+ const noticeRows=data.notices.filter(n=>n.target==="class"||ids.includes(n.target)).map(n=>({"日期":n.date,"科別／分類":n.subject,"對象":n.target==="class"?"全班":studentById(n.target)?.name||"","內容":n.body,"已閱覽人數":n.readBy?.length||0}));
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(noticeRows),"聯絡紀錄");
+ XLSX.writeFile(wb,name);
+}
+window.exportStudent=id=>exportIdsExcel([id],`${studentById(id).name}_個別資料.xlsx`);
+window.exportSelected=()=>{const ids=[...document.querySelectorAll(".studentPick:checked")].map(x=>x.value);if(!ids.length)return alert("請先到學生資料頁勾選學生");exportIdsExcel(ids,"選取學生資料.xlsx")};
+window.exportClass=()=>exportIdsExcel(classStudents().map(s=>s.id),`${currentClass().name||"全班"}_學生資料.xlsx`);
 window.backupJSON=()=>download("親師聯絡簿完整備份.json",JSON.stringify(data,null,2),"application/json");
 
-function renderSettings(){
- settings.innerHTML=`<div class="card panel"><div class="panel-head"><h2>設定</h2></div>
- <div class="field"><label>教師顯示名稱</label><input id="teacherNameInput" value="${esc(data.settings.teacherName)}"></div>
- <label class="check-item"><input id="positiveReminder" type="checkbox" ${data.settings.positiveReminder?"checked":""}>發布多則提醒時，提示加入正向回饋</label>
- <button class="btn" onclick="saveSettings()">儲存設定</button></div>`;
-}
-window.saveSettings=()=>{data.settings.teacherName=teacherNameInput.value.trim()||"Meng";data.settings.positiveReminder=positiveReminder.checked;save();alert("已儲存")};
+function renderSettings(){settings.innerHTML=`<div class="card panel"><div class="panel-head"><h2>設定</h2></div><div class="field"><label>教師顯示名稱</label><input id="teacherNameInput" value="${esc(data.settings.teacherName)}"></div><button class="btn" onclick="saveSettings()">儲存</button></div>`}
+window.saveSettings=()=>{data.settings.teacherName=teacherNameInput.value.trim()||"Meng";save()};
 
-function renderAssistant(){
- assistant.innerHTML=`<div class="card panel"><div class="panel-head"><h2>AI 通知助手</h2><span class="badge good">客觀・中性・可核對</span></div>
- <p>選擇情境後，系統會產生不貼標籤、不推測動機，並清楚交代事實與處理方式的文字。</p>
- <div class="field"><label>情境</label><select id="assistantType">${Object.keys(safeTemplates).map(k=>`<option>${k}</option>`).join("")}</select></div>
- <div class="field"><label>補充可觀察事實</label><input id="assistantFact" placeholder="例如：第二節數學課，提醒兩次後已停止交談"></div>
- <button class="btn" onclick="generateSafeText()">產生評語</button>
- <div class="field"><label>建議文字</label><textarea id="assistantOutput"></textarea></div>
- <button class="btn secondary" onclick="copySafeText()">複製文字</button></div>`;
-}
-window.generateSafeText=()=>{
- let t=safeTemplates[assistantType.value]||"";const f=assistantFact.value.trim();
- assistantOutput.value=f?`觀察紀錄：${f}\n${t}`:t;
-};
-window.copySafeText=async()=>{await navigator.clipboard.writeText(assistantOutput.value);alert("已複製")};
+function renderAssistant(){assistant.innerHTML=`<div class="card panel"><div class="panel-head"><h2>防禦性評語助手</h2></div><div class="field"><label>情境</label><select id="assistantType">${Object.keys(safeTemplates).map(k=>`<option>${k}</option>`).join("")}</select></div><div class="field"><label>可觀察事實</label><input id="assistantFact" placeholder="例如：第三節課提醒兩次後已停止交談"></div><button class="btn" onclick="generateSafeText()">產生</button><div class="field"><textarea id="assistantOutput"></textarea></div></div>`}
+window.generateSafeText=()=>{assistantOutput.value=(assistantFact.value.trim()?`觀察紀錄：${assistantFact.value.trim()}\n`:"")+(safeTemplates[assistantType.value]||"")};
 
 function renderParent(){
- const n=data.notices.filter(x=>x.classId===currentParent.classId&&(x.target==="class"||x.target===currentParent.id)).slice().reverse();
- parentContent.innerHTML=`<h3>${currentParent.seat}號 ${esc(currentParent.name)}</h3>
- <div class="list">${n.map(x=>`<div class="list-item"><span class="badge">${esc(x.subject)}</span><div style="white-space:pre-wrap;margin:8px 0">${esc(x.body)}</div><div class="small muted">${esc(x.date)}</div><button class="btn secondary" onclick="parentSign('${x.id}')">${x.signed.includes(currentParent.id)?"已簽閱":"簽閱"}</button></div>`).join("")||'<div class="muted">目前沒有聯絡事項</div>'}</div>
- <div class="field"><label>留言給老師</label><textarea id="parentMessageText"></textarea></div><button class="btn" onclick="sendParentMessage()">送出留言</button>`;
+ const s=currentParent;
+ const anns=data.announcements.filter(a=>a.classId===s.classId&&(a.target==="all"||a.target===s.id)).slice().reverse();
+ const ns=data.notices.filter(n=>n.classId===s.classId&&(n.target==="class"||n.target===s.id)).slice().reverse();
+ parentContent.innerHTML=`<h3>${s.seat}號 ${esc(s.name)}家長</h3><h4>公告</h4><div class="list">${anns.map(a=>`<div class="list-item"><b>${esc(a.level)}</b><div>${esc(a.text)}</div>${renderAttachmentList(a.attachments||[],a.id,"parent")}<label><input type="checkbox" ${a.readBy?.includes(s.id)?"checked":""} onchange="parentReadAnnouncement('${a.id}',this.checked)"> 已閱覽</label></div>`).join("")||'<div class="muted">無公告</div>'}</div><h4>聯絡事項</h4><div class="list">${ns.map(n=>`<div class="list-item"><span class="badge">${esc(n.subject)}</span><div style="white-space:pre-wrap">${esc(n.body)}</div><label><input type="checkbox" ${n.readBy?.includes(s.id)?"checked":""} onchange="parentReadNotice('${n.id}',this.checked)"> 已閱覽</label></div>`).join("")||'<div class="muted">無聯絡事項</div>'}</div><div class="field"><label>留言給老師</label><textarea id="parentMessageText"></textarea></div><button class="btn" onclick="sendParentMessage()">送出留言</button>`;setTimeout(()=>hydrateAttachmentPreviews("parent"),0);
 }
-window.parentSign=id=>{const n=data.notices.find(x=>x.id===id);if(n&&!n.signed.includes(currentParent.id))n.signed.push(currentParent.id);save();renderParent()};
+window.parentReadNotice=(id,on)=>{const n=data.notices.find(x=>x.id===id);n.readBy ||= [];n.readBy=on?[...new Set([...n.readBy,currentParent.id])]:n.readBy.filter(x=>x!==currentParent.id);save();renderParent()};
+window.parentReadAnnouncement=(id,on)=>{const a=data.announcements.find(x=>x.id===id);a.readBy ||= [];a.readBy=on?[...new Set([...a.readBy,currentParent.id])]:a.readBy.filter(x=>x!==currentParent.id);save();renderParent()};
 window.sendParentMessage=()=>{const t=parentMessageText.value.trim();if(!t)return;data.parentMessages.unshift({id:"m"+Date.now(),studentId:currentParent.id,studentName:currentParent.name,text:t,date:new Date().toLocaleString("zh-TW")});save();renderParent()};
 
 renderAll();

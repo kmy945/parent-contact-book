@@ -1,5 +1,5 @@
 {
-  "name": "親師聯絡簿 v9.0",
+  "name": "親師聯絡簿 v9.3",
   "short_name": "聯絡簿",
   "start_url": "./",
   "scope": "./",
@@ -7,5 +7,5 @@
   "background_color": "#eef8fd",
   "theme_color": "#1587a8",
   "lang": "zh-Hant",
-  "description": "國中親師聯絡、科別管理與防禦性評語系統"
+  "description": "國中班級學年度、學生與家長資料、個別聯絡及晤談紀錄系統"
 }
