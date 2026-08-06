@@ -1,11 +1,11 @@
 {
-  "name": "親師聯絡簿 v9.4 Google Drive 免費版",
-  "short_name": "聯絡簿",
+  "name": "親師聯絡簿 v10 Professional",
+  "short_name": "親師聯絡簿",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#eef8fd",
-  "theme_color": "#1587a8",
+  "background_color": "#edf8fd",
+  "theme_color": "#1689aa",
   "lang": "zh-Hant",
-  "description": "使用 Google Drive 連結處理公告附件的國中親師聯絡簿"
+  "description": "國中導師使用的班級、出缺勤、日常表現、公告、家長閱覽與輔導紀錄系統"
 }
