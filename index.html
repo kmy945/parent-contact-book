@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1587a8">
 <link rel="manifest" href="manifest.webmanifest">
-<title>親師聯絡簿 v9.3</title>
+<title>親師聯絡簿 v9.4</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <style>
@@ -257,7 +257,6 @@ th,td{padding:11px;border-bottom:1px solid var(--line);text-align:left}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyBNr-1S-xSeDvESdq3tYbWjIQ8pmgOjpd8",
@@ -267,8 +266,8 @@ const firebaseConfig={
   messagingSenderId:"241202878085",
   appId:"1:241202878085:web:fb598315e315aa33cbbbec"
 };
-let app,auth,db,storage;
-try{app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app)}catch(e){console.warn(e)}
+let app,auth,db;
+try{app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app)}catch(e){console.warn(e)}
 
 const defaultSubjects=["國文","英語","數學","自然","社會","健康與體育","音樂","視覺藝術","表演藝術","資訊科技","生活科技","輔導","家政","童軍","班級事務","導師時間"];
 const safeTemplates={
@@ -301,7 +300,7 @@ const defaultData={
 let data=JSON.parse(localStorage.getItem("pcb_v9_2_data")||"null")||structuredClone(defaultData);
 data.classes ||= defaultData.classes; data.students ||= []; data.notices ||= []; data.announcements ||= [];
 data.attendance ||= []; data.parentMessages ||= []; data.subjects ||= defaultData.subjects; data.settings ||= defaultData.settings;
-let mode="visitor",uid=null,currentParent=null,selectedStudentId=null,announcementFiles=[];
+let mode="visitor",uid=null,currentParent=null,selectedStudentId=null,announcementLinks=[];
 
 function save(){
  localStorage.setItem("pcb_v9_2_data",JSON.stringify(data));
@@ -476,78 +475,131 @@ window.deleteSubject=id=>{data.subjects=data.subjects.filter(s=>s.id!==id);save(
 function renderParents(){parents.innerHTML=`<div class="card panel"><div class="panel-head"><h2>家長留言</h2></div><div class="list">${data.parentMessages.map(m=>`<div class="list-item"><b>${esc(m.studentName)}</b><div>${esc(m.text)}</div><div class="small muted">${esc(m.date)}</div></div>`).join("")||'<div class="muted">目前沒有留言</div>'}</div></div>`}
 
 function renderAnnouncements(){
- announcements.innerHTML=`<div class="card panel"><div class="panel-head"><h2>統一公告與個別公告</h2></div>
- <div class="form-grid"><div class="field"><label>公告範圍</label><select id="announcementTarget"><option value="all">統一公告（本班所有家長）</option>${classStudents().map(s=>`<option value="${s.id}">個別公告：${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div>
- <div class="field"><label>重要程度</label><select id="announcementLevel"><option>一般</option><option>重要</option><option>緊急</option></select></div></div>
- <div class="field"><label>公告內容</label><textarea id="announcementBody"></textarea></div>
- <div class="field"><label>上傳附件（PDF、Word、圖片）</label>
-  <input id="announcementFileInput" type="file" multiple accept=".pdf,.doc,.docx,image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleAnnouncementFiles(event)">
-  <div class="small muted">PDF、圖片與 DOCX 可直接線上預覽；舊式 DOC 檔可供下載，建議轉存為 DOCX 以獲得完整預覽。</div>
-  <div id="newAttachmentPreview"></div>
+ announcements.innerHTML=`<div class="card panel"><div class="panel-head"><h2>統一公告與個別公告</h2><span class="badge good">Google Drive 免費附件模式</span></div>
+ <div class="form-grid">
+  <div class="field"><label>公告範圍</label><select id="announcementTarget"><option value="all">統一公告（本班所有家長）</option>${classStudents().map(s=>`<option value="${s.id}">個別公告：${s.seat}號 ${esc(s.name)}</option>`).join("")}</select></div>
+  <div class="field"><label>重要程度</label><select id="announcementLevel"><option>一般</option><option>重要</option><option>緊急</option></select></div>
  </div>
+ <div class="field"><label>公告內容</label><textarea id="announcementBody" placeholder="輸入要給家長看的公告內容"></textarea></div>
+
+ <div class="card panel" style="box-shadow:none;background:#f8fcfe">
+  <div class="panel-head"><h3>Google Drive 附件</h3><button class="btn secondary" onclick="addDriveLinkRow()">＋新增附件連結</button></div>
+  <div class="safe-box">請先在 Google Drive 將檔案分享權限設為「知道連結的任何人皆可查看」，再把分享連結貼到下方。</div>
+  <div id="driveLinkRows" class="list" style="margin-top:12px"></div>
+ </div>
+
  <button class="btn" onclick="publishAnnouncement()">發布公告</button>
- <div class="list" style="margin-top:18px">${data.announcements.map(a=>`<div class="list-item"><b>${a.target==="all"?"統一公告":"個別公告"}｜${esc(a.level)}</b><div>${esc(a.text)}</div><div class="small muted">${esc(a.date)}</div>${renderAttachmentList(a.attachments||[],a.id,"teacher")}</div>`).join("")||'<div class="muted">尚無公告</div>'}</div></div>`;
+
+ <div class="list" style="margin-top:18px">${data.announcements.map(a=>`<div class="list-item"><b>${a.target==="all"?"統一公告":"個別公告"}｜${esc(a.level)}</b><div>${esc(a.text)}</div><div class="small muted">${esc(a.date)}</div>${renderAttachmentList(a.attachments||[],a.id,"teacher")}</div>`).join("")||'<div class="muted">尚無公告</div>'}</div>
+ </div>`;
+ if(!announcementLinks.length) announcementLinks=[{name:"",url:"",type:"auto"}];
+ renderDriveLinkRows();
  setTimeout(()=>hydrateAttachmentPreviews("teacher"),0);
 }
-window.handleAnnouncementFiles=async e=>{
- const files=[...e.target.files];
- const max=15*1024*1024;
- announcementFiles=[];
- for(const file of files){
-  if(file.size>max){alert(`${file.name} 超過 15MB，未加入`);continue}
-  const item={name:file.name,type:file.type||guessMime(file.name),file,localUrl:URL.createObjectURL(file)};
-  announcementFiles.push(item);
- }
- newAttachmentPreview.innerHTML=announcementFiles.map((f,i)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><button class="btn danger" onclick="removePendingAttachment(${i})">移除</button></div><div id="pendingPreview${i}"></div></div>`).join("");
- announcementFiles.forEach((f,i)=>previewRawFile(f.file,document.getElementById(`pendingPreview${i}`)));
-};
-window.removePendingAttachment=i=>{announcementFiles.splice(i,1);announcementFileInput.value="";newAttachmentPreview.innerHTML=announcementFiles.map((f,j)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><button class="btn danger" onclick="removePendingAttachment(${j})">移除</button></div><div id="pendingPreview${j}"></div></div>`).join("");announcementFiles.forEach((f,j)=>previewRawFile(f.file,document.getElementById(`pendingPreview${j}`)))};
-function guessMime(name){const n=name.toLowerCase();if(n.endsWith(".pdf"))return"application/pdf";if(n.endsWith(".docx"))return"application/vnd.openxmlformats-officedocument.wordprocessingml.document";if(n.endsWith(".doc"))return"application/msword";if(/\.(png|jpg|jpeg|gif|webp)$/i.test(n))return"image/"+n.split(".").pop().replace("jpg","jpeg");return"application/octet-stream"}
-async function previewRawFile(file,box){
- if(!box)return;const type=file.type||guessMime(file.name);const url=URL.createObjectURL(file);
- if(type.startsWith("image/"))box.innerHTML=`<img src="${url}" alt="${esc(file.name)}">`;
- else if(type==="application/pdf")box.innerHTML=`<iframe src="${url}" title="${esc(file.name)}"></iframe>`;
- else if(file.name.toLowerCase().endsWith(".docx")){
-  try{const result=await mammoth.convertToHtml({arrayBuffer:await file.arrayBuffer()});box.innerHTML=`<div class="docx-preview">${result.value}</div>`}
-  catch(e){box.innerHTML='<div class="risk-box">Word 預覽失敗，但仍可上傳與下載。</div>'}
- }else box.innerHTML='<div class="muted">此 Word 格式無法在瀏覽器直接預覽，發布後仍可下載查看。</div>';
+
+function renderDriveLinkRows(){
+ const box=document.getElementById("driveLinkRows");if(!box)return;
+ box.innerHTML=announcementLinks.map((x,i)=>`<div class="list-item">
+  <div class="form-grid">
+   <div class="field"><label>附件名稱</label><input value="${esc(x.name)}" placeholder="例如：校外教學通知.pdf" oninput="announcementLinks[${i}].name=this.value"></div>
+   <div class="field"><label>檔案類型</label><select onchange="announcementLinks[${i}].type=this.value">
+    <option value="auto" ${x.type==="auto"?"selected":""}>自動判斷</option>
+    <option value="pdf" ${x.type==="pdf"?"selected":""}>PDF</option>
+    <option value="word" ${x.type==="word"?"selected":""}>Word</option>
+    <option value="image" ${x.type==="image"?"selected":""}>圖片</option>
+    <option value="excel" ${x.type==="excel"?"selected":""}>Excel</option>
+    <option value="video" ${x.type==="video"?"selected":""}>影片</option>
+    <option value="audio" ${x.type==="audio"?"selected":""}>音樂</option>
+    <option value="other" ${x.type==="other"?"selected":""}>其他</option>
+   </select></div>
+  </div>
+  <div class="field"><label>Google Drive 分享連結</label><input value="${esc(x.url)}" placeholder="貼上 https://drive.google.com/..." oninput="announcementLinks[${i}].url=this.value"></div>
+  <div class="toolbar"><button class="btn secondary" onclick="previewPendingDriveLink(${i})">預覽</button><button class="btn danger" onclick="removeDriveLinkRow(${i})">移除</button></div>
+  <div id="pendingDrivePreview${i}" class="file-preview hidden"></div>
+ </div>`).join("");
 }
-async function persistAttachment(item){
- if(mode==="cloud"&&uid&&storage){
-  const safeName=item.name.replace(/[^\w.\-\u4e00-\u9fff]/g,"_");
-  const storageRef=ref(storage,`announcements/${uid}/${Date.now()}_${safeName}`);
-  await uploadBytes(storageRef,item.file,{contentType:item.type});const url=await getDownloadURL(storageRef);
-  return{name:item.name,type:item.type,url};
- }
- const dataUrl=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(item.file)});
- return{name:item.name,type:item.type,url:dataUrl};
+window.addDriveLinkRow=()=>{announcementLinks.push({name:"",url:"",type:"auto"});renderDriveLinkRows()};
+window.removeDriveLinkRow=i=>{announcementLinks.splice(i,1);if(!announcementLinks.length)announcementLinks=[{name:"",url:"",type:"auto"}];renderDriveLinkRows()};
+
+function extractDriveId(url){
+ const patterns=[
+  /\/file\/d\/([a-zA-Z0-9_-]+)/,
+  /[?&]id=([a-zA-Z0-9_-]+)/,
+  /\/document\/d\/([a-zA-Z0-9_-]+)/,
+  /\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/,
+  /\/presentation\/d\/([a-zA-Z0-9_-]+)/
+ ];
+ for(const p of patterns){const m=String(url||"").match(p);if(m)return m[1]}
+ return "";
 }
-window.publishAnnouncement=async()=>{
- const t=announcementBody.value.trim();if(!t&&!announcementFiles.length)return alert("請輸入公告內容或上傳附件");
- const btn=event?.target;try{
-  if(btn){btn.disabled=true;btn.textContent="上傳中…"}
-  const attachments=[];
-  for(const item of announcementFiles)attachments.push(await persistAttachment(item));
-  data.announcements.unshift({id:"a"+Date.now(),classId:data.currentClassId,target:announcementTarget.value,level:announcementLevel.value,text:t,date:new Date().toLocaleString("zh-TW"),readBy:[],attachments});
-  announcementFiles=[];save();alert("公告與附件已發布");
- }catch(err){console.error(err);alert("附件上傳失敗，請檢查 Firebase Storage 設定或網路連線")}
- finally{if(btn){btn.disabled=false;btn.textContent="發布公告"}}
+function drivePreviewUrl(url){
+ const id=extractDriveId(url);return id?`https://drive.google.com/file/d/${id}/preview`:url;
+}
+function driveOpenUrl(url){
+ const id=extractDriveId(url);return id?`https://drive.google.com/open?id=${id}`:url;
+}
+function inferAttachmentType(name,url,manual="auto"){
+ if(manual&&manual!=="auto")return manual;
+ const s=(name+" "+url).toLowerCase();
+ if(s.includes(".pdf"))return"pdf";
+ if(/\.(doc|docx)\b/.test(s))return"word";
+ if(/\.(png|jpg|jpeg|gif|webp|bmp)\b/.test(s))return"image";
+ if(/\.(xls|xlsx|csv)\b/.test(s))return"excel";
+ if(/\.(mp4|mov|avi|webm)\b/.test(s))return"video";
+ if(/\.(mp3|wav|m4a|ogg)\b/.test(s))return"audio";
+ return"other";
+}
+window.previewPendingDriveLink=i=>{
+ const item=announcementLinks[i],box=document.getElementById(`pendingDrivePreview${i}`);
+ if(!item.url.trim())return alert("請先貼上 Google Drive 分享連結");
+ box.classList.remove("hidden");
+ renderSingleDrivePreview(box,{name:item.name||"Google Drive 附件",url:item.url,type:inferAttachmentType(item.name,item.url,item.type)});
 };
+
+window.publishAnnouncement=()=>{
+ const t=announcementBody.value.trim();
+ const attachments=announcementLinks.filter(x=>x.url.trim()).map(x=>({
+  name:x.name.trim()||"Google Drive 附件",
+  url:x.url.trim(),
+  openUrl:driveOpenUrl(x.url.trim()),
+  previewUrl:drivePreviewUrl(x.url.trim()),
+  type:inferAttachmentType(x.name,x.url,x.type),
+  source:"google-drive"
+ }));
+ if(!t&&!attachments.length)return alert("請輸入公告內容或加入 Google Drive 附件");
+ data.announcements.unshift({
+  id:"a"+Date.now(),classId:data.currentClassId,target:announcementTarget.value,
+  level:announcementLevel.value,text:t,date:new Date().toLocaleString("zh-TW"),
+  readBy:[],attachments
+ });
+ announcementLinks=[{name:"",url:"",type:"auto"}];
+ save();alert("公告已發布");
+};
+
 function renderAttachmentList(files,announcementId,scope){
  if(!files.length)return"";
- return `<div style="margin-top:10px">${files.map((f,i)=>`<div class="file-preview"><div class="attachment-row"><b>${esc(f.name)}</b><a class="btn secondary" href="${f.url}" target="_blank" rel="noopener">另開／下載</a></div><div class="attachment-preview-target" data-url="${esc(f.url)}" data-name="${esc(f.name)}" data-type="${esc(f.type||"")}" data-key="${scope}-${announcementId}-${i}"></div></div>`).join("")}</div>`;
+ return `<div style="margin-top:10px">${files.map((f,i)=>`<div class="file-preview">
+  <div class="attachment-row"><b>${esc(f.name)}</b><a class="btn secondary" href="${esc(f.openUrl||f.url)}" target="_blank" rel="noopener">在 Google Drive 開啟</a></div>
+  <div class="attachment-preview-target" data-url="${esc(f.previewUrl||f.url)}" data-open="${esc(f.openUrl||f.url)}" data-name="${esc(f.name)}" data-type="${esc(f.type||"other")}" data-key="${scope}-${announcementId}-${i}"></div>
+ </div>`).join("")}</div>`;
 }
-async function hydrateAttachmentPreviews(scope){
- const nodes=[...document.querySelectorAll(`.attachment-preview-target[data-key^="${scope}-"]`)];
- for(const box of nodes){
-  const url=box.dataset.url,name=box.dataset.name,type=box.dataset.type||guessMime(name);
-  if(type.startsWith("image/"))box.innerHTML=`<img src="${url}" alt="${esc(name)}">`;
-  else if(type==="application/pdf"||name.toLowerCase().endsWith(".pdf"))box.innerHTML=`<iframe src="${url}" title="${esc(name)}"></iframe>`;
-  else if(name.toLowerCase().endsWith(".docx")){
-   try{const buf=await fetch(url).then(r=>r.arrayBuffer());const result=await mammoth.convertToHtml({arrayBuffer:buf});box.innerHTML=`<div class="docx-preview">${result.value}</div>`}
-   catch(e){box.innerHTML='<div class="risk-box">目前無法載入 Word 線上預覽，請使用「另開／下載」。</div>'}
-  }else box.innerHTML='<div class="muted">舊式 DOC 檔請使用「另開／下載」查看。</div>';
+function renderSingleDrivePreview(box,file){
+ const type=file.type||"other",preview=file.previewUrl||drivePreviewUrl(file.url),open=file.openUrl||driveOpenUrl(file.url);
+ if(type==="image"){
+  const id=extractDriveId(file.url);
+  const img=id?`https://drive.google.com/uc?export=view&id=${id}`:file.url;
+  box.innerHTML=`<img src="${esc(img)}" alt="${esc(file.name)}" onerror="this.parentElement.innerHTML='<iframe src=&quot;${esc(preview)}&quot; title=&quot;${esc(file.name)}&quot;></iframe>'">`;
+ }else if(["pdf","word","excel","video","audio","other"].includes(type)){
+  box.innerHTML=`<iframe src="${esc(preview)}" title="${esc(file.name)}" allow="autoplay"></iframe><div class="small muted" style="margin-top:8px">若預覽沒有顯示，請確認 Google Drive 權限已設為「知道連結的任何人皆可查看」，或使用「在 Google Drive 開啟」。</div>`;
+ }else{
+  box.innerHTML=`<a class="btn secondary" href="${esc(open)}" target="_blank" rel="noopener">開啟附件</a>`;
  }
+}
+function hydrateAttachmentPreviews(scope){
+ const nodes=[...document.querySelectorAll(`.attachment-preview-target[data-key^="${scope}-"]`)];
+ nodes.forEach(box=>renderSingleDrivePreview(box,{
+  name:box.dataset.name,url:box.dataset.open,openUrl:box.dataset.open,previewUrl:box.dataset.url,type:box.dataset.type
+ }));
 }
 
 function renderPreview(){
