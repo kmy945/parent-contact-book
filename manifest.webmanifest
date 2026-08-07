@@ -1,11 +1,11 @@
 {
-  "name": "親師聯絡簿 V15.1 登入穩定修正版",
-  "short_name": "親師聯絡簿 V15.1",
+  "name": "親師聯絡簿 V15.2 登入穩定修正版",
+  "short_name": "親師聯絡簿 V15.2",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "整合親師聯絡、學生家長 Excel、家長帳號、三年歷程、輔導晤談與教師段考加權成績中心。"
+  "description": "修正舊班級狀態誤判、家長登入與封面排版。"
 }
