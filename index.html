@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15.3 班級關聯修正版</title>
+<title>親師聯絡簿 V15.4 家長頁穩定修正版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -33,7 +33,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.3</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.4</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -44,7 +44,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15.3</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.4</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -60,7 +60,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.3</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.4</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -226,7 +226,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v15")||"null")||JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null, pendingAnnAttachments=[];
-D.version="15.3"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
+D.version="15.4"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
 D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 D.gradeConfigs ||= {}; D.gradeScores ||= {}; D.examStatus ||= {}; D.gradeNotes ||= {}; D.gradeShare ||= {}; D.loginLogs ||= []; D.auditLogs ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -235,24 +235,55 @@ function save(){localStorage.setItem("pcb_v15",JSON.stringify(D));renderAll()}
 function tab(x){tlogin.classList.toggle("hidden",x!=="t");plogin.classList.toggle("hidden",x!=="p");tt.classList.toggle("on",x==="t");pt.classList.toggle("on",x==="p")}
 async function enterTeacher(){for(const s of D.students){let c=D.classes.find(x=>x.id===s.classId);if(c)await ensureStudentCredential(s,c,false)}localStorage.setItem("pcb_v15",JSON.stringify(D));login.classList.add("hidden");teacher.classList.remove("hidden");renderAll()}
 async function enterParent(){
- const account=pa.value.trim(), typed=pp.value;
- let s=D.students.find(x=>x.account===account&&!x.archived);
- if(!s || s.accountStatus==="disabled"){alert("帳號或密碼不正確，或帳號目前未啟用");return}
- let cForCredential=D.classes.find(x=>x.id===s.classId);
- if(cForCredential)await ensureStudentCredential(s,cForCredential,false);
- localStorage.setItem("pcb_v15",JSON.stringify(D));
- let ok=false;
- if(s.passwordHash) ok=(await sha256(typed))===s.passwordHash;
- else if(s.password!==undefined && typed===String(s.password)){
-   ok=true;s.passwordHash=await sha256(typed);delete s.password;
+ try{
+   const account=pa.value.trim(), typed=pp.value;
+   let s=D.students.find(x=>x.account===account&&!x.archived);
+   if(!s || s.accountStatus==="disabled"){alert("帳號或密碼不正確，或帳號目前未啟用");return}
+
+   let cForCredential=D.classes.find(x=>x.id===s.classId) || findBestClassForStudent(s);
+   if(cForCredential)await ensureStudentCredential(s,cForCredential,false);
+   localStorage.setItem("pcb_v15",JSON.stringify(D));
+
+   let ok=false;
+   if(s.passwordHash) ok=(await sha256(typed))===s.passwordHash;
+   else if(s.password!==undefined && typed===String(s.password)){
+     ok=true;s.passwordHash=await sha256(typed);delete s.password;
+   }
+   if(!ok){
+     D.loginLogs.unshift({id:"log"+Date.now(),sid:s.id,time:N(),result:"密碼錯誤",device:(navigator.userAgent||"").slice(0,160)});
+     localStorage.setItem("pcb_v15",JSON.stringify(D));
+     alert("帳號或密碼不正確");
+     return;
+   }
+
+   let rel=repairStudentClassLink(s,false);
+   let c=rel.classObj || findBestClassForStudent(s);
+   if(c && s.classId!==c.id){s.classId=c.id;s.classCode=classCode(c);rel.changed=true}
+   if(rel.changed)localStorage.setItem("pcb_v15",JSON.stringify(D));
+   if(!c){
+     alert("找不到此學生目前對應的班級。請導師登入後，在「班級／學年度」按下「修復學生班級關聯」。");
+     return;
+   }
+
+   D.currentClassId=c.id;
+   CP=s;
+   addLoginLog(s);
+   localStorage.setItem("pcb_v15",JSON.stringify(D));
+
+   login.classList.add("hidden");
+   teacher.classList.add("hidden");
+   parent.classList.remove("hidden");
+
+   try{
+     renderParent();
+   }catch(err){
+     console.error("renderParent failed",err);
+     renderParentFallback(err);
+   }
+ }catch(err){
+   console.error("Parent login failed",err);
+   alert("登入後載入家長頁面時發生錯誤，已保留帳號資料。請重新整理後再試。");
  }
- if(!ok){D.loginLogs.unshift({id:"log"+Date.now(),sid:s.id,time:N(),result:"密碼錯誤",device:(navigator.userAgent||"").slice(0,160)});save();alert("帳號或密碼不正確");return}
- let rel=repairStudentClassLink(s,false);
- let c=rel.classObj;
- if(rel.changed)localStorage.setItem("pcb_v15",JSON.stringify(D));
- if(!c){alert("找不到此學生目前對應的班級。請導師登入後，在「班級／學年度」按下「修復學生班級關聯」。");return}
- CP=s;addLoginLog(s);localStorage.setItem("pcb_v15",JSON.stringify(D));
- login.classList.add("hidden");parent.classList.remove("hidden");renderParent();
 }
 function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p===id));if(id==="preview")renderPreview();window.scrollTo({top:0,behavior:"smooth"})}
 function renderAll(){renderHeader();renderHome();renderDaily();renderSchedule();renderClasses();renderStudents();renderContacts();renderCounseling();renderGrades();renderAccounts();renderPreview();renderReports()}
@@ -958,43 +989,103 @@ XLSX.writeFile(wb,name)}
 function exportTimetable(){let days=["星期一","星期二","星期三","星期四","星期五"],rows=[1,2,3,4,5,6,7].map(p=>{let r={"節次":`第${p}節`};days.forEach(d=>r[d]=D.timetable[D.currentClassId+"|"+d+"-"+p]||"");return r}),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"功課表");XLSX.writeFile(wb,"班級功課表.xlsx")}
 
 function parentSharedGradesHtml(s,c){
- let cfg=D.gradeConfigs[c.id];if(!cfg)return "";
- let parts=[];
- for(const exam of EXAMS){
-   let key=`${c.id}|${c.schoolYear}|${cfg.term}|${exam}`;
-   if(!D.gradeShare[key])continue;
-   let vals=cfg.subjects.map(sub=>({name:sub.name,score:scoreOf(exam,s.id,sub.id)})).filter(x=>x.score!==null),avg=weightedExam(exam,s.id);
-   parts.push(`<div class="item"><b>${exam}</b><div>${vals.map(x=>`${E(x.name)}：${x.score}`).join("｜")||"尚無成績"}</div><div>科目加權平均：<b>${avg===null?"—":avg.toFixed(2)}</b></div></div>`);
+ try{
+   let cfg=D.gradeConfigs?.[c.id];
+   if(!cfg)return "";
+   let parts=[];
+   for(const exam of EXAMS){
+     let key=`${c.id}|${c.schoolYear}|${cfg.term}|${exam}`;
+     if(!D.gradeShare?.[key])continue;
+     let vals=(cfg.subjects||[]).map(sub=>({name:sub.name,score:scoreOf(exam,s.id,sub.id)})).filter(x=>x.score!==null),avg=weightedExam(exam,s.id);
+     parts.push(`<div class="item"><b>${E(exam)}</b><div>${vals.map(x=>`${E(x.name)}：${x.score}`).join("｜")||"尚無成績"}</div><div>科目加權平均：<b>${avg===null?"—":avg.toFixed(2)}</b></div></div>`);
+   }
+   return parts.length?`<h4>老師分享的成績</h4>${parts.join("")}`:"";
+ }catch(err){
+   console.error("parentSharedGradesHtml",err);
+   return "";
  }
- return parts.length?`<h4>老師分享的成績</h4>${parts.join("")}`:"";
-}
-function renderParent(){
- let s=CP,c=D.classes.find(x=>x.id===s.classId)||C();D.currentClassId=c.id;
- if(s.forcePasswordChange){
-   parentView.innerHTML=`<div class="warn"><b>首次登入／密碼已重設</b><br>為保護帳號，請先修改密碼後再使用聯絡簿。</div>${parentPasswordForm(true)}`;
-   return;
- }
- let hw=D.homework.filter(x=>x.classId===c.id&&x.date===T()),an=D.announcements.filter(x=>x.classId===c.id),ns=D.notices.filter(x=>x.sid===s.id&&x.parentVisible&&x.date.startsWith(T())),sg=D.signatures.find(x=>x.sid===s.id&&x.date===T());
- parentView.innerHTML=`<div class="head"><h3>${s.seat}號 ${E(s.name)}家長</h3><button class="btn secondary" onclick="showParentSettings()">帳號／聯絡資料設定</button></div><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${attachmentButtons(x)}${(x.links||[]).map(l=>`<div><a target="_blank" href="${E(l.url)}">${E(l.label||"連結")}</a></div>`).join("")}${x.url?`<a target="_blank" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}${parentSharedGradesHtml(s,c)}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted small">簽閱時間：${E(sg.time)}</div>`:""}`;
 }
 function parentPasswordForm(forced=false){
  return `<div class="card panel" style="box-shadow:none;margin-top:12px"><h3>修改密碼</h3><div class="field"><label>目前密碼</label><input id="oldPw" type="password"></div><div class="field"><label>新密碼（至少6碼）</label><input id="newPw" type="password"></div><div class="field"><label>再次輸入新密碼</label><input id="newPw2" type="password"></div><button class="btn" onclick="changeParentPassword(${forced})">儲存新密碼</button></div>`;
 }
+function renderParentFallback(err){
+ const pv=document.getElementById("parentView");
+ if(!pv)return;
+ pv.innerHTML=`<div class="card panel"><div class="head"><h2>家長專區</h2><button class="btn secondary" onclick="exitParent()">登出</button></div><div class="warn">登入成功，但部分資料載入時發生錯誤。帳號與學生資料仍保留。</div><div class="safe" style="margin-top:10px">學生：<b>${E(CP?.name||"")}</b><br>座號：${E(CP?.seat||"")}<br>班級：${E(CP?.classCode||"")}</div><button class="btn" style="margin-top:12px" onclick="tryRenderParentAgain()">重新載入家長頁</button><details style="margin-top:12px"><summary>錯誤資訊</summary><pre style="white-space:pre-wrap">${E(String(err?.message||err||"未知錯誤"))}</pre></details></div>`;
+}
+function tryRenderParentAgain(){try{renderParent()}catch(err){renderParentFallback(err)}}
+function exitParent(){CP=null;parent.classList.add("hidden");login.classList.remove("hidden")}
+function renderParent(){
+ try{
+   let s=CP;
+   if(!s)throw new Error("找不到目前登入的家長學生資料");
+
+   let c=findBestClassForStudent(s) || D.classes.find(x=>x.id===s.classId&&x.status!=="deleted"&&x.status!=="disabled");
+   if(!c)throw new Error("找不到目前有效班級");
+   if(s.classId!==c.id){s.classId=c.id;s.classCode=classCode(c)}
+   D.currentClassId=c.id;
+   localStorage.setItem("pcb_v15",JSON.stringify(D));
+
+   const pv=document.getElementById("parentView");
+   if(!pv)throw new Error("找不到家長頁容器");
+
+   if(s.forcePasswordChange){
+     pv.innerHTML=`<div class="card panel"><div class="head"><h2>${E(s.seat)}號 ${E(s.name)}家長</h2><button class="btn secondary" onclick="exitParent()">登出</button></div><div class="warn"><b>首次登入／密碼已重設</b><br>為保護帳號，請先修改密碼後再使用聯絡簿。</div>${parentPasswordForm(true)}</div>`;
+     return;
+   }
+
+   const today=T();
+   let hw=(D.homework||[]).filter(x=>x.classId===c.id&&x.date===today);
+   let an=(D.announcements||[]).filter(x=>x.classId===c.id);
+   let ns=(D.notices||[]).filter(x=>x.sid===s.id&&x.parentVisible&&String(x.date||"").startsWith(today));
+   let sg=(D.signatures||[]).find(x=>x.sid===s.id&&x.date===today);
+
+   pv.innerHTML=`<div class="card panel"><div class="head"><h2>${E(s.seat)}號 ${E(s.name)}家長</h2><div><button class="btn secondary" onclick="showParentSettings()">帳號／聯絡資料設定</button> <button class="btn secondary" onclick="exitParent()">登出</button></div></div>
+   <div class="safe">班級：${E(classCode(c))}${c.name?`（${E(c.name)}）`:""}｜${E(c.schoolYear)}學年度</div>
+   <h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject||"提醒事項")}</b>｜${E(x.content||"")}</div>`).join("")||'<div class="muted">今日尚無功課／提醒。</div>'}
+   <h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type||"公告")}｜${E(x.title||"")}</b><div>${E(x.text||"")}</div>${typeof attachmentButtons==="function"?attachmentButtons(x):""}${(x.links||[]).map(l=>`<div><a target="_blank" rel="noopener" href="${E(l.url)}">${E(l.label||"連結")}</a></div>`).join("")}${x.url?`<a target="_blank" rel="noopener" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||'<div class="muted">目前沒有公告。</div>'}
+   <h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content||"")}</div>`).join("")||'<div class="muted">今日沒有個別提醒。</div>'}
+   ${parentSharedGradesHtml(s,c)}
+   <h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea>
+   <label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label>
+   <button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>
+   ${sg?`<div class="muted small">簽閱時間：${E(sg.time||"")}</div>`:""}</div>`;
+ }catch(err){
+   console.error("renderParent",err);
+   renderParentFallback(err);
+ }
+}
 async function changeParentPassword(forced=false){
- let old=document.getElementById("oldPw").value,nw=document.getElementById("newPw").value,nw2=document.getElementById("newPw2").value;
- if(nw.length<6)return alert("新密碼至少6碼");if(nw!==nw2)return alert("兩次新密碼不一致");
- let ok=CP.passwordHash?(await sha256(old))===CP.passwordHash:(old===String(CP.password||""));
- if(!ok)return alert("目前密碼不正確");
- CP.passwordHash=await sha256(nw);delete CP.password;CP.forcePasswordChange=false;addAudit("家長自行修改密碼",CP.id,"");
- save();renderParent();alert("密碼已更新");
+ try{
+   let old=document.getElementById("oldPw")?.value||"",nw=document.getElementById("newPw")?.value||"",nw2=document.getElementById("newPw2")?.value||"";
+   if(nw.length<6)return alert("新密碼至少6碼");
+   if(nw!==nw2)return alert("兩次新密碼不一致");
+   let ok=CP.passwordHash?(await sha256(old))===CP.passwordHash:(old===String(CP.password||""));
+   if(!ok)return alert("目前密碼不正確");
+   CP.passwordHash=await sha256(nw);delete CP.password;CP.forcePasswordChange=false;addAudit("家長自行修改密碼",CP.id,"");
+   localStorage.setItem("pcb_v15",JSON.stringify(D));
+   renderParent();alert("密碼已更新");
+ }catch(err){console.error(err);alert("修改密碼時發生錯誤，請重新整理後再試")}
 }
 function showParentSettings(){
  let s=CP;
  showModal("家長帳號／聯絡資料設定",`${parentPasswordForm(false)}<div class="card panel" style="box-shadow:none"><h3>聯絡資料</h3><div class="field"><label>家長姓名</label><input id="setPName" value="${E(s.parent1Name||"")}"></div><div class="field"><label>電話</label><input id="setPPhone" value="${E(s.parent1Phone||"")}"></div><div class="field"><label>Email</label><input id="setPEmail" value="${E(s.parent1Email||"")}"></div><div class="field"><label>Line ID</label><input id="setPLine" value="${E(s.parent1Line||"")}"></div><button class="btn" onclick="saveParentContact()">儲存聯絡資料</button></div>`);
 }
-function saveParentContact(){CP.parent1Name=document.getElementById("setPName").value;CP.parent1Phone=document.getElementById("setPPhone").value;CP.parent1Email=document.getElementById("setPEmail").value;CP.parent1Line=document.getElementById("setPLine").value;addAudit("家長更新聯絡資料",CP.id,"");save();closeModal();renderParent();alert("聯絡資料已更新")}
+function saveParentContact(){
+ try{
+   CP.parent1Name=document.getElementById("setPName").value;
+   CP.parent1Phone=document.getElementById("setPPhone").value;
+   CP.parent1Email=document.getElementById("setPEmail").value;
+   CP.parent1Line=document.getElementById("setPLine").value;
+   addAudit("家長更新聯絡資料",CP.id,"");
+   localStorage.setItem("pcb_v15",JSON.stringify(D));
+   closeModal();renderParent();alert("聯絡資料已更新");
+ }catch(err){console.error(err);alert("聯絡資料儲存失敗")}
+}
 function submitP(){if(!ps.checked)return alert("請先勾選已詳閱");if(pm.value.trim())D.contacts.unshift({id:"pc"+Date.now(),date:N(),sid:CP.id,content:pm.value.trim(),status:"尚未處理"});D.signatures.push({date:T(),time:N(),sid:CP.id});save();renderParent();alert("已完成今日簽閱")}
 
+window.addEventListener("error",e=>{console.error("Global error",e.error||e.message);if(!parent.classList.contains("hidden")&&CP){renderParentFallback(e.error||new Error(e.message||"頁面載入錯誤"))}});
+window.addEventListener("unhandledrejection",e=>{console.error("Unhandled rejection",e.reason);if(!parent.classList.contains("hidden")&&CP){renderParentFallback(e.reason||new Error("非同步載入錯誤"))}});
 try{
   renderAll();
   window.__PCB_BOOT_OK__=true;
