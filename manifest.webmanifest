@@ -1,5 +1,5 @@
 {
-  "name": "親師聯絡簿 V13 導師專業版",
+  "name": "親師聯絡簿 V14 導師整合正式版",
   "short_name": "親師聯絡簿",
   "start_url": "./",
   "scope": "./",
@@ -7,5 +7,5 @@
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "三年不中斷的國中導師親師聯絡、學生事件與輔導晤談管理系統"
+  "description": "國中導師三年不中斷親師聯絡、學生／家長 Excel 管理、客觀防禦性文字與輔導晤談整合系統"
 }

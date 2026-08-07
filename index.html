@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V13 導師專業版</title>
+<title>親師聯絡簿 V14 導師整合正式版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -32,7 +32,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V13</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V14</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -43,7 +43,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V13</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V14</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -57,7 +57,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V13</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V14</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -83,8 +83,8 @@ const COURSE_GROUPS={
  "彈性":["彈性－社會","彈性－自然","彈性－國文","彈性－英文"],
  "其他":["班會","導師時間","自訂"]
 };
-const LEARN_EVENTS=["作業尚未完成","未攜帶課本","未攜帶習作","未攜帶文具／用品","課堂精神較疲倦","專注情形偶有中斷","課堂討論參與較少","課堂活動尚未完成","學習態度穩定","主動發言","主動協助同學","自訂"];
-const BEHAVIOR_EVENTS=["課堂中曾與同學交談","課堂中曾離開座位","課程期間曾使用手機","課程期間曾有飲食情形","曾短暫影響課程進行","曾未依課堂指示進行","情緒反應較為明顯","與同學互動需進一步引導","自律表現良好","禮貌表現良好","自訂"];
+const LEARN_EVENTS=["作業尚未完成","作業未繳交","作業品質需再確認","未攜帶課本","未攜帶習作","未攜帶文具／用品","課堂精神較疲倦","專注情形偶有中斷","課堂討論參與較少","課堂活動尚未完成","學習進度需持續關心","評量準備尚需加強","學習態度穩定","主動發言","主動協助同學","活動完成度良好","自訂"];
+const BEHAVIOR_EVENTS=["課堂中曾與同學交談","課堂中曾離開座位","課程期間曾使用手機","課程期間曾有飲食情形","曾短暫影響課程進行","曾未依課堂指示進行","提醒後已調整","提醒後仍需持續關心","情緒反應較為明顯","與同學互動需進一步引導","團體活動參與需引導","班級常規配合尚需提醒","自律表現良好","禮貌表現良好","主動服務","合作表現良好","自訂"];
 const HANDLING=["已口頭提醒","已個別提醒","已協助完成","已聯絡家長","已與學生晤談","持續觀察","已鼓勵","已給予正向肯定","已轉介相關處室","自訂"];
 const PROBLEM_TYPES=["學習","生涯","家庭","人際","同儕","感情","生活適應","行為與常規","出缺勤","親師溝通","其他"];
 const LOCATIONS=["教室","導師室","辦公室","輔導室","學務處","電話","線上","校園其他地點","其他"];
@@ -222,20 +222,47 @@ function initialData(){return{
  ],
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
-let D=JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null;
+let D=JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null;
+D.version="14.0"; D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const C=()=>D.classes.find(x=>x.id===D.currentClassId)||D.classes[0], students=()=>D.students.filter(s=>s.classId===D.currentClassId).sort((a,b)=>a.seat-b.seat), S=id=>D.students.find(x=>x.id===id);
-function save(){localStorage.setItem("pcb_v13",JSON.stringify(D));renderAll()}
+const C=()=>D.classes.find(x=>x.id===D.currentClassId&&x.status!=="deleted")||D.classes.find(x=>x.status==="active")||D.classes.find(x=>x.status!=="deleted")||null, students=()=>D.students.filter(s=>s.classId===D.currentClassId&&!s.archived).sort((a,b)=>Number(a.seat)-Number(b.seat)), S=id=>D.students.find(x=>x.id===id);
+function save(){localStorage.setItem("pcb_v14",JSON.stringify(D));renderAll()}
 function tab(x){tlogin.classList.toggle("hidden",x!=="t");plogin.classList.toggle("hidden",x!=="p");tt.classList.toggle("on",x==="t");pt.classList.toggle("on",x==="p")}
 function enterTeacher(){login.classList.add("hidden");teacher.classList.remove("hidden");renderAll()}
-function enterParent(){let s=D.students.find(x=>x.account===pa.value.trim()&&x.password===pp.value);if(!s)return alert("帳號或密碼不正確");CP=s;login.classList.add("hidden");parent.classList.remove("hidden");renderParent()}
+function enterParent(){let s=D.students.find(x=>x.account===pa.value.trim()&&x.password===pp.value&&!x.archived);if(!s)return alert("帳號或密碼不正確");let c=D.classes.find(x=>x.id===s.classId&&x.status!=="deleted");if(!c)return alert("此學生所屬班級目前未啟用");CP=s;login.classList.add("hidden");parent.classList.remove("hidden");renderParent()}
 function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p===id));if(id==="preview")renderPreview();window.scrollTo({top:0,behavior:"smooth"})}
 function renderAll(){renderHeader();renderHome();renderDaily();renderSchedule();renderClasses();renderStudents();renderContacts();renderCounseling();renderPreview();renderReports()}
-function renderHeader(){classSelect.innerHTML=D.classes.filter(c=>c.status!=="deleted").map(c=>`<option value="${c.id}">${c.schoolYear}學年度・${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${E(c.name)}）`:""}${c.status==="graduated"?"｜已畢業":""}</option>`).join("");classSelect.value=D.currentClassId;let c=C();classTitle.textContent=`${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${c.name}）`:""}`;yearTitle.textContent=`${c.schoolYear}學年度｜${c.teacher||"Meng"}老師`}
-function changeClass(){D.currentClassId=classSelect.value;currentSentences=[];save()}
+function renderHeader(){
+ const visible=D.classes.filter(c=>c.status!=="deleted");
+ let c=C();
+ if(c && D.currentClassId!==c.id)D.currentClassId=c.id;
+ classSelect.innerHTML=visible.length
+   ? visible.map(c=>`<option value="${c.id}">${c.schoolYear}學年度・${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${E(c.name)}）`:""}${c.status==="graduated"?"｜已畢業":""}</option>`).join("")
+   : '<option value="">尚未建立班級</option>';
+ if(!c){
+   D.currentClassId="";
+   classSelect.value="";
+   classTitle.textContent="尚未建立班級";
+   yearTitle.textContent="請先新增班級，或從 Excel 建立班級與學生";
+   return;
+ }
+ classSelect.value=c.id;
+ classTitle.textContent=`${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${c.name}）`:""}`;
+ yearTitle.textContent=`${c.schoolYear}學年度｜${c.teacher||"Meng"}老師`;
+}
+function changeClass(){if(!classSelect.value)return;D.currentClassId=classSelect.value;currentSentences=[];save()}
 const stat=(l,n)=>`<div class="stat"><span>${l}</span><b>${n}</b></div>`;
 
+function noClassCard(extra=""){
+ return `<div class="card panel"><div class="head"><h2>尚未建立班級</h2></div><div class="safe">目前沒有可使用的班級。可以先到「班級／學年度」新增班級，或直接到「學生／家長資料」匯入 Excel，系統可依 Excel 班級欄自動建立班級。</div>${extra}</div>`;
+}
+function ensureClassForManual(){
+ let c=C(); if(c)return c;
+ alert("目前尚未建立班級，請先新增班級，或使用 Excel 匯入自動建立班級。");
+ return null;
+}
 function renderHome(){
+ if(!C()){home.innerHTML=noClassCard();return;}
  let ss=students(), signed=D.signatures.filter(x=>x.date===T()&&ss.some(s=>s.id===x.sid)).length;
  home.innerHTML=`<div class="card panel"><div class="head"><h2>今日概況</h2><span>${T()}</span></div><div class="stats">${stat("學生人數",ss.length)}${stat("今日公告",D.announcements.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("今日提醒",D.notices.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("已簽閱",signed+"/"+ss.length)}</div></div>
  <div class="card panel"><div class="head"><h2>今日簽閱</h2></div><div class="list">${ss.map(s=>{let x=D.signatures.find(v=>v.date===T()&&v.sid===s.id);return `<div class="item">${s.seat}號 ${E(s.name)}｜${x?"✅ "+E(x.time):"❌ 未簽閱"}</div>`}).join("")||'<div class="muted">尚無學生資料</div>'}</div></div>`;
@@ -244,6 +271,7 @@ function renderHome(){
 function courseChecks(){return Object.entries(COURSE_GROUPS).map(([g,arr])=>`<div class="item"><b>${E(g)}</b><div class="checkgrid" style="margin-top:8px">${arr.map(x=>`<label class="checkitem"><input type="checkbox" class="course" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div></div>`).join("")}
 function eventChecks(arr,cls){return `<div class="checkgrid">${arr.map(x=>`<label class="checkitem"><input type="checkbox" class="${cls}" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div>`}
 function renderDaily(){
+ if(!C()){daily.innerHTML=noClassCard();return;}
  let ss=students();
  daily.innerHTML=`<div class="card panel"><div class="head"><h2>今日聯絡簿</h2><span class="badge good">學校／班級公告＋學習與生活提醒</span></div>
  <h3>全班內容</h3>
@@ -251,7 +279,7 @@ function renderDaily(){
  <div class="grid2"><div class="field"><label>功課科目</label><input id="hwSub" placeholder="例如：國文"></div><div class="field"><label>功課內容</label><input id="hwText" placeholder="例如：習作 P.32"></div></div><button class="btn secondary" onclick="addHW()">加入功課</button>
  <div class="grid2"><div class="field"><label>公告類型</label><select id="annType"><option>學校公告</option><option>班級公告</option></select></div><div class="field"><label>公告標題</label><input id="annTitle" placeholder="例如：新生訓練通知"></div></div>
  <div class="field"><label>公告內容</label><textarea id="annText" placeholder="一次發布，家長可在今日聯絡簿看到"></textarea></div>
- <div class="grid2"><div class="field"><label>附件名稱（選填）</label><input id="annFile" placeholder="校外教學通知.pdf"></div><div class="field"><label>Google Drive／網址（選填）</label><input id="annUrl" placeholder="https://..."></div></div>
+ <div class="field"><label>附件／Google Drive 連結（選填，可多筆）</label><textarea id="annLinks" placeholder="每行一筆，例如：\n新生訓練通知｜https://drive.google.com/...\n行事曆｜https://drive.google.com/..."></textarea></div>
  <button class="btn" onclick="publishClassContent()">發布全班內容</button></div>
 
  <div class="card panel"><div class="head"><h2>學習與生活提醒</h2><span class="badge">直接選座號／姓名，不從學生頁跳轉</span></div>
@@ -273,14 +301,23 @@ function renderDaily(){
 }
 function selected(cls){return [...document.querySelectorAll("."+cls+":checked")].map(x=>x.value)}
 function addHW(){if(!hwSub.value.trim()||!hwText.value.trim())return;D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:hwSub.value.trim(),content:hwText.value.trim()});save();alert("已加入功課")}
-function publishClassContent(){if(classReminder.value.trim())D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:"提醒事項",content:classReminder.value.trim()});if(annText.value.trim()||annUrl.value.trim()){D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),file:annFile.value.trim(),url:annUrl.value.trim()})}save();alert("全班內容已發布")}
+function publishClassContent(){
+ if(!C())return alert("請先建立班級");
+ if(classReminder.value.trim())D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:"提醒事項",content:classReminder.value.trim()});
+ if(annText.value.trim()||annLinks.value.trim()){
+   let links=annLinks.value.split(/
++/).map(x=>x.trim()).filter(Boolean).map(line=>{let [label,...rest]=line.split("｜");return {label:rest.length?label.trim():"附件",url:(rest.length?rest.join("｜"):label).trim()}});
+   D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),links});
+ }
+ save();alert("全班內容已發布");
+});if(annText.value.trim()||annUrl.value.trim()){D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),file:annFile.value.trim(),url:annUrl.value.trim()})}save();alert("全班內容已發布")}
 function buildSentenceVariant(){
  let courses=selected("course"), events=[...selected("learn"),...selected("behave")], handles=selected("handle"), keyword=kw.value.trim();
  if(!events.length&&!keyword)return null;
  let pieces=[];
  if(courses.length)pieces.push(`今日於${courses.join("、")}課程中，`);
  if(events.length){
-  let chosen=events.map(ev=>{let list=PHRASE_BANK[ev]; if(list?.length)return list[Math.floor(Math.random()*list.length)]; return `觀察到「${ev}」的情形。`});
+  let chosen=events.map(ev=>{let list=PHRASE_BANK[ev]; if(list?.length)return list[Math.floor(Math.random()*list.length)]; return [`今日觀察到「${ev}」的情形，老師已持續關心。`,`今日課程／班級活動中曾出現「${ev}」的情形，已依實際狀況提供提醒或協助。`,`今日在學習或生活表現上有「${ev}」的情形，後續將持續觀察與協助。`][Math.floor(Math.random()*3)]});
   // remove repeated 今日 prefix when already course lead
   if(courses.length)chosen=chosen.map(s=>s.replace(/^今日(?:課程中|課堂中|課程進行期間|課堂討論時|學習過程中|活動過程中|與同學互動時|在人際互動中|在團體活動中|課堂用品準備|未能備妥|仍有|尚未|部分|學習活動進行時)?/,""));
   pieces.push(chosen.join(""));
@@ -309,42 +346,175 @@ function saveTeacherOnly(){let p=eventPayload();if(!p.content)return alert("請�
 function openCounselFromDaily(){let p=eventPayload();if(!p.content)return alert("請先產生事件內容");sessionStorage.setItem("counselDraft",JSON.stringify({sid:p.sid,date:p.date,time:p.time,source:"學生事件",sourceId:"",problemDesc:p.content,content:p.content,handling:p.handling.join("、")}));go("counseling");setTimeout(loadCounselDraft,50)}
 
 function renderSchedule(){
+ if(!C()){schedule.innerHTML=noClassCard();return;}
  let days=["星期一","星期二","星期三","星期四","星期五"], periods=[1,2,3,4,5,6,7];
  schedule.innerHTML=`<div class="card panel"><div class="head"><h2>課表與功課</h2><button class="btn secondary" onclick="exportTimetable()">匯出 Excel 課表</button></div><div class="table-wrap"><table><thead><tr><th>節次</th>${days.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody>${periods.map(p=>`<tr><td>第${p}節</td>${days.map(d=>`<td><select onchange="D.timetable['${D.currentClassId}|${d}-${p}']=this.value;save()"><option value="">—</option>${Object.values(COURSE_GROUPS).flat().map(c=>`<option ${D.timetable[D.currentClassId+"|"+d+"-"+p]===c?"selected":""}>${E(c)}</option>`).join("")}</select></td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
 }
 
 function renderClasses(){
- classes.innerHTML=`<div class="card panel"><div class="head"><h2>班級／學年度管理</h2><div><button class="btn" onclick="addClass()">＋新增班級</button> <button class="btn secondary" onclick="promoteCurrent()">升級新學年</button></div></div><div class="safe">升級新學年會保留原班學生、家長、聯絡、簽閱、輔導與晤談歷程，不需要重新建立資料。七年級→八年級→九年級，九年級後轉為畢業封存。</div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>學年度</th><th>班級</th><th>班名</th><th>狀態</th><th>學生</th><th>操作</th></tr></thead><tbody>${D.classes.filter(c=>c.status!=="deleted").map(c=>`<tr><td>${c.schoolYear}</td><td>${c.grade}${String(c.classNo).padStart(2,"0")}</td><td>${E(c.name||"")}</td><td>${c.status==="graduated"?"畢業封存":"使用中"}</td><td>${D.students.filter(s=>s.classId===c.id).length}</td><td><button class="btn secondary" onclick="editClass('${c.id}')">修改</button> <button class="btn danger" onclick="deleteClass('${c.id}')">刪除</button></td></tr>`).join("")}</tbody></table></div></div>`;
+ const visible=D.classes.filter(c=>c.status!=="deleted");
+ const deleted=D.classes.filter(c=>c.status==="deleted");
+ classes.innerHTML=`<div class="card panel"><div class="head"><h2>班級／學年度管理</h2><div><button class="btn" onclick="addClass()">＋新增班級</button> <button class="btn secondary" onclick="promoteCurrent()" ${C()?"":"disabled"}>升級新學年</button></div></div>
+ <div class="safe">新學年採「原班直升」，學生、家長、聯絡、簽閱、輔導／晤談與歷程全部保留。七→八→九；九年級後改為畢業封存，不必每年重建。</div>
+ <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>學年度</th><th>班級</th><th>班名</th><th>狀態</th><th>學生</th><th>操作</th></tr></thead><tbody>${visible.map(c=>`<tr><td>${c.schoolYear}</td><td>${c.grade}${String(c.classNo).padStart(2,"0")}</td><td>${E(c.name||"")}</td><td>${c.status==="graduated"?"畢業封存":"使用中"}</td><td>${D.students.filter(s=>s.classId===c.id&&!s.archived).length}</td><td><button class="btn secondary" onclick="switchToClass('${c.id}')">切換</button> <button class="btn secondary" onclick="editClass('${c.id}')">修改</button> <button class="btn danger" onclick="deleteClass('${c.id}')">刪除</button></td></tr>`).join("")||`<tr><td colspan="6" class="muted">目前沒有班級。可按「新增班級」，或到學生資料用 Excel 匯入自動建立。</td></tr>`}</tbody></table></div>
+ ${deleted.length?`<details style="margin-top:14px"><summary><b>已刪除班級（${deleted.length}）</b></summary><div class="list" style="margin-top:10px">${deleted.map(c=>`<div class="item">${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班 ${E(c.name||"")} <button class="btn secondary" onclick="restoreClass('${c.id}')">復原</button> <button class="btn danger" onclick="purgeClass('${c.id}')">永久刪除</button></div>`).join("")}</div></details>`:""}</div>`;
+}
+function switchToClass(id){let c=D.classes.find(x=>x.id===id&&x.status!=="deleted");if(!c)return;D.currentClassId=id;save()}
+function restoreClass(id){let c=D.classes.find(x=>x.id===id);if(!c)return;c.status="active";D.currentClassId=id;save()}
+function purgeClass(id){
+ let c=D.classes.find(x=>x.id===id); if(!c)return;
+ if(!confirm(`永久刪除 ${c.grade}${String(c.classNo).padStart(2,"0")} 班及其學生與相關紀錄？此操作無法復原。`))return;
+ const sids=D.students.filter(s=>s.classId===id).map(s=>s.id);
+ D.classes=D.classes.filter(x=>x.id!==id);
+ D.students=D.students.filter(s=>s.classId!==id);
+ D.homework=D.homework.filter(x=>x.classId!==id);
+ D.announcements=D.announcements.filter(x=>x.classId!==id);
+ D.notices=D.notices.filter(x=>x.classId!==id&&!sids.includes(x.sid));
+ D.attendance=D.attendance.filter(x=>x.classId!==id&&!sids.includes(x.sid));
+ D.signatures=D.signatures.filter(x=>!sids.includes(x.sid));
+ D.contacts=D.contacts.filter(x=>!sids.includes(x.sid));
+ D.counseling=D.counseling.filter(x=>x.classId!==id&&!sids.includes(x.sid));
+ if(D.currentClassId===id)D.currentClassId="";
+ save();
 }
 function addClass(){let sy=Number(prompt("學年度，例如 115"));if(!sy)return;let g=Number(prompt("年級：7、8、9"));if(![7,8,9].includes(g))return alert("請輸入 7、8 或 9");let no=Number(prompt("班級，例如 6"));if(!no)return;let name=prompt("班名（可留空）")||"";let id="c"+Date.now();D.classes.push({id,schoolYear:sy,grade:g,classNo:no,name,teacher:"Meng",status:"active",history:[{schoolYear:sy,grade:g,classNo:no}]});D.currentClassId=id;save()}
 function editClass(id){let c=D.classes.find(x=>x.id===id);let sy=prompt("學年度",c.schoolYear);if(sy===null)return;let g=prompt("年級",c.grade);if(g===null)return;let no=prompt("班級",c.classNo);if(no===null)return;c.schoolYear=Number(sy)||c.schoolYear;c.grade=Number(g)||c.grade;c.classNo=Number(no)||c.classNo;c.name=prompt("班名",c.name||"")??c.name;save()}
-function deleteClass(id){let c=D.classes.find(x=>x.id===id);if(!confirm(`確定刪除 ${c.grade}${String(c.classNo).padStart(2,"0")} 班？\n\n建議只刪除誤建班級；若是畢業班請使用封存。`))return;c.status="deleted";if(D.currentClassId===id)D.currentClassId=D.classes.find(x=>x.status==="active")?.id||D.classes.find(x=>x.status!=="deleted")?.id;save()}
-function promoteCurrent(){let c=C();if(c.status==="graduated")return alert("此班已畢業封存");if(c.grade>=9){if(!confirm("九年級升級後將設為畢業封存，所有三年資料仍會保留。確定嗎？"))return;c.status="graduated";save();return}let old={schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo};c.schoolYear+=1;c.grade+=1;c.history ||= [];c.history.push({schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,from:old});save();alert(`已升級為 ${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班，學生與歷程均已保留。`)}
+function deleteClass(id){
+ let c=D.classes.find(x=>x.id===id); if(!c)return;
+ if(!confirm(`確定將 ${c.grade}${String(c.classNo).padStart(2,"0")} 班移到「已刪除班級」？
 
-function renderStudents(){
- let ss=students();
- students.innerHTML=`<div class="card panel"><div class="head"><h2>學生／家長資料</h2><div><button class="btn" onclick="addStudent()">＋手動新增</button> <button class="btn secondary" onclick="studentFile.click()">匯入 Excel</button> <button class="btn secondary" onclick="downloadTemplate()">下載 Excel 範本</button><input id="studentFile" type="file" class="hidden" accept=".xlsx,.xls" onchange="importStudents(event)"></div></div><p class="muted">家長資料皆為選填。可手動新增／修改／刪除，也可用 Excel 批次匯入。</p><div class="table-wrap"><table><thead><tr><th>座號</th><th>姓名</th><th>家長1</th><th>電話</th><th>家長2</th><th>升學意向</th><th>操作</th></tr></thead><tbody>${ss.map(s=>`<tr><td>${s.seat}</td><td>${E(s.name)}</td><td>${E(s.parent1Name||"")}</td><td>${E(s.parent1Phone||"")}</td><td>${E(s.parent2Name||"")}</td><td>${E(s.advancement||"未定")}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">修改</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">刪除</button></td></tr>`).join("")}</tbody></table></div></div>`;
+首頁、班級選單與所有功能會立即停止顯示此班，但資料暫時保留，可復原。`))return;
+ c.status="deleted";
+ if(D.currentClassId===id){
+   const next=D.classes.find(x=>x.status==="active"&&x.id!==id)||D.classes.find(x=>x.status!=="deleted"&&x.id!==id);
+   D.currentClassId=next?.id||"";
+ }
+ save();
+}
+function promoteCurrent(){
+ let c=C(); if(!c)return alert("目前沒有可升級的班級");
+ if(c.status==="graduated")return alert("此班已畢業封存");
+ c.history ||= [];
+ if(!c.history.some(h=>Number(h.schoolYear)===Number(c.schoolYear)&&Number(h.grade)===Number(c.grade)&&Number(h.classNo)===Number(c.classNo))){
+   c.history.push({schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,name:c.name||""});
+ }
+ if(c.grade>=9){
+   if(!confirm("九年級完成後將設為「畢業封存」。三年學生、家長、聯絡與輔導歷程仍會保留。確定嗎？"))return;
+   c.status="graduated"; c.graduatedAt=N(); save(); return;
+ }
+ c.schoolYear=Number(c.schoolYear)+1;
+ c.grade=Number(c.grade)+1;
+ c.history.push({schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,name:c.name||""});
+ D.students.filter(s=>s.classId===c.id&&!s.archived).forEach(s=>{
+   s.history ||= [];
+   if(!s.history.some(h=>Number(h.schoolYear)===Number(c.schoolYear)&&Number(h.grade)===Number(c.grade)))s.history.push({schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,seat:s.seat});
+   s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;
+ });
+ save();
+ alert(`已升級為 ${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班。所有歷程均已保留。`);
 }
 function studentForm(s){
  const ask=(label,key,num=false)=>{let v=prompt(label,s[key]??"");if(v===null)return false;s[key]=num?Number(v):v;return true};
- if(!ask("座號","seat",true))return false;if(!ask("姓名","name"))return false;ask("學號","studentNo");ask("性別","gender");ask("生日","birthday");ask("學生電話","phone");ask("學生地址","address");ask("家長1姓名（選填）","parent1Name");ask("家長1電話（選填）","parent1Phone");ask("家長1 Email（選填）","parent1Email");ask("家長2姓名（選填）","parent2Name");ask("家長2電話（選填）","parent2Phone");ask("家長2 Email（選填）","parent2Email");s.advancement=prompt("升學意向：高中／高職／五專／就業／未定",s.advancement||"未定")||"未定";return true
+ if(!ask("座號","seat",true))return false;if(!ask("姓名","name"))return false;ask("學號","studentNo");ask("性別","gender");ask("生日","birthday");ask("學生電話","phone");ask("學生地址","address");ask("家長1姓名（選填）","parent1Name");ask("家長1關係（選填，例如：父、母、祖母）","parent1Relation");ask("家長1電話（選填）","parent1Phone");ask("家長1 Email（選填）","parent1Email");ask("家長1 Line ID（選填）","parent1Line");ask("家長2姓名（選填）","parent2Name");ask("家長2關係（選填）","parent2Relation");ask("家長2電話（選填）","parent2Phone");ask("家長2 Email（選填）","parent2Email");ask("家長2 Line ID（選填）","parent2Line");ask("備註（選填）","notes");s.advancement=prompt("升學意向：高中／高職／五專／就業／未定",s.advancement||"未定")||"未定";return true
 }
-function addStudent(){let c=C(),s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Phone:"",parent1Email:"",parent2Name:"",parent2Phone:"",parent2Email:"",advancement:"未定"};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";D.students.push(s);save()}
+function addStudent(){let c=ensureClassForManual();if(!c)return;let s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Relation:"",parent1Phone:"",parent1Email:"",parent1Line:"",parent2Name:"",parent2Relation:"",parent2Phone:"",parent2Email:"",parent2Line:"",advancement:"未定",notes:""};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";s.history=[{schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,seat:s.seat}];D.students.push(s);save()};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";D.students.push(s);save()}
 function editStudent(id){let s=S(id);if(studentForm(s))save()}
-function deleteStudent(id){let s=S(id);if(confirm(`確定刪除 ${s.seat}號 ${s.name}？\n相關歷程會一併刪除，請謹慎操作。`)){D.students=D.students.filter(x=>x.id!==id);D.notices=D.notices.filter(x=>x.sid!==id);D.attendance=D.attendance.filter(x=>x.sid!==id);D.contacts=D.contacts.filter(x=>x.sid!==id);D.counseling=D.counseling.filter(x=>x.sid!==id);save()}}
-function downloadTemplate(){let ws=XLSX.utils.aoa_to_sheet([["班級","座號","姓名","學號","性別","生日","學生電話","學生地址","家長1姓名","家長1電話","家長1 Email","家長2姓名","家長2電話","家長2 Email","升學意向"],[`${C().grade}${String(C().classNo).padStart(2,"0")}`,1,"王小明","","","","","","王媽媽","0912-000-000","","","","","高中"]]);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本.xlsx")}
-async function importStudents(e){let f=e.target.files[0];if(!f)return;try{let wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});rows.forEach(r=>{let seat=Number(r["座號"]);if(!seat)return;let s=students().find(x=>x.seat===seat);if(!s){s={id:"s"+Date.now()+Math.random(),classId:D.currentClassId,password:"123456"};D.students.push(s)}Object.assign(s,{seat,name:String(r["姓名"]||""),studentNo:String(r["學號"]||""),gender:String(r["性別"]||""),birthday:String(r["生日"]||""),phone:String(r["學生電話"]||""),address:String(r["學生地址"]||""),parent1Name:String(r["家長1姓名"]||""),parent1Phone:String(r["家長1電話"]||""),parent1Email:String(r["家長1 Email"]||""),parent2Name:String(r["家長2姓名"]||""),parent2Phone:String(r["家長2電話"]||""),parent2Email:String(r["家長2 Email"]||""),advancement:String(r["升學意向"]||"未定")});let c=C();s.account||=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(seat).padStart(2,"0")}`});save();alert(`已匯入 ${rows.length} 筆`)}catch(err){console.error(err);alert("Excel 匯入失敗，請使用系統範本")}e.target.value=""}
+function deleteStudent(id){let s=S(id);if(!s)return;if(confirm(`確定將 ${s.seat}號 ${s.name} 從目前班級移除？
+
+聯絡、簽閱與輔導歷程不會立即刪除。`)){s.archived=true;s.previousClassId=s.classId;save()}}號 ${s.name}？\n相關歷程會一併刪除，請謹慎操作。`)){D.students=D.students.filter(x=>x.id!==id);D.notices=D.notices.filter(x=>x.sid!==id);D.attendance=D.attendance.filter(x=>x.sid!==id);D.contacts=D.contacts.filter(x=>x.sid!==id);D.counseling=D.counseling.filter(x=>x.sid!==id);save()}}
+function downloadTemplate(){
+ let c=C(), cls=c?`${c.grade}${String(c.classNo).padStart(2,"0")}`:"706";
+ let ws=XLSX.utils.aoa_to_sheet([
+ ["學年度","班級","班名","座號","姓名","學號","性別","生日","學生電話","學生地址","家長1姓名","家長1關係","家長1電話","家長1 Email","家長1 Line ID","家長2姓名","家長2關係","家長2電話","家長2 Email","家長2 Line ID","升學意向","備註"],
+ [c?.schoolYear||115,cls,c?.name||"",1,"王小明","","","","","","王媽媽","母","0912-000-000","","","","","","","","未定",""]
+ ]);
+ let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本_V14.xlsx")
+}${String(C().classNo).padStart(2,"0")}`,1,"王小明","","","","","","王媽媽","0912-000-000","","","","","高中"]]);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本.xlsx")}
+async function importStudents(e){
+ let f=e.target.files[0]; if(!f)return;
+ try{
+   let wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true});
+   let rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});
+   if(!rows.length)throw new Error("Excel 沒有資料");
+   let imported=0, updated=0, createdClasses=0;
+   for(const r of rows){
+     let seat=Number(String(r["座號"]||"").trim()); let name=String(r["姓名"]||"").trim();
+     if(!seat||!name)continue;
+     let rawClass=String(r["班級"]||"").trim();
+     let year=Number(String(r["學年度"]||"").replace(/\D/g,""))||C()?.schoolYear||115;
+     let target=C();
+     if(rawClass){
+       let digits=rawClass.replace(/\D/g,"");
+       let grade=digits.length>=3?Number(digits[0]):(C()?.grade||7);
+       let classNo=digits.length>=3?Number(digits.slice(1)):(Number(digits)||C()?.classNo||1);
+       let className=String(r["班名"]||"").trim();
+       target=D.classes.find(c=>c.status!=="deleted"&&Number(c.schoolYear)===year&&Number(c.grade)===grade&&Number(c.classNo)===classNo);
+       if(!target){
+         target={id:"c"+Date.now()+Math.random(),schoolYear:year,grade,classNo,name:className,teacher:"Meng",status:"active",history:[{schoolYear:year,grade,classNo,name:className}]};
+         D.classes.push(target); createdClasses++;
+       } else if(className && !target.name) target.name=className;
+     }
+     if(!target){
+       target={id:"c"+Date.now()+Math.random(),schoolYear:year,grade:7,classNo:1,name:String(r["班名"]||""),teacher:"Meng",status:"active",history:[{schoolYear:year,grade:7,classNo:1,name:String(r["班名"]||"")}]};
+       D.classes.push(target); createdClasses++;
+     }
+     D.currentClassId=target.id;
+     let s=D.students.find(x=>x.classId===target.id&&Number(x.seat)===seat);
+     let isNew=!s;
+     if(!s){s={id:"s"+Date.now()+Math.random(),classId:target.id,password:"123456",history:[]};D.students.push(s)}
+     Object.assign(s,{
+       classId:target.id, archived:false, seat, name,
+       studentNo:String(r["學號"]||""),gender:String(r["性別"]||""),birthday:String(r["生日"]||""),
+       phone:String(r["學生電話"]||""),address:String(r["學生地址"]||""),
+       parent1Name:String(r["家長1姓名"]||""),parent1Relation:String(r["家長1關係"]||r["關係"]||""),
+       parent1Phone:String(r["家長1電話"]||r["電話"]||""),parent1Email:String(r["家長1 Email"]||r["Email"]||""),
+       parent1Line:String(r["家長1 Line ID"]||r["Line ID"]||""),
+       parent2Name:String(r["家長2姓名"]||""),parent2Relation:String(r["家長2關係"]||""),
+       parent2Phone:String(r["家長2電話"]||""),parent2Email:String(r["家長2 Email"]||""),
+       parent2Line:String(r["家長2 Line ID"]||""),
+       advancement:String(r["升學意向"]||"未定"),notes:String(r["備註"]||"")
+     });
+     s.account ||= `${target.grade}${String(target.classNo).padStart(2,"0")}${String(seat).padStart(2,"0")}`;
+     s.history ||= [];
+     if(!s.history.some(h=>Number(h.schoolYear)===Number(target.schoolYear)&&Number(h.grade)===Number(target.grade))){
+       s.history.push({schoolYear:target.schoolYear,grade:target.grade,classNo:target.classNo,seat});
+     }
+     isNew?imported++:updated++;
+   }
+   save();
+   alert(`Excel 匯入完成\n新增學生：${imported} 人\n更新學生：${updated} 人\n自動建立班級：${createdClasses} 個`);
+ }catch(err){
+   console.error(err);
+   alert("Excel 匯入失敗："+err.message+"\n請確認至少有「座號、姓名」欄；若尚未建立班級，請再加上「班級」欄，例如 706。");
+ }
+ e.target.value="";
+}
+function exportStudentMaster(){
+ let c=C(); if(!c)return;
+ let rows=students().map(s=>({
+ "學年度":c.schoolYear,"班級":`${c.grade}${String(c.classNo).padStart(2,"0")}`,"班名":c.name||"",
+ "座號":s.seat,"姓名":s.name,"學號":s.studentNo||"","性別":s.gender||"","生日":s.birthday||"",
+ "學生電話":s.phone||"","學生地址":s.address||"",
+ "家長1姓名":s.parent1Name||"","家長1關係":s.parent1Relation||"","家長1電話":s.parent1Phone||"","家長1 Email":s.parent1Email||"","家長1 Line ID":s.parent1Line||"",
+ "家長2姓名":s.parent2Name||"","家長2關係":s.parent2Relation||"","家長2電話":s.parent2Phone||"","家長2 Email":s.parent2Email||"","家長2 Line ID":s.parent2Line||"",
+ "升學意向":s.advancement||"未定","備註":s.notes||"","家長登入帳號":s.account||""
+ }));
+ let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"學生家長資料");XLSX.writeFile(wb,`${c.schoolYear}_${c.grade}${String(c.classNo).padStart(2,"0")}班_學生家長資料.xlsx`);
+}
+
 
 function renderContacts(){
+ if(!C()){contacts.innerHTML=noClassCard();return;}
  contacts.innerHTML=`<div class="card panel"><div class="head"><h2>親師聯繫</h2><span class="badge">家長反應／提問，可一鍵轉入輔導紀錄</span></div><div class="list">${D.contacts.filter(c=>S(c.sid)?.classId===D.currentClassId).map(c=>`<div class="item"><b>${E(c.date)}｜${E(S(c.sid)?.name||"")}</b><div>${E(c.content)}</div><div class="small muted">處理狀態：${E(c.status||"尚未處理")}</div><button class="btn secondary" onclick="contactToCounsel('${c.id}')">加入輔導／晤談</button></div>`).join("")||'<div class="muted">尚無家長反應或提問</div>'}</div></div>`;
 }
 function contactToCounsel(id){let c=D.contacts.find(x=>x.id===id);sessionStorage.setItem("counselDraft",JSON.stringify({sid:c.sid,date:c.date.slice(0,10),time:"",source:"親師聯繫",sourceId:c.id,problemType:"親師溝通",problemDesc:c.content,content:c.content,handling:""}));go("counseling");setTimeout(loadCounselDraft,50)}
 
 function renderCounseling(){
+ if(!C()){counseling.innerHTML=noClassCard();return;}
  let ss=students();
  counseling.innerHTML=`<div class="card panel"><div class="head"><h2>輔導／晤談紀錄</h2><span class="badge good">可從學生事件匯入，也可自行新增</span></div>
  <div class="grid3"><div class="field"><label>日期</label><input id="cDate" type="date" value="${T()}"></div><div class="field"><label>時間</label><input id="cTime" type="time"></div><div class="field"><label>學生</label><select id="cStudent">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div>
- <div class="field"><label>晤談對象</label><select id="cObject">${OBJECTS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>地點</label><select id="cLocation">${LOCATIONS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>問題類型</label><select id="cProblemType" onchange="renderProblemGuides()">${PROBLEM_TYPES.map(x=>`<option>${x}</option>`).join("")}</select></div></div>
+ <div class="field"><label>晤談對象</label><select id="cObject">${OBJECTS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>地點</label><select id="cLocation">${LOCATIONS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>問題類型</label><select id="cProblemType" onchange="renderProblemGuides()">${PROBLEM_TYPES.map(x=>`<option>${x}</option>`).join("")}</select></div></div><div class="grid2"><div class="field"><label>其他問題類型（選填）</label><input id="cProblemOther" placeholder="選「其他」時可填"></div><div class="field"><label>地點補充（選填）</label><input id="cLocationOther" placeholder="例如：圖書館旁、家長來校"></div></div>
  <div class="field"><label>問題描述（可用 AI 指引詞句逐句加入）</label><div id="problemGuides" class="list"></div><textarea id="cProblemDesc" placeholder="描述具體可觀察情形，不使用人格標籤或推測動機"></textarea></div>
  <div class="field"><label>晤談內容</label><textarea id="cContent"></textarea></div>
  <div class="field"><label>處理方式</label><div class="checkgrid">${HANDLING.map(x=>`<label class="checkitem"><input type="checkbox" class="cHandle" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div><textarea id="cHandling" placeholder="可勾選後再補充"></textarea></div>
@@ -357,15 +527,17 @@ function renderCounseling(){
 function renderProblemGuides(){let box=document.getElementById("problemGuides");if(!box)return;let t=cProblemType.value,list=PROBLEM_GUIDES[t]||["請以具體可觀察的事件、學生自述或家長反映內容進行描述。"];box.innerHTML=list.map((x,i)=>`<div class="item">${E(x)} <button class="btn secondary" onclick="appendProblemGuide(${i})">＋加入</button></div>`).join("")}
 function appendProblemGuide(i){let list=PROBLEM_GUIDES[cProblemType.value]||[];if(list[i])cProblemDesc.value+=(cProblemDesc.value?"\n":"")+list[i]}
 function loadCounselDraft(){let raw=sessionStorage.getItem("counselDraft");if(!raw)return;try{let d=JSON.parse(raw);if(d.sid)cStudent.value=d.sid;if(d.date)cDate.value=d.date;if(d.time)cTime.value=d.time;if(d.problemType)cProblemType.value=d.problemType;cProblemDesc.value=d.problemDesc||"";cContent.value=d.content||"";cHandling.value=d.handling||"";cSourceBox.textContent=`來源：${d.source||"學生事件"}${d.sourceId?`（${d.sourceId}）`:""}`;cSourceBox.dataset.source=d.source||"學生事件";cSourceBox.dataset.sourceId=d.sourceId||"";renderProblemGuides();sessionStorage.removeItem("counselDraft")}catch(e){}}
-function saveCounsel(){let desc=cProblemDesc.value.trim(),content=cContent.value.trim();if(!desc&&!content)return alert("請至少填寫問題描述或晤談內容");let risky=RISKY.filter(w=>(desc+" "+content+" "+cHandling.value).includes(w));if(risky.length&&!confirm(`偵測到較容易造成誤解的用語：${risky.join("、")}。\n建議先改寫為具體行為與情境。仍要儲存嗎？`))return;let h=[...document.querySelectorAll(".cHandle:checked")].map(x=>x.value);if(cHandling.value.trim())h.push(cHandling.value.trim());D.counseling.push({id:"coun"+Date.now(),classId:D.currentClassId,date:cDate.value,time:cTime.value,sid:cStudent.value,object:cObject.value,location:cLocation.value,problemType:cProblemType.value,problemDesc:desc,content,handling:h.join("、"),follow:cFollow.value.trim(),source:cSourceBox.dataset.source||"教師手動建立",sourceId:cSourceBox.dataset.sourceId||"",teacher:"Meng"});save();alert("已儲存")}
+function saveCounsel(){let desc=cProblemDesc.value.trim(),content=cContent.value.trim();if(!desc&&!content)return alert("請至少填寫問題描述或晤談內容");let risky=RISKY.filter(w=>(desc+" "+content+" "+cHandling.value).includes(w));if(risky.length&&!confirm(`偵測到較容易造成誤解的用語：${risky.join("、")}。\n建議先改寫為具體行為與情境。仍要儲存嗎？`))return;let h=[...document.querySelectorAll(".cHandle:checked")].map(x=>x.value);if(cHandling.value.trim())h.push(cHandling.value.trim());D.counseling.push({id:"coun"+Date.now(),classId:D.currentClassId,date:cDate.value,time:cTime.value,sid:cStudent.value,object:cObject.value,location:cLocation.value,problemType:(cProblemType.value==="其他"&&cProblemOther.value.trim()?`其他：${cProblemOther.value.trim()}`:cProblemType.value),problemDesc:desc,content,handling:h.join("、"),follow:cFollow.value.trim(),locationNote:cLocationOther.value.trim(),source:cSourceBox.dataset.source||"教師手動建立",sourceId:cSourceBox.dataset.sourceId||"",teacher:"Meng"});save();alert("已儲存")}
 function clearCounsel(){document.querySelectorAll("#counseling input[type=checkbox]").forEach(x=>x.checked=false);cProblemDesc.value="";cContent.value="";cHandling.value="";cFollow.value="";cSourceBox.textContent="來源：教師手動建立";cSourceBox.dataset.source="教師手動建立";cSourceBox.dataset.sourceId=""}
 
 function renderPreview(){
+ if(!C()){preview.innerHTML=noClassCard();return;}
  let ss=students();preview.innerHTML=`<div class="card panel"><div class="head"><h2>家長預覽</h2><select id="pv" onchange="previewCard(this.value)">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div id="pvbox"></div></div>`;if(ss[0])setTimeout(()=>previewCard(ss[0].id),0)
 }
-function previewCard(id){let s=S(id),hw=D.homework.filter(x=>x.classId===D.currentClassId&&x.date===T()),an=D.announcements.filter(x=>x.classId===D.currentClassId),ns=D.notices.filter(x=>x.sid===id&&x.parentVisible&&x.date.startsWith(T()));pvbox.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${x.url?`<a href="${E(x.url)}" target="_blank">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea disabled placeholder="家長有需要反應或提問時再填寫"></textarea><label class="checkitem" style="margin-top:10px"><input type="checkbox" disabled><span>我已詳閱今日聯絡簿內容</span></label>`}
+function previewCard(id){let s=S(id),hw=D.homework.filter(x=>x.classId===D.currentClassId&&x.date===T()),an=D.announcements.filter(x=>x.classId===D.currentClassId),ns=D.notices.filter(x=>x.sid===id&&x.parentVisible&&x.date.startsWith(T()));pvbox.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${(x.links||[]).map(l=>`<div><a href="${E(l.url)}" target="_blank">${E(l.label||"附件")}</a></div>`).join("")}${x.url?`<a href="${E(x.url)}" target="_blank">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea disabled placeholder="家長有需要反應或提問時再填寫"></textarea><label class="checkitem" style="margin-top:10px"><input type="checkbox" disabled><span>我已詳閱今日聯絡簿內容</span></label>`}
 
 function renderReports(){
+ if(!C()){reports.innerHTML=noClassCard("<button class=\"btn secondary\" onclick=\"go(\'students\')\">前往匯入學生</button>");return;}
  reports.innerHTML=`<div class="card panel"><div class="head"><h2>Excel 匯入／匯出</h2></div><p class="muted">所有歷程匯出皆保留日期、時間、對象、地點、問題描述、內容、處理方式與來源。</p><div class="grid2"><div class="field"><label>學生</label><select id="rs">${students().map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div class="field"><label>匯出</label><div class="toolbar"><button class="btn" onclick="exp([rs.value],S(rs.value).name+'_學生三年歷程.xlsx')">個別學生</button><button class="btn secondary" onclick="exp(students().map(x=>x.id),'全班學生歷程.xlsx')">全班</button></div></div></div></div>`;
 }
 function exp(ids,name){let wb=XLSX.utils.book_new(),basic=D.students.filter(x=>ids.includes(x.id));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(basic),"學生家長資料");
@@ -379,7 +551,7 @@ let history=D.classes.filter(c=>c.id===D.currentClassId).flatMap(c=>(c.history||
 XLSX.writeFile(wb,name)}
 function exportTimetable(){let days=["星期一","星期二","星期三","星期四","星期五"],rows=[1,2,3,4,5,6,7].map(p=>{let r={"節次":`第${p}節`};days.forEach(d=>r[d]=D.timetable[D.currentClassId+"|"+d+"-"+p]||"");return r}),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"功課表");XLSX.writeFile(wb,"班級功課表.xlsx")}
 
-function renderParent(){let s=CP,c=D.classes.find(x=>x.id===s.classId)||C();D.currentClassId=c.id;let hw=D.homework.filter(x=>x.classId===c.id&&x.date===T()),an=D.announcements.filter(x=>x.classId===c.id),ns=D.notices.filter(x=>x.sid===s.id&&x.parentVisible&&x.date.startsWith(T())),sg=D.signatures.find(x=>x.sid===s.id&&x.date===T());parentView.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${x.url?`<a target="_blank" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted small">簽閱時間：${E(sg.time)}</div>`:""}`}
+function renderParent(){let s=CP,c=D.classes.find(x=>x.id===s.classId)||C();D.currentClassId=c.id;let hw=D.homework.filter(x=>x.classId===c.id&&x.date===T()),an=D.announcements.filter(x=>x.classId===c.id),ns=D.notices.filter(x=>x.sid===s.id&&x.parentVisible&&x.date.startsWith(T())),sg=D.signatures.find(x=>x.sid===s.id&&x.date===T());parentView.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${(x.links||[]).map(l=>`<div><a target="_blank" href="${E(l.url)}">${E(l.label||"附件")}</a></div>`).join("")}${x.url?`<a target="_blank" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted small">簽閱時間：${E(sg.time)}</div>`:""}`}
 function submitP(){if(!ps.checked)return alert("請先勾選已詳閱");if(pm.value.trim())D.contacts.unshift({id:"pc"+Date.now(),date:N(),sid:CP.id,content:pm.value.trim(),status:"尚未處理"});D.signatures.push({date:T(),time:N(),sid:CP.id});save();renderParent();alert("已完成今日簽閱")}
 
 renderAll();
