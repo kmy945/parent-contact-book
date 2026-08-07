@@ -1,5 +1,5 @@
 {
-  "name": "親師聯絡簿 V14.1 穩定正式版",
+  "name": "親師聯絡簿 V14.2 穩定正式版",
   "short_name": "親師聯絡簿",
   "start_url": "./",
   "scope": "./",
@@ -7,5 +7,5 @@
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "V14.1 穩定版：修正登入初始化、班級刪除、Excel 學生家長管理與三年歷程。"
+  "description": "修正學生資料管理並支援 Word、PDF、圖片公告附件。"
 }

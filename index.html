@@ -225,7 +225,7 @@ function initialData(){return{
 let D=JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null;
 D.version="14.1"; D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const C=()=>D.classes.find(x=>x.id===D.currentClassId&&x.status!=="deleted")||D.classes.find(x=>x.status==="active")||D.classes.find(x=>x.status!=="deleted")||null, students=()=>D.students.filter(s=>s.classId===D.currentClassId&&!s.archived).sort((a,b)=>Number(a.seat)-Number(b.seat)), S=id=>D.students.find(x=>x.id===id);
+const C=()=>D.classes.find(x=>x.id===D.currentClassId&&x.status!=="deleted")||D.classes.find(x=>x.status==="active")||D.classes.find(x=>x.status!=="deleted")||null, classStudents=()=>D.students.filter(s=>s.classId===D.currentClassId&&!s.archived).sort((a,b)=>Number(a.seat)-Number(b.seat)), S=id=>D.students.find(x=>x.id===id);
 function save(){localStorage.setItem("pcb_v14",JSON.stringify(D));renderAll()}
 function tab(x){tlogin.classList.toggle("hidden",x!=="t");plogin.classList.toggle("hidden",x!=="p");tt.classList.toggle("on",x==="t");pt.classList.toggle("on",x==="p")}
 function enterTeacher(){login.classList.add("hidden");teacher.classList.remove("hidden");renderAll()}
@@ -263,7 +263,7 @@ function ensureClassForManual(){
 }
 function renderHome(){
  if(!C()){home.innerHTML=noClassCard();return;}
- let ss=students(), signed=D.signatures.filter(x=>x.date===T()&&ss.some(s=>s.id===x.sid)).length;
+ let ss=classStudents(), signed=D.signatures.filter(x=>x.date===T()&&ss.some(s=>s.id===x.sid)).length;
  home.innerHTML=`<div class="card panel"><div class="head"><h2>今日概況</h2><span>${T()}</span></div><div class="stats">${stat("學生人數",ss.length)}${stat("今日公告",D.announcements.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("今日提醒",D.notices.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("已簽閱",signed+"/"+ss.length)}</div></div>
  <div class="card panel"><div class="head"><h2>今日簽閱</h2></div><div class="list">${ss.map(s=>{let x=D.signatures.find(v=>v.date===T()&&v.sid===s.id);return `<div class="item">${s.seat}號 ${E(s.name)}｜${x?"✅ "+E(x.time):"❌ 未簽閱"}</div>`}).join("")||'<div class="muted">尚無學生資料</div>'}</div></div>`;
 }
@@ -272,14 +272,21 @@ function courseChecks(){return Object.entries(COURSE_GROUPS).map(([g,arr])=>`<di
 function eventChecks(arr,cls){return `<div class="checkgrid">${arr.map(x=>`<label class="checkitem"><input type="checkbox" class="${cls}" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div>`}
 function renderDaily(){
  if(!C()){daily.innerHTML=noClassCard();return;}
- let ss=students();
+ let ss=classStudents();
  daily.innerHTML=`<div class="card panel"><div class="head"><h2>今日聯絡簿</h2><span class="badge good">學校／班級公告＋學習與生活提醒</span></div>
  <h3>全班內容</h3>
  <div class="grid2"><div class="field"><label>日期</label><input id="dDate" type="date" value="${T()}"></div><div class="field"><label>今日／明日提醒</label><input id="classReminder" placeholder="例如：明天穿運動服、攜帶直笛"></div></div>
  <div class="grid2"><div class="field"><label>功課科目</label><input id="hwSub" placeholder="例如：國文"></div><div class="field"><label>功課內容</label><input id="hwText" placeholder="例如：習作 P.32"></div></div><button class="btn secondary" onclick="addHW()">加入功課</button>
  <div class="grid2"><div class="field"><label>公告類型</label><select id="annType"><option>學校公告</option><option>班級公告</option></select></div><div class="field"><label>公告標題</label><input id="annTitle" placeholder="例如：新生訓練通知"></div></div>
  <div class="field"><label>公告內容</label><textarea id="annText" placeholder="一次發布，家長可在今日聯絡簿看到"></textarea></div>
- <div class="field"><label>附件／Google Drive 連結（選填，可多筆）</label><textarea id="annLinks" placeholder="每行一筆，例如：\n新生訓練通知｜https://drive.google.com/...\n行事曆｜https://drive.google.com/..."></textarea></div>
+ <div class="field"><label>公告附件（選填，可多檔）</label>
+<div class="toolbar">
+  <button class="btn secondary" type="button" onclick="document.getElementById('annFiles').click()">＋上傳 Word／PDF／圖片</button>
+  <input id="annFiles" type="file" class="hidden" multiple accept=".doc,.docx,.pdf,.jpg,.jpeg,.png,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="selectAnnouncementFiles(event)">
+</div>
+<div id="annFileList" class="list" style="margin-top:8px"><div class="muted small">尚未選擇附件。</div></div>
+</div>
+<div class="field"><label>Google Drive／網址（選填，可多筆）</label><textarea id="annLinks" placeholder="每行一筆，例如：\n新生訓練通知｜https://drive.google.com/...\n行事曆｜https://drive.google.com/..."></textarea></div>
  <button class="btn" onclick="publishClassContent()">發布全班內容</button></div>
 
  <div class="card panel"><div class="head"><h2>學習與生活提醒</h2><span class="badge">直接選座號／姓名，不從學生頁跳轉</span></div>
@@ -422,8 +429,9 @@ function promoteCurrent(){
  alert(`已升級為 ${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班。所有歷程均已保留。`);
 }
 function renderStudents(){
- let c=C(), ss=c?students():[];
- students.innerHTML=`<div class="card panel"><div class="head"><h2>學生／家長資料</h2><div><button class="btn" onclick="addStudent()" ${c?"":"disabled"}>＋手動新增</button> <button class="btn secondary" onclick="document.getElementById('studentFile').click()">匯入 Excel</button> <button class="btn secondary" onclick="downloadTemplate()">下載 Excel 範本</button> <button class="btn secondary" onclick="exportStudentMaster()" ${c?"":"disabled"}>匯出學生資料</button><input id="studentFile" type="file" class="hidden" accept=".xlsx,.xls" onchange="importStudents(event)"></div></div>
+ let c=C(), ss=c?classStudents():[];
+ const studentPage=document.getElementById("students");
+ studentPage.innerHTML=`<div class="card panel"><div class="head"><h2>學生／家長資料</h2><div><button class="btn" onclick="addStudent()" ${c?"":"disabled"}>＋手動新增</button> <button class="btn secondary" onclick="document.getElementById('studentFile').click()">匯入 Excel</button> <button class="btn secondary" onclick="downloadTemplate()">下載 Excel 範本</button> <button class="btn secondary" onclick="exportStudentMaster()" ${c?"":"disabled"}>匯出學生資料</button><input id="studentFile" type="file" class="hidden" accept=".xlsx,.xls" onchange="importStudents(event)"></div></div>
  ${c?`<div class="safe">目前班級：<b>${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班 ${E(c.name||"")}</b>。家長資料皆為選填，可只匯入「座號、姓名」。</div>`:`<div class="warn">目前尚未建立班級。仍可直接匯入 Excel；只要 Excel 有「班級」欄，例如 706，系統會自動建立班級。</div>`}
  <p class="muted">支援手動新增／修改／移除，以及 Excel 批次匯入。再次匯入相同班級＋座號會更新既有學生，不會重複建立。</p>
  <div class="table-wrap"><table><thead><tr><th>座號</th><th>姓名</th><th>學號</th><th>家長1</th><th>關係</th><th>電話</th><th>家長2</th><th>登入帳號</th><th>操作</th></tr></thead><tbody>${c?(ss.map(s=>`<tr><td>${E(s.seat)}</td><td>${E(s.name)}</td><td>${E(s.studentNo||"")}</td><td>${E(s.parent1Name||"")}</td><td>${E(s.parent1Relation||"")}</td><td>${E(s.parent1Phone||"")}</td><td>${E(s.parent2Name||"")}</td><td>${E(s.account||"")}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">修改</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">移除</button></td></tr>`).join("")||`<tr><td colspan="9" class="muted">尚無學生。可手動新增或匯入 Excel。</td></tr>`):`<tr><td colspan="9" class="muted">請先新增班級，或直接匯入含「班級」欄的 Excel。</td></tr>`}</tbody></table></div></div>`;
@@ -434,7 +442,7 @@ function studentForm(s){
 }
 function addStudent(){
  let c=ensureClassForManual();if(!c)return;
- let s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Relation:"",parent1Phone:"",parent1Email:"",parent1Line:"",parent2Name:"",parent2Relation:"",parent2Phone:"",parent2Email:"",parent2Line:"",advancement:"未定",notes:""};
+ let s={id:"s"+Date.now(),classId:c.id,seat:classStudents().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Relation:"",parent1Phone:"",parent1Email:"",parent1Line:"",parent2Name:"",parent2Relation:"",parent2Phone:"",parent2Email:"",parent2Line:"",advancement:"未定",notes:""};
  if(!studentForm(s)||!s.name)return;
  s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;
  s.password="123456";
@@ -521,7 +529,7 @@ async function importStudents(e){
 }
 function exportStudentMaster(){
  let c=C(); if(!c)return;
- let rows=students().map(s=>({
+ let rows=classStudents().map(s=>({
  "學年度":c.schoolYear,"班級":`${c.grade}${String(c.classNo).padStart(2,"0")}`,"班名":c.name||"",
  "座號":s.seat,"姓名":s.name,"學號":s.studentNo||"","性別":s.gender||"","生日":s.birthday||"",
  "學生電話":s.phone||"","學生地址":s.address||"",
@@ -541,7 +549,7 @@ function contactToCounsel(id){let c=D.contacts.find(x=>x.id===id);sessionStorage
 
 function renderCounseling(){
  if(!C()){counseling.innerHTML=noClassCard();return;}
- let ss=students();
+ let ss=classStudents();
  counseling.innerHTML=`<div class="card panel"><div class="head"><h2>輔導／晤談紀錄</h2><span class="badge good">可從學生事件匯入，也可自行新增</span></div>
  <div class="grid3"><div class="field"><label>日期</label><input id="cDate" type="date" value="${T()}"></div><div class="field"><label>時間</label><input id="cTime" type="time"></div><div class="field"><label>學生</label><select id="cStudent">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div>
  <div class="field"><label>晤談對象</label><select id="cObject">${OBJECTS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>地點</label><select id="cLocation">${LOCATIONS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>問題類型</label><select id="cProblemType" onchange="renderProblemGuides()">${PROBLEM_TYPES.map(x=>`<option>${x}</option>`).join("")}</select></div></div><div class="grid2"><div class="field"><label>其他問題類型（選填）</label><input id="cProblemOther" placeholder="選「其他」時可填"></div><div class="field"><label>地點補充（選填）</label><input id="cLocationOther" placeholder="例如：圖書館旁、家長來校"></div></div>
@@ -562,13 +570,13 @@ function clearCounsel(){document.querySelectorAll("#counseling input[type=checkb
 
 function renderPreview(){
  if(!C()){preview.innerHTML=noClassCard();return;}
- let ss=students();preview.innerHTML=`<div class="card panel"><div class="head"><h2>家長預覽</h2><select id="pv" onchange="previewCard(this.value)">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div id="pvbox"></div></div>`;if(ss[0])setTimeout(()=>previewCard(ss[0].id),0)
+ let ss=classStudents();preview.innerHTML=`<div class="card panel"><div class="head"><h2>家長預覽</h2><select id="pv" onchange="previewCard(this.value)">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div id="pvbox"></div></div>`;if(ss[0])setTimeout(()=>previewCard(ss[0].id),0)
 }
 function previewCard(id){let s=S(id),hw=D.homework.filter(x=>x.classId===D.currentClassId&&x.date===T()),an=D.announcements.filter(x=>x.classId===D.currentClassId),ns=D.notices.filter(x=>x.sid===id&&x.parentVisible&&x.date.startsWith(T()));pvbox.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${(x.links||[]).map(l=>`<div><a href="${E(l.url)}" target="_blank">${E(l.label||"附件")}</a></div>`).join("")}${x.url?`<a href="${E(x.url)}" target="_blank">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea disabled placeholder="家長有需要反應或提問時再填寫"></textarea><label class="checkitem" style="margin-top:10px"><input type="checkbox" disabled><span>我已詳閱今日聯絡簿內容</span></label>`}
 
 function renderReports(){
  if(!C()){reports.innerHTML=noClassCard("<button class=\"btn secondary\" onclick=\"go(\'students\')\">前往匯入學生</button>");return;}
- reports.innerHTML=`<div class="card panel"><div class="head"><h2>Excel 匯入／匯出</h2></div><p class="muted">所有歷程匯出皆保留日期、時間、對象、地點、問題描述、內容、處理方式與來源。</p><div class="grid2"><div class="field"><label>學生</label><select id="rs">${students().map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div class="field"><label>匯出</label><div class="toolbar"><button class="btn" onclick="exp([rs.value],S(rs.value).name+'_學生三年歷程.xlsx')">個別學生</button><button class="btn secondary" onclick="exp(students().map(x=>x.id),'全班學生歷程.xlsx')">全班</button></div></div></div></div>`;
+ reports.innerHTML=`<div class="card panel"><div class="head"><h2>Excel 匯入／匯出</h2></div><p class="muted">所有歷程匯出皆保留日期、時間、對象、地點、問題描述、內容、處理方式與來源。</p><div class="grid2"><div class="field"><label>學生</label><select id="rs">${classStudents().map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div class="field"><label>匯出</label><div class="toolbar"><button class="btn" onclick="exp([rs.value],S(rs.value).name+'_學生三年歷程.xlsx')">個別學生</button><button class="btn secondary" onclick="exp(classStudents().map(x=>x.id),'全班學生歷程.xlsx')">全班</button></div></div></div></div>`;
 }
 function exp(ids,name){let wb=XLSX.utils.book_new(),basic=D.students.filter(x=>ids.includes(x.id));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(basic),"學生家長資料");
 let attendance=D.attendance.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time,"學生":S(x.sid)?.name,"到校狀態":x.status,"請假別":x.leave,"到校時間":x.arrival,"離校／請假時間":x.leaveTime,"請假方式":x.method}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(attendance),"出缺勤");
