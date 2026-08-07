@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15 導師整合正式版</title>
+<title>親師聯絡簿 V15.1 登入穩定修正版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -23,28 +23,28 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 .table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 .app{min-height:100vh;display:grid;grid-template-columns:230px 1fr}.side{position:sticky;top:0;height:100vh;padding:16px 11px;background:linear-gradient(#f9fdff,#eaf7fd);border-right:1px solid var(--line);overflow:auto}.brand{padding:10px 13px 17px;font-size:22px;font-weight:900}.brand em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:22px;color:#177698}.nav{width:100%;border:0;background:transparent;border-radius:12px;padding:10px 11px;text-align:left;margin:3px 0;color:var(--ink)}.nav.on,.nav:hover{background:#dff2fa;color:#176f99;font-weight:900}
 .header{padding:20px 24px 45px;background:radial-gradient(circle at 12% 20%,rgba(255,255,255,.8) 0 8px,transparent 9px),radial-gradient(circle at 38% 35%,rgba(255,255,255,.65) 0 14px,transparent 15px),linear-gradient(#dcf4ff,#98d8e9);position:relative;overflow:hidden}.header:after{content:"";position:absolute;left:-5%;right:-5%;bottom:-34px;height:84px;background:rgba(255,255,255,.78);border-radius:50% 45% 0 0/40% 35% 0 0}.header h1{position:relative;z-index:2;margin:24px 0 5px;font-size:31px}.headerRow{position:relative;z-index:2;display:flex;justify-content:space-between;gap:12px}.content{padding:0 22px 40px;margin-top:-22px;position:relative;z-index:3}
-.login{min-height:100vh;position:relative;background:#eaf5fb url("cover-clean.jpg") center/cover no-repeat;display:grid;place-items:center}.login:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,43,64,.04),rgba(234,245,251,.25))}.loginCard{position:relative;width:min(430px,calc(100% - 28px));padding:27px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);margin-left:min(48vw,620px)}.tabs{display:flex;gap:6px;background:#eaf5fa;padding:5px;border-radius:14px;margin:18px 0}.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:10px}.tabs .on{background:#fff;font-weight:800}.sign{text-align:right;margin-top:18px;color:#597586}.sign em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:27px;color:#177698}
+.login{min-height:100vh;position:relative;background:#eaf5fb url("cover-clean.jpg") center/cover no-repeat;display:flex;justify-content:flex-end;align-items:flex-start;padding:clamp(28px,7vh,92px) clamp(18px,4vw,58px) 28px}.login:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,43,64,.01),rgba(234,245,251,.08))}.loginCard{position:relative;width:min(405px,calc(100% - 24px));padding:22px 24px;background:rgba(255,255,255,.80);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);margin:0;border:1px solid rgba(255,255,255,.7);box-shadow:0 12px 30px rgba(31,77,103,.18)}.tabs{display:flex;gap:6px;background:#eaf5fa;padding:5px;border-radius:14px;margin:18px 0}.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:10px}.tabs .on{background:#fff;font-weight:800}.sign{text-align:right;margin-top:18px;color:#597586}.sign em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:27px;color:#177698}
 .bottom{display:none}
 @media(max-width:1100px){.stats,.checkgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}}
-@media(max-width:800px){.loginCard{margin:38vh auto 16px}.app{display:block}.side{display:none}.content{padding:0 11px 82px}.header{padding:16px 15px 40px}.headerRow{display:block}.grid2,.grid3,.checkgrid{grid-template-columns:1fr}.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line)}.bottom button{border:0;background:#fff;padding:10px 3px;font-size:12px;color:var(--ink)}}
+@media(max-width:800px){.login{justify-content:center;padding:22px 14px 24px}.loginCard{margin:0 auto;background:rgba(255,255,255,.82);padding:20px}.app{display:block}.side{display:none}.content{padding:0 11px 82px}.header{padding:16px 15px 40px}.headerRow{display:block}.grid2,.grid3,.checkgrid{grid-template-columns:1fr}.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line)}.bottom button{border:0;background:#fff;padding:10px 3px;font-size:12px;color:var(--ink)}}
 .grade-table input{min-width:72px;text-align:center}.grade-table th{position:sticky;top:0;background:#f5fbfe;z-index:2}.grade-table th:first-child,.grade-table td:first-child{position:sticky;left:0;background:#fff;z-index:1}.grade-table th:nth-child(2),.grade-table td:nth-child(2){position:sticky;left:58px;background:#fff;z-index:1}.score-bad{background:#fff1f1!important}.score-warn{background:#fff8df!important}.score-good{background:#edf9f2!important}.mini-chart{width:180px;height:54px}.account-off{opacity:.55}.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.38);display:grid;place-items:center;z-index:100;padding:16px}.modal-box{max-width:650px;width:100%;max-height:85vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.1</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
-  <div id="plogin" class="hidden"><div class="field"><label>家長帳號</label><input id="pa" value="70601"></div><div class="field"><label>密碼</label><input id="pp" type="password" value="123456"></div><button class="btn" style="width:100%" onclick="enterParent()">登入</button></div>
+  <div id="plogin" class="hidden"><div class="field"><label>家長帳號</label><input id="pa" value="70601"></div><div class="field"><label>密碼</label><input id="pp" type="password" value="Ab123456" autocomplete="current-password"></div><button class="btn" style="width:100%" onclick="enterParent()">登入</button></div>
   <div class="sign">Designed by <em>Meng</em></div>
  </div>
 </section>
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.1</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -60,7 +60,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.1</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -226,7 +226,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v15")||"null")||JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null, pendingAnnAttachments=[];
-D.version="15.0";
+D.version="15.1";
 D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 D.gradeConfigs ||= {}; D.gradeScores ||= {}; D.examStatus ||= {}; D.gradeNotes ||= {}; D.gradeShare ||= {}; D.loginLogs ||= []; D.auditLogs ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -238,6 +238,9 @@ async function enterParent(){
  const account=pa.value.trim(), typed=pp.value;
  let s=D.students.find(x=>x.account===account&&!x.archived);
  if(!s || s.accountStatus==="disabled"){alert("帳號或密碼不正確，或帳號目前未啟用");return}
+ let cForCredential=D.classes.find(x=>x.id===s.classId);
+ if(cForCredential)await ensureStudentCredential(s,cForCredential,false);
+ localStorage.setItem("pcb_v15",JSON.stringify(D));
  let ok=false;
  if(s.passwordHash) ok=(await sha256(typed))===s.passwordHash;
  else if(s.password!==undefined && typed===String(s.password)){
@@ -285,8 +288,20 @@ async function ensureStudentCredential(s,c,force=false){
  s.account ||= accountForStudent(s,c);
  s.accountStatus ||= "active";
  s.forcePasswordChange = s.forcePasswordChange ?? true;
+
+ const newDefaultHash=await sha256("Ab123456");
+ const oldDefaultHash=await sha256("123456");
+
+ // V15.1：舊版預設密碼 123456 自動遷移成 Ab123456。
+ if(s.password==="123456" || s.passwordHash===oldDefaultHash){
+   s.passwordHash=newDefaultHash;
+   delete s.password;
+   s.forcePasswordChange=true;
+   return;
+ }
+
  if(force || (!s.passwordHash && !s.password)){
-   s.passwordHash=await sha256("Ab123456");
+   s.passwordHash=newDefaultHash;
    delete s.password;
    s.forcePasswordChange=true;
  }
@@ -787,7 +802,7 @@ function renderAccounts(){
  const enabled=ss.filter(s=>(s.accountStatus||"active")==="active").length;
  const activated=ss.filter(s=>s.lastLogin).length;
  page.innerHTML=`<div class="card panel"><div class="head"><h2>家長帳號管理</h2><div><button class="btn secondary" onclick="batchCreateAccounts()">批次建立／修復帳號</button> <button class="btn secondary" onclick="exportAccountList()">匯出帳號清單</button></div></div>
- <div class="safe">老師具有帳號管理權。原密碼不顯示；忘記密碼時由老師「重設」新密碼。家長登入後可自行修改密碼。新帳號預設密碼為 <b>Ab123456</b>，首次登入後要求修改。</div>
+ <div class="safe">老師具有帳號管理權。原密碼不顯示；忘記密碼時由老師「重設」新密碼。家長登入後可自行修改密碼。新帳號預設密碼為 <b>Ab123456</b>，首次登入後要求修改。V15.1 也會自動把舊版預設密碼 123456 轉換為新版預設密碼。</div>
  <div class="stats" style="margin-top:12px">${stat("班級學生",ss.length)}${stat("帳號啟用",enabled)}${stat("已有登入",activated)}${stat("尚未登入",ss.length-activated)}</div>
  <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>座號</th><th>學生</th><th>家長</th><th>帳號</th><th>狀態</th><th>最後登入</th><th>登入次數</th><th>操作</th></tr></thead><tbody>${ss.map(s=>`<tr class="${(s.accountStatus||"active")==="disabled"?"account-off":""}"><td>${s.seat}</td><td>${E(s.name)}</td><td>${E(s.parent1Name||"未填")}</td><td><b>${E(s.account||"尚未建立")}</b></td><td>${(s.accountStatus||"active")==="active"?"🟢 啟用":"⚪ 停用"}${s.forcePasswordChange?'<div class="small muted">首次／重設後需改密碼</div>':""}</td><td>${E(s.lastLogin||"尚未登入")}</td><td>${Number(s.loginCount||0)}</td><td><button class="btn secondary" onclick="resetParentPassword('${s.id}')">重設密碼</button> <button class="btn secondary" onclick="toggleParentAccount('${s.id}')">${(s.accountStatus||"active")==="active"?"停用":"啟用"}</button> <button class="btn secondary" onclick="showLoginLogs('${s.id}')">登入紀錄</button></td></tr>`).join("")||'<tr><td colspan="8">尚無學生</td></tr>'}</tbody></table></div></div>`;
 }

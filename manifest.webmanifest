@@ -1,6 +1,6 @@
 {
-  "name": "親師聯絡簿 V15 導師整合正式版",
-  "short_name": "親師聯絡簿 V15",
+  "name": "親師聯絡簿 V15.1 登入穩定修正版",
+  "short_name": "親師聯絡簿 V15.1",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
