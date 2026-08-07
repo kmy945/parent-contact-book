@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15.2 登入穩定修正版</title>
+<title>親師聯絡簿 V15.3 班級關聯修正版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -33,7 +33,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.2</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.3</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -44,7 +44,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15.2</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.3</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -60,7 +60,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.2</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.3</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -226,7 +226,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v15")||"null")||JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null, pendingAnnAttachments=[];
-D.version="15.2"; for(const c of D.classes){if(!c.status)c.status="active"}
+D.version="15.3"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
 D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 D.gradeConfigs ||= {}; D.gradeScores ||= {}; D.examStatus ||= {}; D.gradeNotes ||= {}; D.gradeShare ||= {}; D.loginLogs ||= []; D.auditLogs ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -247,8 +247,10 @@ async function enterParent(){
    ok=true;s.passwordHash=await sha256(typed);delete s.password;
  }
  if(!ok){D.loginLogs.unshift({id:"log"+Date.now(),sid:s.id,time:N(),result:"密碼錯誤",device:(navigator.userAgent||"").slice(0,160)});save();alert("帳號或密碼不正確");return}
- let c=D.classes.find(x=>x.id===s.classId&&x.status!=="deleted"&&x.status!=="disabled");
- if(!c){alert("此學生所屬班級目前被停用或已刪除，請聯絡導師確認班級狀態。");return}
+ let rel=repairStudentClassLink(s,false);
+ let c=rel.classObj;
+ if(rel.changed)localStorage.setItem("pcb_v15",JSON.stringify(D));
+ if(!c){alert("找不到此學生目前對應的班級。請導師登入後，在「班級／學年度」按下「修復學生班級關聯」。");return}
  CP=s;addLoginLog(s);localStorage.setItem("pcb_v15",JSON.stringify(D));
  login.classList.add("hidden");parent.classList.remove("hidden");renderParent();
 }
@@ -371,6 +373,90 @@ async function openAttachment(id){
 }
 function attachmentButtons(x){return(x.attachments||[]).map(a=>`<div style="margin-top:6px"><button type="button" class="btn secondary" onclick="openAttachment('${E(a.id)}')">📎 ${E(a.name)}</button> <span class="muted small">${humanSize(a.size)}</span></div>`).join("")}
 
+
+function activeClasses(){
+ return D.classes.filter(c=>c.status!=="deleted"&&c.status!=="disabled");
+}
+function classCode(c){
+ return c?`${Number(c.grade||0)}${String(Number(c.classNo||0)).padStart(2,"0")}`:"";
+}
+function inferStudentClassCode(s){
+ if(s.classCode)return String(s.classCode);
+ if(s.account && /^\d{5}$/.test(String(s.account))){
+   return String(s.account).slice(0,3);
+ }
+ if(s.history?.length){
+   const h=[...s.history].reverse().find(x=>x.grade&&x.classNo);
+   if(h)return `${Number(h.grade)}${String(Number(h.classNo)).padStart(2,"0")}`;
+ }
+ if(s.previousClassId){
+   const old=D.classes.find(c=>c.id===s.previousClassId);
+   if(old)return classCode(old);
+ }
+ return "";
+}
+function findBestClassForStudent(s){
+ let direct=D.classes.find(c=>c.id===s.classId&&c.status!=="deleted"&&c.status!=="disabled");
+ if(direct)return direct;
+
+ const code=inferStudentClassCode(s);
+ let candidates=activeClasses();
+
+ if(code){
+   const byCode=candidates.filter(c=>classCode(c)===code);
+   if(byCode.length===1)return byCode[0];
+   if(byCode.length>1){
+     // Prefer same school year when history gives one, otherwise latest.
+     const years=(s.history||[]).map(h=>Number(h.schoolYear)).filter(Number.isFinite);
+     const y=years.length?Math.max(...years):null;
+     if(y){
+       const sameYear=byCode.find(c=>Number(c.schoolYear)===y);
+       if(sameYear)return sameYear;
+     }
+     return [...byCode].sort((a,b)=>Number(b.schoolYear||0)-Number(a.schoolYear||0))[0];
+   }
+ }
+
+ // If only one active class exists, use it as a final safe repair target.
+ if(candidates.length===1)return candidates[0];
+
+ // Prefer current selected class if it exists and code is compatible.
+ const current=D.classes.find(c=>c.id===D.currentClassId&&c.status!=="deleted"&&c.status!=="disabled");
+ if(current && (!code || classCode(current)===code))return current;
+
+ return null;
+}
+function repairStudentClassLink(s,saveNow=false){
+ const oldId=s.classId;
+ const found=findBestClassForStudent(s);
+ if(!found)return {ok:false,changed:false,classObj:null};
+ if(s.classId!==found.id){
+   s.previousClassId=s.classId||s.previousClassId||"";
+   s.classId=found.id;
+   s.classCode=classCode(found);
+   if(saveNow)localStorage.setItem("pcb_v15",JSON.stringify(D));
+   return {ok:true,changed:true,classObj:found,oldId};
+ }
+ s.classCode=classCode(found);
+ return {ok:true,changed:false,classObj:found,oldId};
+}
+function repairAllStudentClassLinks(showMessage=true){
+ let changed=0,unresolved=[];
+ for(const s of D.students){
+   if(s.archived)continue;
+   const r=repairStudentClassLink(s,false);
+   if(r.changed)changed++;
+   if(!r.ok)unresolved.push(s);
+ }
+ localStorage.setItem("pcb_v15",JSON.stringify(D));
+ if(showMessage){
+   alert(unresolved.length
+     ? `已修復 ${changed} 位學生的班級關聯；仍有 ${unresolved.length} 位無法自動判斷，請到班級／學年度確認。`
+     : `班級關聯檢查完成。已修復 ${changed} 位學生。`);
+ }
+ return {changed,unresolved};
+}
+
 function noClassCard(extra=""){
  return `<div class="card panel"><div class="head"><h2>尚未建立班級</h2></div><div class="safe">目前沒有可使用的班級。可以先到「班級／學年度」新增班級，或直接到「學生／家長資料」匯入 Excel，系統可依 Excel 班級欄自動建立班級。</div>${extra}</div>`;
 }
@@ -479,7 +565,7 @@ function renderSchedule(){
 function renderClasses(){
  const visible=D.classes.filter(c=>c.status!=="deleted"&&c.status!=="disabled");
  const deleted=D.classes.filter(c=>c.status==="deleted");
- classes.innerHTML=`<div class="card panel"><div class="head"><h2>班級／學年度管理</h2><div><button class="btn" onclick="addClass()">＋新增班級</button> <button class="btn secondary" onclick="repairClassStatus()">修復班級狀態</button> <button class="btn secondary" onclick="promoteCurrent()" ${C()?"":"disabled"}>升級新學年</button></div></div>
+ classes.innerHTML=`<div class="card panel"><div class="head"><h2>班級／學年度管理</h2><div><button class="btn" onclick="addClass()">＋新增班級</button> <button class="btn secondary" onclick="repairClassStatus()">修復班級狀態</button> <button class="btn secondary" onclick="repairAllStudentClassLinks()">修復學生班級關聯</button> <button class="btn secondary" onclick="promoteCurrent()" ${C()?"":"disabled"}>升級新學年</button></div></div>
  <div class="safe">新學年採「原班直升」，學生、家長、聯絡、簽閱、輔導／晤談與歷程全部保留。七→八→九；九年級後改為畢業封存，不必每年重建。</div>
  <div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>學年度</th><th>班級</th><th>班名</th><th>狀態</th><th>學生</th><th>操作</th></tr></thead><tbody>${visible.map(c=>`<tr><td>${c.schoolYear}</td><td>${c.grade}${String(c.classNo).padStart(2,"0")}</td><td>${E(c.name||"")}</td><td>${c.status==="graduated"?"畢業封存":c.status==="disabled"?"停用":"使用中"}</td><td>${D.students.filter(s=>s.classId===c.id&&!s.archived).length}</td><td><button class="btn secondary" onclick="switchToClass('${c.id}')">切換</button> <button class="btn secondary" onclick="editClass('${c.id}')">修改</button> <button class="btn danger" onclick="deleteClass('${c.id}')">刪除</button></td></tr>`).join("")||`<tr><td colspan="6" class="muted">目前沒有班級。可按「新增班級」，或到學生資料用 Excel 匯入自動建立。</td></tr>`}</tbody></table></div>
  ${deleted.length?`<details style="margin-top:14px"><summary><b>已刪除班級（${deleted.length}）</b></summary><div class="list" style="margin-top:10px">${deleted.map(c=>`<div class="item">${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班 ${E(c.name||"")} <button class="btn secondary" onclick="restoreClass('${c.id}')">復原</button> <button class="btn danger" onclick="purgeClass('${c.id}')">永久刪除</button></div>`).join("")}</div></details>`:""}</div>`;
@@ -490,8 +576,12 @@ function repairClassStatus(){
  if(!D.currentClassId||!D.classes.find(c=>c.id===D.currentClassId&&c.status!=="deleted"&&c.status!=="disabled")){
    D.currentClassId=D.classes.find(c=>c.status!=="deleted"&&c.status!=="disabled")?.id||"";
  }
+ const rel=repairAllStudentClassLinks(false);
  save();
- alert(changed?`已修復 ${changed} 個舊班級狀態。`:"班級狀態已正常，不需修復。");
+ alert(`班級狀態檢查完成。
+修復班級：${changed} 個
+修復學生班級關聯：${rel.changed} 位${rel.unresolved.length?`
+仍有 ${rel.unresolved.length} 位需人工確認。`:""}`);
 }
 function switchToClass(id){let c=D.classes.find(x=>x.id===id&&x.status!=="deleted"&&x.status!=="disabled");if(!c)return;D.currentClassId=id;save()}
 function restoreClass(id){let c=D.classes.find(x=>x.id===id);if(!c)return;c.status="active";D.currentClassId=id;save()}
@@ -817,7 +907,7 @@ function renderAccounts(){
 }
 async function batchCreateAccounts(){
  const c=C();if(!c)return;
- for(const s of classStudents()){s.account=accountForStudent(s,c);await ensureStudentCredential(s,c,false)}
+ for(const s of classStudents()){s.classId=c.id;s.classCode=classCode(c);s.account=accountForStudent(s,c);await ensureStudentCredential(s,c,false)}
  addAudit("批次建立／修復家長帳號","","");save();alert("家長帳號已完成檢查／建立");
 }
 async function resetParentPassword(sid){

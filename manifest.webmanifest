@@ -1,11 +1,11 @@
 {
-  "name": "親師聯絡簿 V15.2 登入穩定修正版",
-  "short_name": "親師聯絡簿 V15.2",
+  "name": "親師聯絡簿 V15.3 班級關聯修正版",
+  "short_name": "親師聯絡簿 V15.3",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "修正舊班級狀態誤判、家長登入與封面排版。"
+  "description": "修正家長登入時學生與班級 ID 關聯失效，並加入自動修復機制。"
 }
