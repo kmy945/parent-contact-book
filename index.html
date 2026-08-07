@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15.4 家長頁穩定修正版</title>
+<title>親師聯絡簿 V15.5 家長頁穩定修正版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -33,7 +33,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.4</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.5</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -44,7 +44,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15.4</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.5</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -60,7 +60,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.4</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.5</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -226,7 +226,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v15")||"null")||JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null, pendingAnnAttachments=[];
-D.version="15.4"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
+D.version="15.5"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
 D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 D.gradeConfigs ||= {}; D.gradeScores ||= {}; D.examStatus ||= {}; D.gradeNotes ||= {}; D.gradeShare ||= {}; D.loginLogs ||= []; D.auditLogs ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -235,54 +235,75 @@ function save(){localStorage.setItem("pcb_v15",JSON.stringify(D));renderAll()}
 function tab(x){tlogin.classList.toggle("hidden",x!=="t");plogin.classList.toggle("hidden",x!=="p");tt.classList.toggle("on",x==="t");pt.classList.toggle("on",x==="p")}
 async function enterTeacher(){for(const s of D.students){let c=D.classes.find(x=>x.id===s.classId);if(c)await ensureStudentCredential(s,c,false)}localStorage.setItem("pcb_v15",JSON.stringify(D));login.classList.add("hidden");teacher.classList.remove("hidden");renderAll()}
 async function enterParent(){
+ const account=(document.getElementById("pa")?.value||"").trim();
+ const typed=document.getElementById("pp")?.value||"";
+ let s=null;
  try{
-   const account=pa.value.trim(), typed=pp.value;
-   let s=D.students.find(x=>x.account===account&&!x.archived);
-   if(!s || s.accountStatus==="disabled"){alert("帳號或密碼不正確，或帳號目前未啟用");return}
+   s=(D.students||[]).find(x=>String(x.account||"")===account&&!x.archived);
+   if(!s || s.accountStatus==="disabled"){
+     alert("帳號或密碼不正確，或帳號目前未啟用"); return;
+   }
 
-   let cForCredential=D.classes.find(x=>x.id===s.classId) || findBestClassForStudent(s);
-   if(cForCredential)await ensureStudentCredential(s,cForCredential,false);
-   localStorage.setItem("pcb_v15",JSON.stringify(D));
-
+   // 驗證密碼：此階段不寫入 localStorage，避免儲存失敗阻斷登入。
    let ok=false;
-   if(s.passwordHash) ok=(await sha256(typed))===s.passwordHash;
-   else if(s.password!==undefined && typed===String(s.password)){
-     ok=true;s.passwordHash=await sha256(typed);delete s.password;
+   if(s.passwordHash){
+     ok=(await sha256(typed))===s.passwordHash;
+   }else if(s.password!==undefined){
+     ok=typed===String(s.password);
+   }else{
+     // 舊資料若尚未建立雜湊，允許新版預設密碼完成第一次遷移。
+     ok=typed==="Ab123456";
    }
-   if(!ok){
-     D.loginLogs.unshift({id:"log"+Date.now(),sid:s.id,time:N(),result:"密碼錯誤",device:(navigator.userAgent||"").slice(0,160)});
-     localStorage.setItem("pcb_v15",JSON.stringify(D));
-     alert("帳號或密碼不正確");
-     return;
-   }
+   if(!ok){ alert("帳號或密碼不正確"); return; }
 
-   let rel=repairStudentClassLink(s,false);
-   let c=rel.classObj || findBestClassForStudent(s);
-   if(c && s.classId!==c.id){s.classId=c.id;s.classCode=classCode(c);rel.changed=true}
-   if(rel.changed)localStorage.setItem("pcb_v15",JSON.stringify(D));
-   if(!c){
-     alert("找不到此學生目前對應的班級。請導師登入後，在「班級／學年度」按下「修復學生班級關聯」。");
-     return;
-   }
-
-   D.currentClassId=c.id;
+   // 先建立登入狀態與顯示頁面；任何紀錄/儲存失敗都不能造成白畫面。
    CP=s;
-   addLoginLog(s);
-   localStorage.setItem("pcb_v15",JSON.stringify(D));
-
-   login.classList.add("hidden");
-   teacher.classList.add("hidden");
-   parent.classList.remove("hidden");
-
-   try{
-     renderParent();
-   }catch(err){
-     console.error("renderParent failed",err);
-     renderParentFallback(err);
+   let c=null;
+   try{ c=findBestClassForStudent(s); }catch(e){ console.warn("class lookup",e); }
+   if(!c){
+     c=(D.classes||[]).find(x=>x.id===s.classId && x.status!=="deleted" && x.status!=="disabled") ||
+       (D.classes||[]).find(x=>x.status!=="deleted" && x.status!=="disabled") || null;
    }
+   if(c){
+     D.currentClassId=c.id;
+     s.classId=c.id;
+     try{s.classCode=classCode(c)}catch(e){}
+   }
+
+   const loginEl=document.getElementById("login");
+   const teacherEl=document.getElementById("teacher");
+   const parentEl=document.getElementById("parent");
+   if(loginEl)loginEl.classList.add("hidden");
+   if(teacherEl)teacherEl.classList.add("hidden");
+   if(parentEl)parentEl.classList.remove("hidden");
+
+   // 先畫面、後紀錄。
+   try{ renderParent(); }
+   catch(e){ console.error(e); renderParentFallback(e); }
+
+   // 背景式更新登入紀錄與舊密碼格式；失敗不影響家長使用。
+   try{
+     if(!s.passwordHash){
+       s.passwordHash=await sha256(typed);
+       delete s.password;
+     }
+     addLoginLog(s);
+     try{localStorage.setItem("pcb_v15",JSON.stringify(D));}
+     catch(storageErr){console.warn("localStorage write skipped",storageErr);}
+   }catch(logErr){console.warn("login log skipped",logErr);}
  }catch(err){
-   console.error("Parent login failed",err);
-   alert("登入後載入家長頁面時發生錯誤，已保留帳號資料。請重新整理後再試。");
+   console.error("Parent login fatal",err);
+   // 即使未知錯誤，也不留白頁。
+   CP=s||CP;
+   const loginEl=document.getElementById("login");
+   const parentEl=document.getElementById("parent");
+   if(CP){
+     if(loginEl)loginEl.classList.add("hidden");
+     if(parentEl)parentEl.classList.remove("hidden");
+     renderParentFallback(err);
+   }else{
+     alert("登入資料讀取失敗，請重新整理頁面後再試。");
+   }
  }
 }
 function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p===id));if(id==="preview")renderPreview();window.scrollTo({top:0,behavior:"smooth"})}
@@ -1020,11 +1041,14 @@ function renderParent(){
    let s=CP;
    if(!s)throw new Error("找不到目前登入的家長學生資料");
 
-   let c=findBestClassForStudent(s) || D.classes.find(x=>x.id===s.classId&&x.status!=="deleted"&&x.status!=="disabled");
+   let c=null;
+   try{c=findBestClassForStudent(s)}catch(e){console.warn("parent class lookup",e)}
+   c=c || (D.classes||[]).find(x=>x.id===s.classId&&x.status!=="deleted"&&x.status!=="disabled")
+       || (D.classes||[]).find(x=>x.status!=="deleted"&&x.status!=="disabled");
    if(!c)throw new Error("找不到目前有效班級");
    if(s.classId!==c.id){s.classId=c.id;s.classCode=classCode(c)}
    D.currentClassId=c.id;
-   localStorage.setItem("pcb_v15",JSON.stringify(D));
+   try{localStorage.setItem("pcb_v15",JSON.stringify(D));}catch(e){console.warn("parent save skipped",e);}
 
    const pv=document.getElementById("parentView");
    if(!pv)throw new Error("找不到家長頁容器");
