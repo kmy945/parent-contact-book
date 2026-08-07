@@ -1,11 +1,11 @@
 {
-  "name": "親師聯絡簿 V14.2 穩定正式版",
-  "short_name": "親師聯絡簿",
+  "name": "親師聯絡簿 V15 導師整合正式版",
+  "short_name": "親師聯絡簿 V15",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "修正學生資料管理並支援 Word、PDF、圖片公告附件。"
+  "description": "整合親師聯絡、學生家長 Excel、家長帳號、三年歷程、輔導晤談與教師段考加權成績中心。"
 }
