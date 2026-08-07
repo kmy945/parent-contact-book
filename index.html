@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V14 導師整合正式版</title>
+<title>親師聯絡簿 V14.1 穩定正式版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -32,7 +32,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V14</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V14.1</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -43,7 +43,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V14</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V14.1</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -57,7 +57,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V14</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V14.1</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -223,7 +223,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null;
-D.version="14.0"; D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
+D.version="14.1"; D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const C=()=>D.classes.find(x=>x.id===D.currentClassId&&x.status!=="deleted")||D.classes.find(x=>x.status==="active")||D.classes.find(x=>x.status!=="deleted")||null, students=()=>D.students.filter(s=>s.classId===D.currentClassId&&!s.archived).sort((a,b)=>Number(a.seat)-Number(b.seat)), S=id=>D.students.find(x=>x.id===id);
 function save(){localStorage.setItem("pcb_v14",JSON.stringify(D));renderAll()}
@@ -303,14 +303,22 @@ function selected(cls){return [...document.querySelectorAll("."+cls+":checked")]
 function addHW(){if(!hwSub.value.trim()||!hwText.value.trim())return;D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:hwSub.value.trim(),content:hwText.value.trim()});save();alert("已加入功課")}
 function publishClassContent(){
  if(!C())return alert("請先建立班級");
- if(classReminder.value.trim())D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:"提醒事項",content:classReminder.value.trim()});
- if(annText.value.trim()||annLinks.value.trim()){
-   let links=annLinks.value.split(/
-+/).map(x=>x.trim()).filter(Boolean).map(line=>{let [label,...rest]=line.split("｜");return {label:rest.length?label.trim():"附件",url:(rest.length?rest.join("｜"):label).trim()}});
-   D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),links});
+ if(classReminder.value.trim()){
+   D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:"提醒事項",content:classReminder.value.trim()});
  }
- save();alert("全班內容已發布");
-});if(annText.value.trim()||annUrl.value.trim()){D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),file:annFile.value.trim(),url:annUrl.value.trim()})}save();alert("全班內容已發布")}
+ if(annText.value.trim()||annLinks.value.trim()){
+   let links=annLinks.value.split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>{
+     let [label,...rest]=line.split("｜");
+     return {label:rest.length?label.trim():"附件",url:(rest.length?rest.join("｜"):label).trim()};
+   });
+   D.announcements.unshift({
+     id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),
+     type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),links
+   });
+ }
+ save();
+ alert("全班內容已發布");
+}
 function buildSentenceVariant(){
  let courses=selected("course"), events=[...selected("learn"),...selected("behave")], handles=selected("handle"), keyword=kw.value.trim();
  if(!events.length&&!keyword)return null;
@@ -413,23 +421,45 @@ function promoteCurrent(){
  save();
  alert(`已升級為 ${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班。所有歷程均已保留。`);
 }
+function renderStudents(){
+ let c=C(), ss=c?students():[];
+ students.innerHTML=`<div class="card panel"><div class="head"><h2>學生／家長資料</h2><div><button class="btn" onclick="addStudent()" ${c?"":"disabled"}>＋手動新增</button> <button class="btn secondary" onclick="document.getElementById('studentFile').click()">匯入 Excel</button> <button class="btn secondary" onclick="downloadTemplate()">下載 Excel 範本</button> <button class="btn secondary" onclick="exportStudentMaster()" ${c?"":"disabled"}>匯出學生資料</button><input id="studentFile" type="file" class="hidden" accept=".xlsx,.xls" onchange="importStudents(event)"></div></div>
+ ${c?`<div class="safe">目前班級：<b>${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班 ${E(c.name||"")}</b>。家長資料皆為選填，可只匯入「座號、姓名」。</div>`:`<div class="warn">目前尚未建立班級。仍可直接匯入 Excel；只要 Excel 有「班級」欄，例如 706，系統會自動建立班級。</div>`}
+ <p class="muted">支援手動新增／修改／移除，以及 Excel 批次匯入。再次匯入相同班級＋座號會更新既有學生，不會重複建立。</p>
+ <div class="table-wrap"><table><thead><tr><th>座號</th><th>姓名</th><th>學號</th><th>家長1</th><th>關係</th><th>電話</th><th>家長2</th><th>登入帳號</th><th>操作</th></tr></thead><tbody>${c?(ss.map(s=>`<tr><td>${E(s.seat)}</td><td>${E(s.name)}</td><td>${E(s.studentNo||"")}</td><td>${E(s.parent1Name||"")}</td><td>${E(s.parent1Relation||"")}</td><td>${E(s.parent1Phone||"")}</td><td>${E(s.parent2Name||"")}</td><td>${E(s.account||"")}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">修改</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">移除</button></td></tr>`).join("")||`<tr><td colspan="9" class="muted">尚無學生。可手動新增或匯入 Excel。</td></tr>`):`<tr><td colspan="9" class="muted">請先新增班級，或直接匯入含「班級」欄的 Excel。</td></tr>`}</tbody></table></div></div>`;
+}
 function studentForm(s){
  const ask=(label,key,num=false)=>{let v=prompt(label,s[key]??"");if(v===null)return false;s[key]=num?Number(v):v;return true};
  if(!ask("座號","seat",true))return false;if(!ask("姓名","name"))return false;ask("學號","studentNo");ask("性別","gender");ask("生日","birthday");ask("學生電話","phone");ask("學生地址","address");ask("家長1姓名（選填）","parent1Name");ask("家長1關係（選填，例如：父、母、祖母）","parent1Relation");ask("家長1電話（選填）","parent1Phone");ask("家長1 Email（選填）","parent1Email");ask("家長1 Line ID（選填）","parent1Line");ask("家長2姓名（選填）","parent2Name");ask("家長2關係（選填）","parent2Relation");ask("家長2電話（選填）","parent2Phone");ask("家長2 Email（選填）","parent2Email");ask("家長2 Line ID（選填）","parent2Line");ask("備註（選填）","notes");s.advancement=prompt("升學意向：高中／高職／五專／就業／未定",s.advancement||"未定")||"未定";return true
 }
-function addStudent(){let c=ensureClassForManual();if(!c)return;let s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Relation:"",parent1Phone:"",parent1Email:"",parent1Line:"",parent2Name:"",parent2Relation:"",parent2Phone:"",parent2Email:"",parent2Line:"",advancement:"未定",notes:""};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";s.history=[{schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,seat:s.seat}];D.students.push(s);save()};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";D.students.push(s);save()}
+function addStudent(){
+ let c=ensureClassForManual();if(!c)return;
+ let s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Relation:"",parent1Phone:"",parent1Email:"",parent1Line:"",parent2Name:"",parent2Relation:"",parent2Phone:"",parent2Email:"",parent2Line:"",advancement:"未定",notes:""};
+ if(!studentForm(s)||!s.name)return;
+ s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;
+ s.password="123456";
+ s.history=[{schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,seat:s.seat}];
+ D.students.push(s);save();
+}
 function editStudent(id){let s=S(id);if(studentForm(s))save()}
-function deleteStudent(id){let s=S(id);if(!s)return;if(confirm(`確定將 ${s.seat}號 ${s.name} 從目前班級移除？
-
-聯絡、簽閱與輔導歷程不會立即刪除。`)){s.archived=true;s.previousClassId=s.classId;save()}}號 ${s.name}？\n相關歷程會一併刪除，請謹慎操作。`)){D.students=D.students.filter(x=>x.id!==id);D.notices=D.notices.filter(x=>x.sid!==id);D.attendance=D.attendance.filter(x=>x.sid!==id);D.contacts=D.contacts.filter(x=>x.sid!==id);D.counseling=D.counseling.filter(x=>x.sid!==id);save()}}
+function deleteStudent(id){
+ let s=S(id);if(!s)return;
+ if(confirm(`確定將 ${s.seat}號 ${s.name} 從目前班級移除？\n\n聯絡、簽閱與輔導歷程不會立即刪除。`)){
+   s.archived=true;
+   s.previousClassId=s.classId;
+   save();
+ }
+}
 function downloadTemplate(){
  let c=C(), cls=c?`${c.grade}${String(c.classNo).padStart(2,"0")}`:"706";
  let ws=XLSX.utils.aoa_to_sheet([
- ["學年度","班級","班名","座號","姓名","學號","性別","生日","學生電話","學生地址","家長1姓名","家長1關係","家長1電話","家長1 Email","家長1 Line ID","家長2姓名","家長2關係","家長2電話","家長2 Email","家長2 Line ID","升學意向","備註"],
- [c?.schoolYear||115,cls,c?.name||"",1,"王小明","","","","","","王媽媽","母","0912-000-000","","","","","","","","未定",""]
+   ["學年度","班級","班名","座號","姓名","學號","性別","生日","學生電話","學生地址","家長1姓名","家長1關係","家長1電話","家長1 Email","家長1 Line ID","家長2姓名","家長2關係","家長2電話","家長2 Email","家長2 Line ID","升學意向","備註"],
+   [c?.schoolYear||115,cls,c?.name||"",1,"王小明","","","","","","王媽媽","母","0912-000-000","","","","","","","","未定",""]
  ]);
- let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本_V14.xlsx")
-}${String(C().classNo).padStart(2,"0")}`,1,"王小明","","","","","","王媽媽","0912-000-000","","","","","高中"]]);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本.xlsx")}
+ let wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");
+ XLSX.writeFile(wb,"學生家長資料匯入範本_V14.xlsx");
+}
 async function importStudents(e){
  let f=e.target.files[0]; if(!f)return;
  try{
@@ -554,7 +584,21 @@ function exportTimetable(){let days=["星期一","星期二","星期三","星期
 function renderParent(){let s=CP,c=D.classes.find(x=>x.id===s.classId)||C();D.currentClassId=c.id;let hw=D.homework.filter(x=>x.classId===c.id&&x.date===T()),an=D.announcements.filter(x=>x.classId===c.id),ns=D.notices.filter(x=>x.sid===s.id&&x.parentVisible&&x.date.startsWith(T())),sg=D.signatures.find(x=>x.sid===s.id&&x.date===T());parentView.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${(x.links||[]).map(l=>`<div><a target="_blank" href="${E(l.url)}">${E(l.label||"附件")}</a></div>`).join("")}${x.url?`<a target="_blank" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted small">簽閱時間：${E(sg.time)}</div>`:""}`}
 function submitP(){if(!ps.checked)return alert("請先勾選已詳閱");if(pm.value.trim())D.contacts.unshift({id:"pc"+Date.now(),date:N(),sid:CP.id,content:pm.value.trim(),status:"尚未處理"});D.signatures.push({date:T(),time:N(),sid:CP.id});save();renderParent();alert("已完成今日簽閱")}
 
-renderAll();
+try{
+  renderAll();
+  window.__PCB_BOOT_OK__=true;
+}catch(err){
+  console.error("PCB boot error",err);
+  window.__PCB_BOOT_OK__=false;
+  const card=document.querySelector(".loginCard");
+  if(card){
+    const msg=document.createElement("div");
+    msg.className="warn";
+    msg.style.marginTop="12px";
+    msg.textContent="系統初始化發生錯誤，請重新整理頁面；若仍無法使用，請回報此畫面。";
+    card.appendChild(msg);
+  }
+}
 </script>
 </body>
 </html>
