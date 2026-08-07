@@ -4,51 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V12.1 手機穩定版</title>
+<title>親師聯絡簿 V13 導師專業版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--ink:#173950;--muted:#6f8491;--blue:#278cc5;--aqua:#3ab6c8;--bg:#edf8fc;--paper:#fff;--line:#d8e8ef;--shadow:0 12px 28px rgba(34,101,134,.13)}
-*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg)}
-button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:13px}
-.btn{border:0;border-radius:13px;padding:10px 15px;background:linear-gradient(135deg,var(--blue),var(--aqua));color:#fff;font-weight:800}.btn.secondary{background:#eef8fb;color:var(--ink);border:1px solid var(--line)}.btn.danger{background:#fff1f1;color:#a23f3f}
+:root{--ink:#173950;--muted:#6f8491;--blue:#278cc5;--aqua:#3ab6c8;--bg:#edf8fc;--paper:#fff;--line:#d8e8ef;--shadow:0 12px 28px rgba(34,101,134,.13);--safe:#eaf8f1;--warn:#fff6df;--danger:#fff0f0}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}.muted{color:var(--muted)}.small{font-size:13px}.nowrap{white-space:nowrap}
+.btn{border:0;border-radius:13px;padding:10px 15px;background:linear-gradient(135deg,var(--blue),var(--aqua));color:#fff;font-weight:800}
+.btn.secondary{background:#eef8fb;color:var(--ink);border:1px solid var(--line)}.btn.danger{background:var(--danger);color:#a23f3f;border:1px solid #f0caca}.btn:disabled{opacity:.55}
 .card{background:#fff;border-radius:20px;box-shadow:var(--shadow);border:1px solid #fff}.panel{padding:20px;margin-bottom:16px}.head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.head h2,.head h3{margin:0}
-.field{display:grid;gap:7px;margin:10px 0}.field label{font-weight:800}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#fff;color:var(--ink)}textarea{min-height:105px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.stat{padding:14px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#fff,#f5fbfe)}.stat b{display:block;font-size:26px}
-.list{display:grid;gap:9px}.item{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}.safe{padding:12px;border-radius:13px;background:#eaf8f1;border:1px solid #c7e6d5}.warn{padding:12px;border-radius:13px;background:#fff6df;border:1px solid #edd9a1}
-.options{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.opt{border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff}.opt label{display:flex;gap:7px;align-items:flex-start}.opt input{width:auto;margin-top:3px}.sub{display:grid;gap:6px;margin:8px 0 0 21px}.sub label{font-weight:400}
-.app{min-height:100vh;display:grid;grid-template-columns:220px 1fr}.side{position:sticky;top:0;height:100vh;padding:16px 11px;background:linear-gradient(#f9fdff,#eaf7fd);border-right:1px solid var(--line);overflow:auto}.brand{padding:10px 13px 17px;font-size:22px;font-weight:900}.brand em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:22px;color:#177698}.nav{width:100%;border:0;background:transparent;border-radius:12px;padding:10px 11px;text-align:left;margin:3px 0;color:var(--ink)}.nav.on,.nav:hover{background:#dff2fa;color:#176f99;font-weight:900}
+.field{display:grid;gap:7px;margin:10px 0}.field label{font-weight:800}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#fff;color:var(--ink)}textarea{min-height:105px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.stat{padding:14px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#fff,#f5fbfe)}.stat b{display:block;font-size:26px}
+.list{display:grid;gap:9px}.item{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fbfdff}.safe{padding:12px;border-radius:13px;background:var(--safe);border:1px solid #c7e6d5}.warn{padding:12px;border-radius:13px;background:var(--warn);border:1px solid #edd9a1}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#e7f5fa;font-size:12px}.badge.good{background:var(--safe);color:#23724c}.badge.warn{background:var(--warn);color:#8b620a}
+.checkgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.checkitem{display:flex;align-items:flex-start;gap:8px;padding:10px 11px;border:1px solid var(--line);border-radius:13px;background:#fff;line-height:1.35}.checkitem input{width:18px;height:18px;flex:0 0 18px;margin:1px 0 0}
+.sentence-card{padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff}.sentence-card textarea{min-height:78px}.sentence-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:780px}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.app{min-height:100vh;display:grid;grid-template-columns:230px 1fr}.side{position:sticky;top:0;height:100vh;padding:16px 11px;background:linear-gradient(#f9fdff,#eaf7fd);border-right:1px solid var(--line);overflow:auto}.brand{padding:10px 13px 17px;font-size:22px;font-weight:900}.brand em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:22px;color:#177698}.nav{width:100%;border:0;background:transparent;border-radius:12px;padding:10px 11px;text-align:left;margin:3px 0;color:var(--ink)}.nav.on,.nav:hover{background:#dff2fa;color:#176f99;font-weight:900}
 .header{padding:20px 24px 45px;background:radial-gradient(circle at 12% 20%,rgba(255,255,255,.8) 0 8px,transparent 9px),radial-gradient(circle at 38% 35%,rgba(255,255,255,.65) 0 14px,transparent 15px),linear-gradient(#dcf4ff,#98d8e9);position:relative;overflow:hidden}.header:after{content:"";position:absolute;left:-5%;right:-5%;bottom:-34px;height:84px;background:rgba(255,255,255,.78);border-radius:50% 45% 0 0/40% 35% 0 0}.header h1{position:relative;z-index:2;margin:24px 0 5px;font-size:31px}.headerRow{position:relative;z-index:2;display:flex;justify-content:space-between;gap:12px}.content{padding:0 22px 40px;margin-top:-22px;position:relative;z-index:3}
 .login{min-height:100vh;position:relative;background:#eaf5fb url("cover-clean.jpg") center/cover no-repeat;display:grid;place-items:center}.login:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,43,64,.04),rgba(234,245,251,.25))}.loginCard{position:relative;width:min(430px,calc(100% - 28px));padding:27px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);margin-left:min(48vw,620px)}.tabs{display:flex;gap:6px;background:#eaf5fa;padding:5px;border-radius:14px;margin:18px 0}.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:10px}.tabs .on{background:#fff;font-weight:800}.sign{text-align:right;margin-top:18px;color:#597586}.sign em{display:block;font-family:"Brush Script MT","Segoe Script",cursive;font-size:27px;color:#177698}
 .bottom{display:none}
-@media(max-width:1000px){.stats{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:800px){.login{background-position:center}.loginCard{margin:38vh auto 16px}.app{display:block}.side{display:none}.content{padding:0 11px 80px}.header{padding:16px 15px 40px}.headerRow{display:block}.grid2,.options{grid-template-columns:1fr}.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line)}.bottom button{border:0;background:#fff;padding:10px 3px;font-size:12px;color:var(--ink)}}
+@media(max-width:1100px){.stats,.checkgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.loginCard{margin:38vh auto 16px}.app{display:block}.side{display:none}.content{padding:0 11px 82px}.header{padding:16px 15px 40px}.headerRow{display:block}.grid2,.grid3,.checkgrid{grid-template-columns:1fr}.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line)}.bottom button{border:0;background:#fff;padding:10px 3px;font-size:12px;color:var(--ink)}}
 </style>
-
-<script>
-(async function resetOldAppCache(){
-  try{
-    if("serviceWorker" in navigator){
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r => r.unregister()));
-    }
-    if("caches" in window){
-      const keys = await caches.keys();
-      await Promise.all(keys.map(k => caches.delete(k)));
-    }
-  }catch(e){
-    console.warn("快取清理略過", e);
-  }
-})();
-</script>
-
 </head>
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span style="font-size:13px;vertical-align:middle;padding:4px 8px;border-radius:999px;background:#eaf8f1;color:#23724c">V12.1</span></h1><p class="muted">今日功課、公告、個別聯絡與家長簽閱一次完成</p>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V13</span></h1>
+  <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
-  <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="googleDriveLogin()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
+  <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
   <div id="plogin" class="hidden"><div class="field"><label>家長帳號</label><input id="pa" value="70601"></div><div class="field"><label>密碼</label><input id="pp" type="password" value="123456"></div><button class="btn" style="width:100%" onclick="enterParent()">登入</button></div>
   <div class="sign">Designed by <em>Meng</em></div>
  </div>
@@ -56,11 +43,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span style="font-size:11px;color:#27806a">V12</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V13</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
-  <button class="nav" data-p="students" onclick="go('students')">班級與學生</button>
+  <button class="nav" data-p="classes" onclick="go('classes')">班級／學年度</button>
+  <button class="nav" data-p="students" onclick="go('students')">學生／家長資料</button>
   <button class="nav" data-p="contacts" onclick="go('contacts')">親師聯繫</button>
   <button class="nav" data-p="counseling" onclick="go('counseling')">輔導／晤談</button>
   <button class="nav" data-p="preview" onclick="go('preview')">家長預覽</button>
@@ -68,218 +56,332 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
   <button class="nav" onclick="location.reload()">登出</button>
  </aside>
  <main>
-  <header class="header"><div class="headerRow"><div><select><option>115學年度・706班（六出奇技）</option></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師雲端模式・已同步｜V12.1</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div><h1>706班（六出奇技）</h1><div>115學年度｜Meng老師</div></header>
+  <header class="header">
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V13</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
+  </header>
   <div class="content">
-   <section id="home" class="page"></section><section id="daily" class="page hidden"></section><section id="schedule" class="page hidden"></section><section id="students" class="page hidden"></section><section id="contacts" class="page hidden"></section><section id="counseling" class="page hidden"></section><section id="preview" class="page hidden"></section><section id="reports" class="page hidden"></section>
+   <section id="home" class="page"></section><section id="daily" class="page hidden"></section><section id="schedule" class="page hidden"></section><section id="classes" class="page hidden"></section><section id="students" class="page hidden"></section><section id="contacts" class="page hidden"></section><section id="counseling" class="page hidden"></section><section id="preview" class="page hidden"></section><section id="reports" class="page hidden"></section>
   </div>
  </main>
- <nav class="bottom"><button onclick="go('home')">首頁</button><button onclick="go('daily')">今日</button><button onclick="go('schedule')">功課</button><button onclick="go('preview')">預覽</button><button onclick="go('reports')">匯出</button></nav>
+ <nav class="bottom"><button onclick="go('home')">首頁</button><button onclick="go('daily')">今日</button><button onclick="go('schedule')">功課</button><button onclick="go('counseling')">輔導</button><button onclick="go('reports')">Excel</button></nav>
 </section>
 
 <section id="parent" class="hidden" style="min-height:100vh;padding:15px;background:#edf8fc"><div style="max-width:760px;margin:auto"><div class="card panel"><div class="head"><h2>今日聯絡簿</h2><button class="btn secondary" onclick="location.reload()">登出</button></div><div id="parentView"></div></div></div></section>
 
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-const firebaseConfig={
-  apiKey:"AIzaSyBNr-1S-xSeDvESdq3tYbWjIQ8pmgOjpd8",
-  authDomain:"parent-contact-book.firebaseapp.com",
-  projectId:"parent-contact-book",
-  storageBucket:"parent-contact-book.firebasestorage.app",
-  messagingSenderId:"241202878085",
-  appId:"1:241202878085:web:fb598315e315aa33cbbbec"
-};
-const firebaseApp=initializeApp(firebaseConfig);
-const firebaseAuth=getAuth(firebaseApp);
-
-window.googleDriveLogin=async()=>{
-  try{
-    const provider=new GoogleAuthProvider();
-    provider.addScope("https://www.googleapis.com/auth/drive.file");
-    const result=await signInWithPopup(firebaseAuth,provider);
-    const credential=GoogleAuthProvider.credentialFromResult(result);
-    window.driveAccessToken=credential?.accessToken||"";
-    window.teacherGoogleUser={
-      uid:result.user.uid,
-      name:result.user.displayName||"Meng",
-      email:result.user.email||""
-    };
-    window.enterTeacher();
-  }catch(err){
-    console.error(err);
-    alert("Google 登入或雲端硬碟授權失敗："+(err.message||err));
-  }
-};
-</script>
-
 <script>
-const Courses=["國文","英語","數學","自然","社會","音樂","體育","視覺藝術","表演藝術","科技","綜合活動","班會","自訂"];
-const Learn=["未完成作業","未帶課本","未帶習作","未帶文具／用品","上課精神不佳","專注力較不穩定","未參與討論","活動完成度待加強","學習態度良好","主動發言","主動協助同學","自訂"];
-const Behave=["與同學交談","擅自離座","使用手機","課堂飲食","影響課程進行","未依課堂規範","情緒起伏","人際互動需引導","自律良好","禮貌良好","自訂"];
-const Handle=["已口頭提醒","已個別提醒","已協助完成","已聯絡家長","已與學生晤談","持續觀察","已鼓勵","已獎勵","已轉介","自訂"];
-const phrases={
-"未完成作業":"今日作業尚未於規定時間內完成，老師已提醒利用時間補齊。",
-"未帶課本":"今日課程所需課本尚未備妥，老師已協助孩子參與課程，並提醒下次課前確認。",
-"未帶習作":"今日尚未攜帶課程所需習作，已提醒於下次上課前備妥。",
-"未帶文具／用品":"今日課程所需用品尚未備妥，老師已協助孩子參與課程。",
-"上課精神不佳":"今日課程中觀察到孩子精神較為疲倦，老師已適時關心。",
-"專注力較不穩定":"今日課堂中專注情形偶有中斷，老師已適時提醒。",
-"未參與討論":"今日課堂討論時參與程度較低，老師已鼓勵孩子表達想法。",
-"活動完成度待加強":"今日課堂活動尚未在指定時間內完成，老師已提供協助與提醒。",
-"學習態度良好":"今日能依照課程指示投入學習活動，值得肯定。",
-"主動發言":"今日能主動回應課堂提問，展現良好的參與態度。",
-"主動協助同學":"今日能主動協助同學或班級事務，值得鼓勵。",
-"與同學交談":"今日課堂中曾有與同學交談的情形，老師已於當下提醒。",
-"擅自離座":"今日課堂中曾有離開座位的情形，老師已提醒依課程需要在座位上參與活動。",
-"使用手機":"今日課程進行期間曾使用手機，老師已依班級規範提醒。",
-"課堂飲食":"今日課程進行期間曾有飲食情形，老師已提醒留意課堂規範。",
-"影響課程進行":"今日課堂中曾有影響課程進行的情形，老師已適時引導。",
-"未依課堂規範":"今日課堂中曾有未依課程指示進行的情形，老師已說明並提醒。",
-"情緒起伏":"今日在課堂或班級活動中情緒反應較為明顯，老師已適時關心並協助調整。",
-"人際互動需引導":"今日與同學互動時曾出現意見不同的情形，老師已陪同釐清並引導合宜表達。",
-"自律良好":"今日能遵守課堂與班級規範，展現良好的自律表現。",
-"禮貌良好":"今日與師長及同學互動時能使用合宜的表達方式，值得肯定。"
+const COURSE_GROUPS={
+ "語文":["國文","英文"],
+ "數學":["數學"],
+ "自然":["自然"],
+ "社會":["歷史","地理","公民"],
+ "藝術":["音樂","視覺藝術","表演藝術"],
+ "健康與體育":["健康教育","體育"],
+ "科技":["資訊科技","生活科技"],
+ "綜合活動":["輔導","家政","童軍"],
+ "社團":["社團"],
+ "彈性":["彈性－社會","彈性－自然","彈性－國文","彈性－英文"],
+ "其他":["班會","導師時間","自訂"]
 };
-const D=JSON.parse(localStorage.getItem("pcb_v11_integrated")||"null")||{students:[{id:"s1",seat:1,name:"王小明",parent:"王媽媽",phone:"0912-000-001",account:"70601",password:"123456",adv:"高中"},{id:"s2",seat:2,name:"李小華",parent:"李爸爸",phone:"0912-000-002",account:"70602",password:"123456",adv:"高職"}],homework:[],ann:[],notices:[],attendance:[],sign:[],contacts:[],counseling:[],timetable:{}};
-let CP=null,pendingFiles=[];window.driveAccessToken=window.driveAccessToken||'';const T=()=>new Date().toISOString().slice(0,10),N=()=>new Date().toLocaleString("zh-TW"),E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])),S=id=>D.students.find(x=>x.id===id);
-function save(){localStorage.setItem("pcb_v11_integrated",JSON.stringify(D));renderAll()}
+const LEARN_EVENTS=["作業尚未完成","未攜帶課本","未攜帶習作","未攜帶文具／用品","課堂精神較疲倦","專注情形偶有中斷","課堂討論參與較少","課堂活動尚未完成","學習態度穩定","主動發言","主動協助同學","自訂"];
+const BEHAVIOR_EVENTS=["課堂中曾與同學交談","課堂中曾離開座位","課程期間曾使用手機","課程期間曾有飲食情形","曾短暫影響課程進行","曾未依課堂指示進行","情緒反應較為明顯","與同學互動需進一步引導","自律表現良好","禮貌表現良好","自訂"];
+const HANDLING=["已口頭提醒","已個別提醒","已協助完成","已聯絡家長","已與學生晤談","持續觀察","已鼓勵","已給予正向肯定","已轉介相關處室","自訂"];
+const PROBLEM_TYPES=["學習","生涯","家庭","人際","同儕","感情","生活適應","行為與常規","出缺勤","親師溝通","其他"];
+const LOCATIONS=["教室","導師室","辦公室","輔導室","學務處","電話","線上","校園其他地點","其他"];
+const OBJECTS=["學生","家長","任課老師","輔導老師","學務處","校護","其他"];
+const RISKY=["懶惰","態度很差","沒家教","故意","問題學生","不受教","白目","很皮","沒救","屢勸不聽","愛講話","不負責任","散漫","總是","從來不","一定"];
+
+const PHRASE_BANK={
+ "作業尚未完成":[
+  "今日作業尚未於規定時間內完成，老師已提醒利用可運用的時間補齊。",
+  "今日仍有學習任務尚未完成，已提醒學生確認進度並儘速補充。",
+  "今日作業完成情形尚需持續關心，老師已向學生說明後續補交方式。"
+ ],
+ "未攜帶課本":[
+  "今日課程所需課本尚未備妥，老師已協助學生參與課程，並提醒下次課前再次確認。",
+  "今日未能備妥課程所需課本，已提醒學生於下次上課前先行檢查學用品。",
+  "今日課堂用品準備尚有遺漏，老師已於課堂中提供必要協助。"
+ ],
+ "未攜帶習作":[
+  "今日尚未攜帶課程所需習作，已提醒於下次上課前備妥。",
+  "今日習作未能隨身備妥，老師已說明後續補充方式。",
+  "今日課程進行時發現習作尚未準備，已提醒學生留意下次攜帶。"
+ ],
+ "未攜帶文具／用品":[
+  "今日課程所需用品尚未備妥，老師已協助學生參與課程。",
+  "今日學用品準備尚有遺漏，已提醒學生於下次課前自行確認。",
+  "今日部分課程用品未備妥，老師已先提供必要協助並提醒後續準備。"
+ ],
+ "課堂精神較疲倦":[
+  "今日課程中觀察到學生精神較為疲倦，老師已適時關心。",
+  "今日課堂中曾出現較為疲累的情形，已提醒適度調整並留意休息。",
+  "今日學習過程中精神狀況稍顯疲倦，老師已給予關心並視情況協助。"
+ ],
+ "專注情形偶有中斷":[
+  "今日課堂中專注情形偶有中斷，老師已適時提醒。",
+  "今日課程進行期間曾出現注意力離開學習任務的情形，提醒後已逐步回到課程活動。",
+  "今日課堂參與過程中專注度有起伏，老師已於當下引導。"
+ ],
+ "課堂討論參與較少":[
+  "今日課堂討論時參與程度較低，老師已鼓勵學生表達想法。",
+  "今日討論活動中較少主動回應，已透過提問方式鼓勵參與。",
+  "今日課程討論時發言較少，老師已提供適當引導與等待時間。"
+ ],
+ "課堂活動尚未完成":[
+  "今日課堂活動尚未在指定時間內完成，老師已提供協助與提醒。",
+  "今日學習活動進度尚未完全完成，已提醒學生利用時間補足。",
+  "今日課堂任務仍有部分待完成，老師已說明後續處理方式。"
+ ],
+ "學習態度穩定":[
+  "今日能依照課程指示投入學習活動，整體參與情形穩定，值得肯定。",
+  "今日能持續參與課程並完成指定活動，表現值得鼓勵。",
+  "今日學習態度穩定，能配合課程安排完成相關任務。"
+ ],
+ "主動發言":[
+  "今日能主動回應課堂提問，展現良好的參與態度。",
+  "今日在課程中願意表達自己的想法，為課堂帶來正向互動。",
+  "今日能於適當時機主動發言，參與情形值得肯定。"
+ ],
+ "主動協助同學":[
+  "今日能主動協助同學或班級事務，展現關懷與責任感。",
+  "今日在團體活動中願意提供協助，表現值得鼓勵。",
+  "今日能在不影響自身學習的情況下適時協助同學，值得肯定。"
+ ],
+ "課堂中曾與同學交談":[
+  "今日課堂中曾有與同學交談的情形，老師已於當下提醒。",
+  "今日課程進行期間偶有與同學交談，經提醒後已逐步回到課程活動。",
+  "今日課堂中曾出現交談情形，老師已適時引導在合宜時機進行互動。"
+ ],
+ "課堂中曾離開座位":[
+  "今日課堂中曾有離開座位的情形，老師已提醒依課程需要在座位上參與活動。",
+  "今日課程進行期間曾短暫離開座位，老師已於當下提醒並引導回到學習活動。",
+  "今日課堂中有離座情形，已向學生說明課堂活動進行時的相關規範。"
+ ],
+ "課程期間曾使用手機":[
+  "今日課程進行期間曾使用手機，老師已依班級規範提醒。",
+  "今日課堂中曾出現手機使用情形，經提醒後已將手機收妥並回到課程活動。",
+  "今日課程期間曾使用手機，老師已於當下說明課堂使用規範。"
+ ],
+ "課程期間曾有飲食情形":[
+  "今日課程進行期間曾有飲食情形，老師已提醒留意課堂規範。",
+  "今日課堂中曾出現飲食情形，已於當下提醒並說明相關規範。",
+  "今日課程期間曾進行飲食，老師已提醒於合宜時間再進行。"
+ ],
+ "曾短暫影響課程進行":[
+  "今日課堂中曾有短暫影響課程進行的情形，老師已適時引導。",
+  "今日課程進行期間曾出現需要老師暫停並提醒的情形，後續已回到課程活動。",
+  "今日課堂中曾有需要額外提醒的狀況，老師已於當下協助調整。"
+ ],
+ "曾未依課堂指示進行":[
+  "今日課堂中曾有未依課程指示進行的情形，老師已說明並提醒。",
+  "今日學習活動進行時曾未能立即依照指示完成，經說明後已逐步配合。",
+  "今日課堂中曾需要再次說明活動規範，老師已於當下協助。"
+ ],
+ "情緒反應較為明顯":[
+  "今日在課堂或班級活動中情緒反應較為明顯，老師已適時關心並協助調整。",
+  "今日曾出現較明顯的情緒反應，老師已先陪同穩定情緒並了解當時狀況。",
+  "今日活動過程中情緒起伏較為明顯，已給予適當關心與支持。"
+ ],
+ "與同學互動需進一步引導":[
+  "今日與同學互動時曾出現意見不同的情形，老師已陪同釐清並引導合宜表達。",
+  "今日同儕互動過程中曾需要老師協助溝通，已引導雙方說明想法。",
+  "今日與同學互動時曾有需要進一步協調的情形，老師已協助了解事件經過。"
+ ],
+ "自律表現良好":[
+  "今日能遵守課堂與班級規範，展現良好的自律表現。",
+  "今日能依照班級約定完成應辦事項，自我管理情形值得肯定。",
+  "今日在課堂與班級活動中能適時自我調整，表現值得鼓勵。"
+ ],
+ "禮貌表現良好":[
+  "今日與師長及同學互動時能使用合宜的表達方式，值得肯定。",
+  "今日在人際互動中能展現尊重與禮貌，表現值得鼓勵。",
+  "今日與他人互動時表達方式適切，能維持良好溝通。"
+ ]
+};
+
+const PROBLEM_GUIDES={
+ "學習":["近期在部分課程的學習任務完成情形需要持續關心。","學生於晤談中提及目前對部分課程內容較難掌握，希望能獲得進一步協助。","本次晤談主要了解近期學習狀況、作業完成與課堂參與情形。"],
+ "生涯":["本次晤談主要了解學生目前對未來升學與生涯方向的想法。","學生對未來學習方向尚在探索中，本次以蒐集想法與提供資訊為主。","本次針對升學選擇與個人興趣進行討論，協助學生整理目前考量。"],
+ "家庭":["本次晤談涉及家庭生活相關情況，內容以學生目前感受與實際需求為主。","學生提及近期家庭生活有部分變動，本次先了解其在校適應情形。","本次主要了解家庭因素是否影響學生近期學習或生活安排。"],
+ "人際":["近期與他人互動時曾出現需要進一步理解的情形，本次晤談主要了解事件經過及學生想法。","本次針對近期人際互動狀況進行了解，協助學生整理溝通方式。","本次晤談以了解學生在人際互動中的感受與實際情境為主。"],
+ "同儕":["近期與同學互動時曾出現意見不同的情形，本次晤談主要了解事件經過。","本次針對同儕互動狀況進行了解，協助學生釐清彼此表達與需求。","本次晤談以學生與同儕近期互動情形為主，未預設任何責任歸屬。"],
+ "感情":["學生主動提及與情感互動相關的困擾，本次以傾聽與了解其目前感受為主。","本次晤談涉及情感互動議題，主要協助學生整理目前想法與界線。","本次以學生自述的情感互動情況為基礎進行關心與討論。"],
+ "生活適應":["本次主要了解學生近期在校生活與作息適應情形。","近期在生活安排或校園適應方面有需要進一步關心的情形。","本次晤談著重了解學生近期生活狀態及可能需要的支持。"],
+ "行為與常規":["近期在部分班級或課堂規範的配合情形需要持續關心。","本次晤談主要了解先前事件經過，並再次說明相關規範與期待。","本次針對近期常規表現進行了解，以具體事件與後續協助為主。"],
+ "出缺勤":["近期到校或出缺勤情形需要進一步了解，本次以確認實際狀況為主。","本次晤談主要了解近期出缺勤原因與後續到校安排。","近期曾有到校時間或請假情形需要持續關心，本次先確認相關資訊。"],
+ "親師溝通":["本次紀錄源自親師聯繫，主要整理家長反映內容與後續處理情形。","本次主要針對家長提出的疑問或反映進一步了解與回應。","本次紀錄用於保留親師溝通內容及後續協助安排。"]
+};
+
+function initialData(){return{
+ version:"13.0",
+ classes:[{id:"c1",schoolYear:115,grade:7,classNo:6,name:"六出奇技",teacher:"Meng",status:"active",history:[{schoolYear:115,grade:7,classNo:6}]}],
+ currentClassId:"c1",
+ students:[
+  {id:"s1",classId:"c1",seat:1,name:"王小明",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"王媽媽",parent1Phone:"0912-000-001",parent1Email:"",parent2Name:"",parent2Phone:"",parent2Email:"",account:"70601",password:"123456",advancement:"高中"},
+  {id:"s2",classId:"c1",seat:2,name:"李小華",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"李爸爸",parent1Phone:"0912-000-002",parent1Email:"",parent2Name:"",parent2Phone:"",parent2Email:"",account:"70602",password:"123456",advancement:"高職"}
+ ],
+ homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
+}}
+let D=JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null;
+const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const C=()=>D.classes.find(x=>x.id===D.currentClassId)||D.classes[0], students=()=>D.students.filter(s=>s.classId===D.currentClassId).sort((a,b)=>a.seat-b.seat), S=id=>D.students.find(x=>x.id===id);
+function save(){localStorage.setItem("pcb_v13",JSON.stringify(D));renderAll()}
 function tab(x){tlogin.classList.toggle("hidden",x!=="t");plogin.classList.toggle("hidden",x!=="p");tt.classList.toggle("on",x==="t");pt.classList.toggle("on",x==="p")}
 function enterTeacher(){login.classList.add("hidden");teacher.classList.remove("hidden");renderAll()}
-function enterParent(){let s=D.students.find(x=>x.account===pa.value&&x.password===pp.value);if(!s)return alert("帳號或密碼不正確");CP=s;login.classList.add("hidden");parent.classList.remove("hidden");renderParent()}
-function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p===id));if(id==="preview")renderPreview();scrollTo({top:0,behavior:"smooth"})}
+function enterParent(){let s=D.students.find(x=>x.account===pa.value.trim()&&x.password===pp.value);if(!s)return alert("帳號或密碼不正確");CP=s;login.classList.add("hidden");parent.classList.remove("hidden");renderParent()}
+function go(id){document.querySelectorAll(".page").forEach(x=>x.classList.toggle("hidden",x.id!==id));document.querySelectorAll(".nav").forEach(x=>x.classList.toggle("on",x.dataset.p===id));if(id==="preview")renderPreview();window.scrollTo({top:0,behavior:"smooth"})}
+function renderAll(){renderHeader();renderHome();renderDaily();renderSchedule();renderClasses();renderStudents();renderContacts();renderCounseling();renderPreview();renderReports()}
+function renderHeader(){classSelect.innerHTML=D.classes.filter(c=>c.status!=="deleted").map(c=>`<option value="${c.id}">${c.schoolYear}學年度・${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${E(c.name)}）`:""}${c.status==="graduated"?"｜已畢業":""}</option>`).join("");classSelect.value=D.currentClassId;let c=C();classTitle.textContent=`${c.grade}${String(c.classNo).padStart(2,"0")}班${c.name?`（${c.name}）`:""}`;yearTitle.textContent=`${c.schoolYear}學年度｜${c.teacher||"Meng"}老師`}
+function changeClass(){D.currentClassId=classSelect.value;currentSentences=[];save()}
 const stat=(l,n)=>`<div class="stat"><span>${l}</span><b>${n}</b></div>`;
-function renderAll(){renderHome();renderDaily();renderSchedule();renderStudents();renderContacts();renderCounseling();renderPreview();renderReports()}
-function renderHome(){let signed=D.sign.filter(x=>x.date===T()).length;home.innerHTML=`<div class="card panel"><div class="head"><h2>今日概況</h2><span>${T()}</span></div><div class="stats">${stat("今日功課",D.homework.filter(x=>x.date===T()).length)}${stat("今日公告",D.ann.filter(x=>x.date.startsWith(T())).length)}${stat("個別聯絡",D.notices.filter(x=>x.date.startsWith(T())).length)}${stat("已簽閱",signed+"/"+D.students.length)}</div></div><div class="card panel"><div class="head"><h2>今日簽閱</h2></div><div class="list">${D.students.map(s=>{let x=D.sign.find(v=>v.date===T()&&v.sid===s.id);return `<div class="item">${s.seat}號 ${E(s.name)}｜${x?"✅ "+E(x.time):"❌ 未簽閱"}</div>`}).join("")}</div></div>`}
-function checks(arr,cls){return arr.map(x=>`<label><input type="checkbox" class="${cls}" value="${E(x)}"> ${E(x)}</label>`).join("")}
-function renderDaily(){daily.innerHTML=`<div class="card panel"><div class="head"><h2>今日聯絡簿</h2><span class="badge">全班與個別內容整合在同一頁</span></div>
-<h3>全班內容</h3><div class="grid2"><div class="field"><label>日期</label><input id="dDate" type="date" value="${T()}"></div><div class="field"><label>今日提醒</label><input id="classReminder" placeholder="例如：明天穿運動服、帶直笛"></div></div>
-<div class="grid2"><div class="field"><label>功課科目</label><input id="hwSub" placeholder="國文"></div><div class="field"><label>功課內容</label><input id="hwText" placeholder="習作 P.32"></div></div><button class="btn secondary" onclick="addHW()">加入今日功課</button>
-<div class="field"><label>統一公告</label><textarea id="classAnn" placeholder="一次發布，全班家長都能看到"></textarea></div>
-<div class="card panel" style="box-shadow:none;background:#f8fcfe">
- <div class="head"><h3>公告附件中心</h3><span class="badge good">可同時上傳多個檔案</span></div>
- <div class="safe">Google 教師登入後，可直接選取學校收到的 PDF、Word、Excel、PowerPoint、圖片等檔案，系統會上傳至老師自己的 Google Drive 並建立家長可查看的連結。</div>
- <div class="field"><label>直接選取檔案</label><input id="directFiles" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,image/*,video/*,audio/*" onchange="selectDirectFiles(event)"></div>
- <div id="pendingFileList" class="attachments"></div>
- <details style="margin-top:11px"><summary><b>或貼上既有 Google Drive／網址連結</b></summary>
-  <div class="grid2"><div class="field"><label>附件名稱</label><input id="fileName" placeholder="校外教學通知.pdf"></div><div class="field"><label>分享連結</label><input id="fileUrl" placeholder="https://drive.google.com/..."></div></div>
- </details>
-</div>
-<button class="btn" id="publishClassBtn" onclick="publishClass()">發布全班內容</button></div>
-<div class="card panel"><div class="head"><h2>個別學生聯絡</h2><span class="badge">直接選座號／姓名</span></div><div class="grid2"><div class="field"><label>學生與家長</label><select id="dStudent">${D.students.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}｜家長：${E(s.parent)}</option>`).join("")}</select></div><div class="field"><label>日期</label><input id="iDate" type="date" value="${T()}"></div></div><div class="safe">送出前會再次顯示學生及家長姓名，避免誤傳。</div>
-<h3>出缺勤</h3><div class="grid2"><div class="field"><label>到校狀態</label><select id="status"><option>準時到校</option><option>遲到</option><option>未到</option><option>早退</option></select></div><div class="field"><label>請假別</label><select id="leave"><option value="">空白（表示到校）</option><option>事假</option><option>病假</option><option>喪假</option><option>未請假</option></select></div><div class="field"><label>到校時間</label><input id="arr" type="time"></div><div class="field"><label>離校／請假時間</label><input id="levt" type="time"></div><div class="field"><label>請假方式</label><select id="method"><option value="">空白（表示到校）</option><option>家長來電</option><option>家長用 LINE 通知</option><option>學生告知</option><option>因未到校聯繫告知</option></select></div></div>
-<h3>發生在哪一堂課？（可複選）</h3><div class="options">${checks(Courses,"course")}</div><h3>學習狀況（可複選）</h3><div class="options">${checks(Learn,"learn")}</div><h3>日常／課堂表現（可複選）</h3><div class="options">${checks(Behave,"behave")}</div><h3>處理方式（可複選）</h3><div class="options">${checks(Handle,"handle")}</div>
-<div class="field"><label>老師關鍵字</label><input id="kw" placeholder="例如：第二節、提醒兩次、已改善"></div><div class="field"><label>家長可見防禦性文字</label><textarea id="out"></textarea></div><button class="btn secondary" onclick="gen()">產生文字</button> <button class="btn" onclick="sendDaily()">確認對象並送出</button></div>`}
-function addHW(){if(!hwSub.value.trim()||!hwText.value.trim())return;D.homework.push({date:dDate.value,subject:hwSub.value.trim(),content:hwText.value.trim()});save();alert("已加入今日功課")}
-function selectDirectFiles(e){
- pendingFiles=[...e.target.files].map(file=>({file,name:file.name,type:file.type||"application/octet-stream",status:"等待上傳",progress:0}));
- renderPendingFiles();
+
+function renderHome(){
+ let ss=students(), signed=D.signatures.filter(x=>x.date===T()&&ss.some(s=>s.id===x.sid)).length;
+ home.innerHTML=`<div class="card panel"><div class="head"><h2>今日概況</h2><span>${T()}</span></div><div class="stats">${stat("學生人數",ss.length)}${stat("今日公告",D.announcements.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("今日提醒",D.notices.filter(x=>x.classId===D.currentClassId&&x.date.startsWith(T())).length)}${stat("已簽閱",signed+"/"+ss.length)}</div></div>
+ <div class="card panel"><div class="head"><h2>今日簽閱</h2></div><div class="list">${ss.map(s=>{let x=D.signatures.find(v=>v.date===T()&&v.sid===s.id);return `<div class="item">${s.seat}號 ${E(s.name)}｜${x?"✅ "+E(x.time):"❌ 未簽閱"}</div>`}).join("")||'<div class="muted">尚無學生資料</div>'}</div></div>`;
 }
-function renderPendingFiles(){
- const box=document.getElementById("pendingFileList");if(!box)return;
- box.innerHTML=pendingFiles.map((x,i)=>`<div class="attachment">
-  <div class="attachmentHead"><div><b>${E(x.name)}</b><div class="small muted">${E(x.type)}｜${formatBytes(x.file.size)}｜${E(x.status)}</div></div><button class="btn danger" onclick="removePendingFile(${i})">移除</button></div>
-  <div class="progress"><span style="width:${x.progress||0}%"></span></div>
- </div>`).join("")||'<div class="muted">尚未選取附件。</div>';
-}
-function removePendingFile(i){pendingFiles.splice(i,1);renderPendingFiles()}
-function formatBytes(n){if(n<1024)return n+" B";if(n<1024*1024)return(n/1024).toFixed(1)+" KB";return(n/1024/1024).toFixed(1)+" MB"}
-async function uploadFileToDrive(item){
- if(!window.driveAccessToken)throw new Error("請先使用 Google 帳號登入，才能直接上傳至 Google Drive。");
- item.status="建立雲端檔案";item.progress=10;renderPendingFiles();
- const metadata={name:item.name,mimeType:item.type};
- const create=await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,mimeType,webViewLink,webContentLink",{
-  method:"POST",
-  headers:{
-   "Authorization":"Bearer "+window.driveAccessToken,
-   "Content-Type":"application/json; charset=UTF-8",
-   "X-Upload-Content-Type":item.type,
-   "X-Upload-Content-Length":String(item.file.size)
-  },
-  body:JSON.stringify(metadata)
- });
- if(!create.ok)throw new Error("無法建立 Google Drive 上傳工作："+await create.text());
- const location=create.headers.get("Location");
- if(!location)throw new Error("Google Drive 未回傳上傳位置。");
- item.status="上傳中";item.progress=45;renderPendingFiles();
- const uploaded=await fetch(location,{method:"PUT",headers:{"Content-Type":item.type},body:item.file});
- if(!uploaded.ok)throw new Error("檔案上傳失敗："+await uploaded.text());
- const info=await uploaded.json();
- item.status="設定家長閱覽權限";item.progress=80;renderPendingFiles();
- const permission=await fetch(`https://www.googleapis.com/drive/v3/files/${info.id}/permissions`,{
-  method:"POST",
-  headers:{"Authorization":"Bearer "+window.driveAccessToken,"Content-Type":"application/json"},
-  body:JSON.stringify({type:"anyone",role:"reader"})
- });
- if(!permission.ok)throw new Error("已上傳，但無法設定分享權限："+await permission.text());
- item.status="完成";item.progress=100;renderPendingFiles();
- return{
-  name:info.name||item.name,
-  mimeType:info.mimeType||item.type,
-  driveId:info.id,
-  url:`https://drive.google.com/open?id=${info.id}`,
-  previewUrl:`https://drive.google.com/file/d/${info.id}/preview`,
-  source:"direct-drive-upload"
- };
-}
-async function publishClass(){
- if(classReminder.value.trim())D.homework.push({date:dDate.value,subject:"明日提醒",content:classReminder.value.trim()});
- const hasAnnouncement=classAnn.value.trim()||fileUrl.value.trim()||pendingFiles.length;
- if(!hasAnnouncement){save();alert("全班功課／提醒已發布");return}
- const btn=document.getElementById("publishClassBtn");
- try{
-  btn.disabled=true;btn.textContent="附件上傳中…";
-  const attachments=[];
-  for(const item of pendingFiles)attachments.push(await uploadFileToDrive(item));
-  if(fileUrl.value.trim())attachments.push({
-   name:fileName.value.trim()||"外部附件",
-   mimeType:"link",
-   url:fileUrl.value.trim(),
-   previewUrl:fileUrl.value.trim(),
-   source:"link"
-  });
-  D.ann.unshift({
-   date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),
-   target:"all",
-   text:classAnn.value.trim(),
-   attachments,
-   file:"",
-   url:""
-  });
-  pendingFiles=[];save();alert("全班內容與附件已發布");
- }catch(err){
-  console.error(err);alert(err.message||String(err));
- }finally{
-  btn.disabled=false;btn.textContent="發布全班內容";
- }
+
+function courseChecks(){return Object.entries(COURSE_GROUPS).map(([g,arr])=>`<div class="item"><b>${E(g)}</b><div class="checkgrid" style="margin-top:8px">${arr.map(x=>`<label class="checkitem"><input type="checkbox" class="course" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div></div>`).join("")}
+function eventChecks(arr,cls){return `<div class="checkgrid">${arr.map(x=>`<label class="checkitem"><input type="checkbox" class="${cls}" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div>`}
+function renderDaily(){
+ let ss=students();
+ daily.innerHTML=`<div class="card panel"><div class="head"><h2>今日聯絡簿</h2><span class="badge good">學校／班級公告＋學習與生活提醒</span></div>
+ <h3>全班內容</h3>
+ <div class="grid2"><div class="field"><label>日期</label><input id="dDate" type="date" value="${T()}"></div><div class="field"><label>今日／明日提醒</label><input id="classReminder" placeholder="例如：明天穿運動服、攜帶直笛"></div></div>
+ <div class="grid2"><div class="field"><label>功課科目</label><input id="hwSub" placeholder="例如：國文"></div><div class="field"><label>功課內容</label><input id="hwText" placeholder="例如：習作 P.32"></div></div><button class="btn secondary" onclick="addHW()">加入功課</button>
+ <div class="grid2"><div class="field"><label>公告類型</label><select id="annType"><option>學校公告</option><option>班級公告</option></select></div><div class="field"><label>公告標題</label><input id="annTitle" placeholder="例如：新生訓練通知"></div></div>
+ <div class="field"><label>公告內容</label><textarea id="annText" placeholder="一次發布，家長可在今日聯絡簿看到"></textarea></div>
+ <div class="grid2"><div class="field"><label>附件名稱（選填）</label><input id="annFile" placeholder="校外教學通知.pdf"></div><div class="field"><label>Google Drive／網址（選填）</label><input id="annUrl" placeholder="https://..."></div></div>
+ <button class="btn" onclick="publishClassContent()">發布全班內容</button></div>
+
+ <div class="card panel"><div class="head"><h2>學習與生活提醒</h2><span class="badge">直接選座號／姓名，不從學生頁跳轉</span></div>
+ <div class="grid2"><div class="field"><label>學生</label><select id="dStudent">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}｜家長：${E(s.parent1Name||"未填")}</option>`).join("")}</select></div><div class="field"><label>日期</label><input id="iDate" type="date" value="${T()}"></div></div>
+ <div class="safe">送出前會再次顯示學生與家長姓名。內容預設採客觀、可觀察、避免人格標籤與動機推測的表達。</div>
+ <h3>出缺勤</h3><div class="grid3"><div class="field"><label>到校狀態</label><select id="status"><option>準時到校</option><option>遲到</option><option>未到</option><option>早退</option></select></div><div class="field"><label>請假別</label><select id="leave"><option value="">空白（表示到校）</option><option>事假</option><option>病假</option><option>喪假</option><option>未請假</option></select></div><div class="field"><label>請假方式</label><select id="method"><option value="">空白（表示到校）</option><option>家長來電</option><option>家長用 LINE 通知</option><option>學生告知</option><option>因未到校聯繫告知</option></select></div><div class="field"><label>到校時間</label><input id="arr" type="time"></div><div class="field"><label>離校／請假時間</label><input id="levt" type="time"></div></div>
+ <h3>發生在哪一堂課？（可複選）</h3>${courseChecks()}
+ <h3>學習狀況（可複選）</h3>${eventChecks(LEARN_EVENTS,"learn")}
+ <h3>日常／課堂表現（可複選）</h3>${eventChecks(BEHAVIOR_EVENTS,"behave")}
+ <h3>處理方式（可複選）</h3>${eventChecks(HANDLING,"handle")}
+ <div class="field"><label>老師關鍵字（選填）</label><input id="kw" placeholder="例如：第二節、提醒兩次、提醒後已改善"></div>
+ <div class="head" style="margin-top:16px"><h3>聯絡內容組句器</h3><div class="nowrap"><button class="btn secondary" onclick="addSentence()">＋加入一句</button> <button class="btn secondary" onclick="clearSentenceSelection()">清除勾選</button></div></div>
+ <div class="muted small">每次勾選一個或多個事件後按「加入一句」，可再重新勾選下一個事件繼續加入。每一句都能換一句、修改、刪除與調整順序。</div>
+ <div id="sentenceList" class="list" style="margin-top:10px"></div>
+ <div id="riskBox" class="safe" style="margin-top:12px">防禦性文字檢查：目前無高風險用詞。</div>
+ <div class="field"><label>家長最後看到的完整文字</label><textarea id="finalText" oninput="syncSentencesFromFinal()"></textarea></div>
+ <div class="toolbar"><button class="btn" onclick="sendDaily()">確認對象並送出</button><button class="btn secondary" onclick="saveTeacherOnly()">只存教師事件紀錄</button><button class="btn secondary" onclick="openCounselFromDaily()">轉入輔導／晤談</button></div></div>`;
+ setTimeout(renderSentences,0)
 }
 function selected(cls){return [...document.querySelectorAll("."+cls+":checked")].map(x=>x.value)}
-function gen(){let c=selected("course"),l=selected("learn"),b=selected("behave"),h=selected("handle"),parts=[];if(c.length)parts.push(`今日於${c.join("、")}課程中，`);let issues=[...l,...b];if(issues.length){let generated=issues.map(x=>phrases[x]||`觀察到「${x}」的情形。`).join("");parts.push(generated)}if(h.length)parts.push(`處理方式：${h.join("、")}。`);if(kw.value.trim())parts.push(`補充觀察：${kw.value.trim()}。`);out.value=parts.join("")}
-function sendDaily(){let s=S(dStudent.value);if(!out.value.trim())return alert("請先產生或輸入內容");if(!confirm(`即將送給：${s.seat}號 ${s.name}\n家長：${s.parent||"未填"}\n\n確定送出？`))return;D.attendance.push({date:iDate.value,time:new Date().toLocaleTimeString("zh-TW"),sid:s.id,status:status.value,leave:leave.value,arrival:arr.value,leaveTime:levt.value,method:method.value});D.notices.push({date:iDate.value+" "+new Date().toLocaleTimeString("zh-TW"),sid:s.id,content:out.value,object:s.parent||"家長",handling:selected("handle").join("、")});save();alert("已送出")}
-function renderSchedule(){let days=["星期一","星期二","星期三","星期四","星期五"],periods=[1,2,3,4,5,6,7];schedule.innerHTML=`<div class="card panel"><div class="head"><h2>課表與功課</h2><button class="btn secondary" onclick="exportTable()">匯出 Excel 課表</button></div><div style="overflow:auto"><table style="width:100%;min-width:700px;border-collapse:collapse"><tr><th>節次</th>${days.map(d=>`<th>${d}</th>`).join("")}</tr>${periods.map(p=>`<tr><td>第${p}節</td>${days.map(d=>`<td><input value="${E(D.timetable[d+"-"+p]||"")}" onchange="D.timetable['${d}-${p}']=this.value;save()"></td>`).join("")}</tr>`).join("")}</table></div></div>`}
-function renderStudents(){students.innerHTML=`<div class="card panel"><div class="head"><h2>班級與學生</h2><button class="btn secondary" onclick="template()">下載 Excel 範本</button></div><div class="list">${D.students.map(s=>`<div class="item">${s.seat}號 ${E(s.name)}｜家長：${E(s.parent)}｜電話：${E(s.phone)}｜升學意向：${E(s.adv)}</div>`).join("")}</div></div>`}
-function renderContacts(){contacts.innerHTML=`<div class="card panel"><div class="head"><h2>親師聯繫</h2><span class="badge">可一鍵轉入輔導紀錄</span></div><div class="list">${D.contacts.map(c=>`<div class="item"><b>${E(c.date)}｜${E(S(c.sid)?.name)}</b><div>${E(c.content)}</div><button class="btn secondary" onclick="toCounsel('${c.id}')">加入輔導紀錄</button></div>`).join("")||'<div class="muted">尚無家長反應或提問</div>'}</div></div>`}
-function toCounsel(id){let c=D.contacts.find(x=>x.id===id);D.counseling.push({date:c.date.split(" ")[0],time:c.date.split(" ")[1]||"",sid:c.sid,object:"家長",content:c.content,handling:"待補充",source:"親師聯繫"});save();alert("已加入輔導紀錄")}
-function renderCounseling(){counseling.innerHTML=`<div class="card panel"><div class="head"><h2>輔導／晤談紀錄</h2></div><div class="grid2"><div class="field"><label>日期</label><input id="cDate" type="date" value="${T()}"></div><div class="field"><label>時間</label><input id="cTime" type="time"></div><div class="field"><label>學生</label><select id="cStudent">${D.students.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div class="field"><label>晤談對象</label><select id="cObj"><option>學生</option><option>家長</option><option>任課老師</option><option>輔導老師</option><option>學務處</option><option>校護</option><option>其他</option></select></div></div><div class="field"><label>內容</label><textarea id="cContent"></textarea></div><div class="field"><label>處理方式</label><textarea id="cHandling"></textarea></div><button class="btn" onclick="addCounsel()">儲存</button><div class="list" style="margin-top:13px">${D.counseling.map(c=>`<div class="item"><b>${E(c.date)} ${E(c.time)}｜${E(S(c.sid)?.name)}｜${E(c.object)}</b><div>${E(c.content)}</div><div class="small">處理方式：${E(c.handling)}</div></div>`).join("")||'<div class="muted">尚無紀錄</div>'}</div></div>`}
-function addCounsel(){D.counseling.push({date:cDate.value,time:cTime.value,sid:cStudent.value,object:cObj.value,content:cContent.value.trim(),handling:cHandling.value.trim(),source:"教師建立"});save()}
-function attachmentHtml(a){
- const files=(a.attachments||[]);
- if(!files.length&&a.url)files.push({name:a.file||"附件",url:a.url,previewUrl:a.url,mimeType:"link"});
- if(!files.length)return"";
- return `<div class="attachments">${files.map(f=>`<div class="attachment">
-  <div class="attachmentHead"><b>${E(f.name||"附件")}</b><a class="btn secondary" target="_blank" rel="noopener" href="${E(f.url)}">開啟／下載</a></div>
-  ${String(f.mimeType||"").startsWith("image/")&&f.driveId?`<img src="https://drive.google.com/uc?export=view&id=${E(f.driveId)}" alt="${E(f.name)}">`:`<iframe src="${E(f.previewUrl||f.url)}" title="${E(f.name||"附件")}"></iframe>`}
- </div>`).join("")}</div>`;
+function addHW(){if(!hwSub.value.trim()||!hwText.value.trim())return;D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:hwSub.value.trim(),content:hwText.value.trim()});save();alert("已加入功課")}
+function publishClassContent(){if(classReminder.value.trim())D.homework.push({id:"h"+Date.now(),classId:D.currentClassId,date:dDate.value,subject:"提醒事項",content:classReminder.value.trim()});if(annText.value.trim()||annUrl.value.trim()){D.announcements.unshift({id:"a"+Date.now(),classId:D.currentClassId,date:dDate.value+" "+new Date().toLocaleTimeString("zh-TW"),type:annType.value,title:annTitle.value.trim(),text:annText.value.trim(),file:annFile.value.trim(),url:annUrl.value.trim()})}save();alert("全班內容已發布")}
+function buildSentenceVariant(){
+ let courses=selected("course"), events=[...selected("learn"),...selected("behave")], handles=selected("handle"), keyword=kw.value.trim();
+ if(!events.length&&!keyword)return null;
+ let pieces=[];
+ if(courses.length)pieces.push(`今日於${courses.join("、")}課程中，`);
+ if(events.length){
+  let chosen=events.map(ev=>{let list=PHRASE_BANK[ev]; if(list?.length)return list[Math.floor(Math.random()*list.length)]; return `觀察到「${ev}」的情形。`});
+  // remove repeated 今日 prefix when already course lead
+  if(courses.length)chosen=chosen.map(s=>s.replace(/^今日(?:課程中|課堂中|課程進行期間|課堂討論時|學習過程中|活動過程中|與同學互動時|在人際互動中|在團體活動中|課堂用品準備|未能備妥|仍有|尚未|部分|學習活動進行時)?/,""));
+  pieces.push(chosen.join(""));
+ }
+ if(handles.length)pieces.push(`老師已採取的處理方式包括：${handles.join("、")}。`);
+ if(keyword)pieces.push(`補充觀察：${keyword}。`);
+ return {courses,events,handles,keyword,text:pieces.join("")}
 }
-function renderPreview(){preview.innerHTML=`<div class="card panel"><div class="head"><h2>家長預覽</h2><select id="pv" onchange="previewCard(this.value)">${D.students.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div id="pvbox"></div></div>`;if(D.students[0])setTimeout(()=>previewCard(D.students[0].id),0)}
-function previewCard(id){let s=S(id),hw=D.homework.filter(x=>x.date===T()),an=D.ann.filter(x=>x.target==="all"||x.target===id),ns=D.notices.filter(x=>x.sid===id&&x.date.startsWith(T()));pvbox.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>統一／個別公告</h4>${an.map(x=>`<div class="item">${E(x.text)}${attachmentHtml(x)}</div>`).join("")||"無"}<h4>個別聯絡</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea disabled placeholder="有需要反應或提問時再填寫"></textarea><label><input type="checkbox" disabled style="width:auto"> 我已詳閱今日聯絡簿內容</label>`}
-function renderReports(){reports.innerHTML=`<div class="card panel"><div class="head"><h2>Excel 匯入／匯出</h2></div><p>學生歷程 Excel 包含日期、時間、晤談對象、內容、處理方式與建立來源。</p><select id="rs">${D.students.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select><br><button class="btn" onclick="exp([rs.value],S(rs.value).name+'_學生歷程.xlsx')" style="margin-top:9px">匯出個別學生</button> <button class="btn secondary" onclick="exp(D.students.map(x=>x.id),'全班學生歷程.xlsx')">匯出全班</button></div>`}
-function exp(ids,name){let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.students.filter(x=>ids.includes(x.id))),"學生資料");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.attendance.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time,"學生":S(x.sid)?.name,"到校狀態":x.status,"請假別":x.leave,"到校時間":x.arrival,"離校／請假時間":x.leaveTime,"請假方式":x.method}))),"出缺勤");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.notices.filter(x=>ids.includes(x.sid)).map(x=>({"日期時間":x.date,"學生":S(x.sid)?.name,"聯繫對象":x.object,"內容":x.content,"處理方式":x.handling}))),"個別聯絡");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.contacts.filter(x=>ids.includes(x.sid)).map(x=>({"日期時間":x.date,"學生":S(x.sid)?.name,"對象":"家長","內容":x.content,"處理方式":"待處理"}))),"親師聯繫");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.counseling.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time,"學生":S(x.sid)?.name,"晤談對象":x.object,"內容":x.content,"處理方式":x.handling,"來源":x.source}))),"輔導晤談");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.sign.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"簽閱時間":x.time,"學生":S(x.sid)?.name}))),"家長簽閱");XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(D.ann.map(a=>({"發布日期時間":a.date,"公告範圍":a.target==="all"?"全班":"個別","公告內容":a.text,"附件名稱":(a.attachments||[]).map(f=>f.name).join("；"),"附件類型":(a.attachments||[]).map(f=>f.mimeType).join("；"),"附件連結":(a.attachments||[]).map(f=>f.url).join("；")}))),"公告附件");XLSX.writeFile(wb,name)}
-function template(){let ws=XLSX.utils.aoa_to_sheet([["座號","姓名","家長姓名","家長電話","家長地址","升學意向"],[1,"王小明","王媽媽","0912-000-000","","高中"]]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料範本.xlsx")}
-function exportTable(){let days=["星期一","星期二","星期三","星期四","星期五"],rows=[1,2,3,4,5,6,7].map(p=>{let r={"節次":`第${p}節`};days.forEach(d=>r[d]=D.timetable[d+"-"+p]||"");return r}),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"功課表");XLSX.writeFile(wb,"班級功課表.xlsx")}
-function renderParent(){let s=CP,hw=D.homework.filter(x=>x.date===T()),an=D.ann.filter(x=>x.target==="all"||x.target===s.id),ns=D.notices.filter(x=>x.sid===s.id&&x.date.startsWith(T())),sg=D.sign.find(x=>x.sid===s.id&&x.date===T());parentView.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>統一／個別公告</h4>${an.map(x=>`<div class="item">${E(x.text)}${attachmentHtml(x)}</div>`).join("")||"無"}<h4>個別聯絡</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label><input id="ps" type="checkbox" style="width:auto" ${sg?"checked disabled":""}> 我已詳閱今日聯絡簿內容</label><br><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted">簽閱時間：${E(sg.time)}</div>`:""}`}
-function submitP(){if(!ps.checked)return alert("請先勾選已詳閱");if(pm.value.trim())D.contacts.unshift({id:"pc"+Date.now(),date:N(),sid:CP.id,content:pm.value.trim()});D.sign.push({date:T(),time:N(),sid:CP.id});save();renderParent();alert("已完成今日簽閱")}
+function addSentence(){let s=buildSentenceVariant();if(!s)return alert("請至少勾選一項學習／生活事件，或輸入關鍵字");currentSentences.push({id:"sent"+Date.now()+Math.random(),...s});renderSentences();clearSentenceSelection(false)}
+function renderSentences(){
+ let box=document.getElementById("sentenceList");if(!box)return;
+ box.innerHTML=currentSentences.length?currentSentences.map((s,i)=>`<div class="sentence-card"><div class="small muted">第 ${i+1} 句｜${E(s.events.join("、")||s.keyword)}</div><textarea onchange="editSentence(${i},this.value)">${E(s.text)}</textarea><div class="sentence-actions"><button class="btn secondary" onclick="regenSentence(${i})">換一句</button><button class="btn secondary" onclick="moveSentence(${i},-1)" ${i===0?"disabled":""}>上移</button><button class="btn secondary" onclick="moveSentence(${i},1)" ${i===currentSentences.length-1?"disabled":""}>下移</button><button class="btn danger" onclick="removeSentence(${i})">刪除</button></div></div>`).join(""):'<div class="muted">尚未加入句子。</div>';
+ let f=document.getElementById("finalText");if(f)f.value=currentSentences.map(x=>x.text).join("\n");
+ checkRisk()
+}
+function editSentence(i,v){currentSentences[i].text=v;renderSentences()}
+function regenSentence(i){let s=currentSentences[i], parts=[];if(s.courses.length)parts.push(`今日於${s.courses.join("、")}課程中，`);let chosen=s.events.map(ev=>{let list=PHRASE_BANK[ev];return list?.[Math.floor(Math.random()*list.length)]||`觀察到「${ev}」的情形。`});parts.push(chosen.join(""));if(s.handles.length)parts.push(`老師已採取的處理方式包括：${s.handles.join("、")}。`);if(s.keyword)parts.push(`補充觀察：${s.keyword}。`);s.text=parts.join("");renderSentences()}
+function moveSentence(i,d){let j=i+d;if(j<0||j>=currentSentences.length)return;[currentSentences[i],currentSentences[j]]=[currentSentences[j],currentSentences[i]];renderSentences()}
+function removeSentence(i){currentSentences.splice(i,1);renderSentences()}
+function clearSentenceSelection(clearKeywords=true){document.querySelectorAll(".course,.learn,.behave,.handle").forEach(x=>x.checked=false);if(clearKeywords&&document.getElementById("kw"))kw.value=""}
+function syncSentencesFromFinal(){checkRisk()}
+function checkRisk(){let txt=(document.getElementById("finalText")?.value||"")+" "+currentSentences.map(x=>x.text).join(" ");let hit=RISKY.filter(w=>txt.includes(w));let box=document.getElementById("riskBox");if(!box)return;box.className=hit.length?"warn":"safe";box.innerHTML=hit.length?`⚠ 偵測到較容易造成誤解的用語：<b>${hit.join("、")}</b>。建議改成具體行為、發生情境、教師處理與後續觀察。`:"防禦性文字檢查：目前無高風險用詞。"}
+function eventPayload(){return{date:iDate.value,time:new Date().toLocaleTimeString("zh-TW"),classId:D.currentClassId,sid:dStudent.value,courses:selected("course"),learn:selected("learn"),behave:selected("behave"),handling:selected("handle"),keywords:kw.value.trim(),content:finalText.value.trim()}}
+function sendDaily(){let s=S(dStudent.value),text=finalText.value.trim();if(!text)return alert("請先加入至少一句內容");checkRisk();if(RISKY.some(w=>text.includes(w))&&!confirm("內容仍含較容易造成誤解的用語，確定送出嗎？"))return;if(!confirm(`即將送給：${s.seat}號 ${s.name}\n家長：${s.parent1Name||"未填"}\n\n確定送出？`))return;D.attendance.push({id:"att"+Date.now(),classId:D.currentClassId,date:iDate.value,time:new Date().toLocaleTimeString("zh-TW"),sid:s.id,status:status.value,leave:leave.value,arrival:arr.value,leaveTime:levt.value,method:method.value});D.notices.push({id:"n"+Date.now(),...eventPayload(),type:"學習與生活提醒",parentVisible:true});currentSentences=[];save();alert("已送出")}
+function saveTeacherOnly(){let p=eventPayload();if(!p.content)return alert("請先加入內容");D.notices.push({id:"n"+Date.now(),...p,type:"教師事件紀錄",parentVisible:false});currentSentences=[];save();alert("已儲存教師事件紀錄")}
+function openCounselFromDaily(){let p=eventPayload();if(!p.content)return alert("請先產生事件內容");sessionStorage.setItem("counselDraft",JSON.stringify({sid:p.sid,date:p.date,time:p.time,source:"學生事件",sourceId:"",problemDesc:p.content,content:p.content,handling:p.handling.join("、")}));go("counseling");setTimeout(loadCounselDraft,50)}
+
+function renderSchedule(){
+ let days=["星期一","星期二","星期三","星期四","星期五"], periods=[1,2,3,4,5,6,7];
+ schedule.innerHTML=`<div class="card panel"><div class="head"><h2>課表與功課</h2><button class="btn secondary" onclick="exportTimetable()">匯出 Excel 課表</button></div><div class="table-wrap"><table><thead><tr><th>節次</th>${days.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody>${periods.map(p=>`<tr><td>第${p}節</td>${days.map(d=>`<td><select onchange="D.timetable['${D.currentClassId}|${d}-${p}']=this.value;save()"><option value="">—</option>${Object.values(COURSE_GROUPS).flat().map(c=>`<option ${D.timetable[D.currentClassId+"|"+d+"-"+p]===c?"selected":""}>${E(c)}</option>`).join("")}</select></td>`).join("")}</tr>`).join("")}</tbody></table></div></div>`;
+}
+
+function renderClasses(){
+ classes.innerHTML=`<div class="card panel"><div class="head"><h2>班級／學年度管理</h2><div><button class="btn" onclick="addClass()">＋新增班級</button> <button class="btn secondary" onclick="promoteCurrent()">升級新學年</button></div></div><div class="safe">升級新學年會保留原班學生、家長、聯絡、簽閱、輔導與晤談歷程，不需要重新建立資料。七年級→八年級→九年級，九年級後轉為畢業封存。</div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>學年度</th><th>班級</th><th>班名</th><th>狀態</th><th>學生</th><th>操作</th></tr></thead><tbody>${D.classes.filter(c=>c.status!=="deleted").map(c=>`<tr><td>${c.schoolYear}</td><td>${c.grade}${String(c.classNo).padStart(2,"0")}</td><td>${E(c.name||"")}</td><td>${c.status==="graduated"?"畢業封存":"使用中"}</td><td>${D.students.filter(s=>s.classId===c.id).length}</td><td><button class="btn secondary" onclick="editClass('${c.id}')">修改</button> <button class="btn danger" onclick="deleteClass('${c.id}')">刪除</button></td></tr>`).join("")}</tbody></table></div></div>`;
+}
+function addClass(){let sy=Number(prompt("學年度，例如 115"));if(!sy)return;let g=Number(prompt("年級：7、8、9"));if(![7,8,9].includes(g))return alert("請輸入 7、8 或 9");let no=Number(prompt("班級，例如 6"));if(!no)return;let name=prompt("班名（可留空）")||"";let id="c"+Date.now();D.classes.push({id,schoolYear:sy,grade:g,classNo:no,name,teacher:"Meng",status:"active",history:[{schoolYear:sy,grade:g,classNo:no}]});D.currentClassId=id;save()}
+function editClass(id){let c=D.classes.find(x=>x.id===id);let sy=prompt("學年度",c.schoolYear);if(sy===null)return;let g=prompt("年級",c.grade);if(g===null)return;let no=prompt("班級",c.classNo);if(no===null)return;c.schoolYear=Number(sy)||c.schoolYear;c.grade=Number(g)||c.grade;c.classNo=Number(no)||c.classNo;c.name=prompt("班名",c.name||"")??c.name;save()}
+function deleteClass(id){let c=D.classes.find(x=>x.id===id);if(!confirm(`確定刪除 ${c.grade}${String(c.classNo).padStart(2,"0")} 班？\n\n建議只刪除誤建班級；若是畢業班請使用封存。`))return;c.status="deleted";if(D.currentClassId===id)D.currentClassId=D.classes.find(x=>x.status==="active")?.id||D.classes.find(x=>x.status!=="deleted")?.id;save()}
+function promoteCurrent(){let c=C();if(c.status==="graduated")return alert("此班已畢業封存");if(c.grade>=9){if(!confirm("九年級升級後將設為畢業封存，所有三年資料仍會保留。確定嗎？"))return;c.status="graduated";save();return}let old={schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo};c.schoolYear+=1;c.grade+=1;c.history ||= [];c.history.push({schoolYear:c.schoolYear,grade:c.grade,classNo:c.classNo,from:old});save();alert(`已升級為 ${c.schoolYear}學年度 ${c.grade}${String(c.classNo).padStart(2,"0")}班，學生與歷程均已保留。`)}
+
+function renderStudents(){
+ let ss=students();
+ students.innerHTML=`<div class="card panel"><div class="head"><h2>學生／家長資料</h2><div><button class="btn" onclick="addStudent()">＋手動新增</button> <button class="btn secondary" onclick="studentFile.click()">匯入 Excel</button> <button class="btn secondary" onclick="downloadTemplate()">下載 Excel 範本</button><input id="studentFile" type="file" class="hidden" accept=".xlsx,.xls" onchange="importStudents(event)"></div></div><p class="muted">家長資料皆為選填。可手動新增／修改／刪除，也可用 Excel 批次匯入。</p><div class="table-wrap"><table><thead><tr><th>座號</th><th>姓名</th><th>家長1</th><th>電話</th><th>家長2</th><th>升學意向</th><th>操作</th></tr></thead><tbody>${ss.map(s=>`<tr><td>${s.seat}</td><td>${E(s.name)}</td><td>${E(s.parent1Name||"")}</td><td>${E(s.parent1Phone||"")}</td><td>${E(s.parent2Name||"")}</td><td>${E(s.advancement||"未定")}</td><td><button class="btn secondary" onclick="editStudent('${s.id}')">修改</button> <button class="btn danger" onclick="deleteStudent('${s.id}')">刪除</button></td></tr>`).join("")}</tbody></table></div></div>`;
+}
+function studentForm(s){
+ const ask=(label,key,num=false)=>{let v=prompt(label,s[key]??"");if(v===null)return false;s[key]=num?Number(v):v;return true};
+ if(!ask("座號","seat",true))return false;if(!ask("姓名","name"))return false;ask("學號","studentNo");ask("性別","gender");ask("生日","birthday");ask("學生電話","phone");ask("學生地址","address");ask("家長1姓名（選填）","parent1Name");ask("家長1電話（選填）","parent1Phone");ask("家長1 Email（選填）","parent1Email");ask("家長2姓名（選填）","parent2Name");ask("家長2電話（選填）","parent2Phone");ask("家長2 Email（選填）","parent2Email");s.advancement=prompt("升學意向：高中／高職／五專／就業／未定",s.advancement||"未定")||"未定";return true
+}
+function addStudent(){let c=C(),s={id:"s"+Date.now(),classId:c.id,seat:students().length+1,name:"",studentNo:"",gender:"",birthday:"",phone:"",address:"",parent1Name:"",parent1Phone:"",parent1Email:"",parent2Name:"",parent2Phone:"",parent2Email:"",advancement:"未定"};if(!studentForm(s)||!s.name)return;s.account=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(s.seat).padStart(2,"0")}`;s.password="123456";D.students.push(s);save()}
+function editStudent(id){let s=S(id);if(studentForm(s))save()}
+function deleteStudent(id){let s=S(id);if(confirm(`確定刪除 ${s.seat}號 ${s.name}？\n相關歷程會一併刪除，請謹慎操作。`)){D.students=D.students.filter(x=>x.id!==id);D.notices=D.notices.filter(x=>x.sid!==id);D.attendance=D.attendance.filter(x=>x.sid!==id);D.contacts=D.contacts.filter(x=>x.sid!==id);D.counseling=D.counseling.filter(x=>x.sid!==id);save()}}
+function downloadTemplate(){let ws=XLSX.utils.aoa_to_sheet([["班級","座號","姓名","學號","性別","生日","學生電話","學生地址","家長1姓名","家長1電話","家長1 Email","家長2姓名","家長2電話","家長2 Email","升學意向"],[`${C().grade}${String(C().classNo).padStart(2,"0")}`,1,"王小明","","","","","","王媽媽","0912-000-000","","","","","高中"]]);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"學生家長資料");XLSX.writeFile(wb,"學生家長資料匯入範本.xlsx")}
+async function importStudents(e){let f=e.target.files[0];if(!f)return;try{let wb=XLSX.read(await f.arrayBuffer(),{type:"array",cellDates:true}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:"",raw:false});rows.forEach(r=>{let seat=Number(r["座號"]);if(!seat)return;let s=students().find(x=>x.seat===seat);if(!s){s={id:"s"+Date.now()+Math.random(),classId:D.currentClassId,password:"123456"};D.students.push(s)}Object.assign(s,{seat,name:String(r["姓名"]||""),studentNo:String(r["學號"]||""),gender:String(r["性別"]||""),birthday:String(r["生日"]||""),phone:String(r["學生電話"]||""),address:String(r["學生地址"]||""),parent1Name:String(r["家長1姓名"]||""),parent1Phone:String(r["家長1電話"]||""),parent1Email:String(r["家長1 Email"]||""),parent2Name:String(r["家長2姓名"]||""),parent2Phone:String(r["家長2電話"]||""),parent2Email:String(r["家長2 Email"]||""),advancement:String(r["升學意向"]||"未定")});let c=C();s.account||=`${c.grade}${String(c.classNo).padStart(2,"0")}${String(seat).padStart(2,"0")}`});save();alert(`已匯入 ${rows.length} 筆`)}catch(err){console.error(err);alert("Excel 匯入失敗，請使用系統範本")}e.target.value=""}
+
+function renderContacts(){
+ contacts.innerHTML=`<div class="card panel"><div class="head"><h2>親師聯繫</h2><span class="badge">家長反應／提問，可一鍵轉入輔導紀錄</span></div><div class="list">${D.contacts.filter(c=>S(c.sid)?.classId===D.currentClassId).map(c=>`<div class="item"><b>${E(c.date)}｜${E(S(c.sid)?.name||"")}</b><div>${E(c.content)}</div><div class="small muted">處理狀態：${E(c.status||"尚未處理")}</div><button class="btn secondary" onclick="contactToCounsel('${c.id}')">加入輔導／晤談</button></div>`).join("")||'<div class="muted">尚無家長反應或提問</div>'}</div></div>`;
+}
+function contactToCounsel(id){let c=D.contacts.find(x=>x.id===id);sessionStorage.setItem("counselDraft",JSON.stringify({sid:c.sid,date:c.date.slice(0,10),time:"",source:"親師聯繫",sourceId:c.id,problemType:"親師溝通",problemDesc:c.content,content:c.content,handling:""}));go("counseling");setTimeout(loadCounselDraft,50)}
+
+function renderCounseling(){
+ let ss=students();
+ counseling.innerHTML=`<div class="card panel"><div class="head"><h2>輔導／晤談紀錄</h2><span class="badge good">可從學生事件匯入，也可自行新增</span></div>
+ <div class="grid3"><div class="field"><label>日期</label><input id="cDate" type="date" value="${T()}"></div><div class="field"><label>時間</label><input id="cTime" type="time"></div><div class="field"><label>學生</label><select id="cStudent">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div>
+ <div class="field"><label>晤談對象</label><select id="cObject">${OBJECTS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>地點</label><select id="cLocation">${LOCATIONS.map(x=>`<option>${x}</option>`).join("")}</select></div><div class="field"><label>問題類型</label><select id="cProblemType" onchange="renderProblemGuides()">${PROBLEM_TYPES.map(x=>`<option>${x}</option>`).join("")}</select></div></div>
+ <div class="field"><label>問題描述（可用 AI 指引詞句逐句加入）</label><div id="problemGuides" class="list"></div><textarea id="cProblemDesc" placeholder="描述具體可觀察情形，不使用人格標籤或推測動機"></textarea></div>
+ <div class="field"><label>晤談內容</label><textarea id="cContent"></textarea></div>
+ <div class="field"><label>處理方式</label><div class="checkgrid">${HANDLING.map(x=>`<label class="checkitem"><input type="checkbox" class="cHandle" value="${E(x)}"><span>${E(x)}</span></label>`).join("")}</div><textarea id="cHandling" placeholder="可勾選後再補充"></textarea></div>
+ <div class="field"><label>後續追蹤</label><textarea id="cFollow" placeholder="例如：持續觀察、兩週後再晤談、視需要與家長聯繫"></textarea></div>
+ <div class="safe" id="cSourceBox">來源：教師手動建立</div>
+ <div class="toolbar" style="margin-top:10px"><button class="btn" onclick="saveCounsel()">儲存輔導／晤談紀錄</button><button class="btn secondary" onclick="clearCounsel()">清空</button></div>
+ <div class="list" style="margin-top:15px">${D.counseling.filter(c=>S(c.sid)?.classId===D.currentClassId).map(c=>`<div class="item"><b>${E(c.date)} ${E(c.time)}｜${E(S(c.sid)?.name||"")}｜${E(c.object)}｜${E(c.location)}</b><div><b>${E(c.problemType)}</b>：${E(c.problemDesc)}</div><div>${E(c.content)}</div><div class="small muted">處理方式：${E(c.handling)}｜後續：${E(c.follow||"")}｜來源：${E(c.source)}</div></div>`).join("")||'<div class="muted">尚無紀錄</div>'}</div></div>`;
+ setTimeout(()=>{renderProblemGuides();loadCounselDraft()},0)
+}
+function renderProblemGuides(){let box=document.getElementById("problemGuides");if(!box)return;let t=cProblemType.value,list=PROBLEM_GUIDES[t]||["請以具體可觀察的事件、學生自述或家長反映內容進行描述。"];box.innerHTML=list.map((x,i)=>`<div class="item">${E(x)} <button class="btn secondary" onclick="appendProblemGuide(${i})">＋加入</button></div>`).join("")}
+function appendProblemGuide(i){let list=PROBLEM_GUIDES[cProblemType.value]||[];if(list[i])cProblemDesc.value+=(cProblemDesc.value?"\n":"")+list[i]}
+function loadCounselDraft(){let raw=sessionStorage.getItem("counselDraft");if(!raw)return;try{let d=JSON.parse(raw);if(d.sid)cStudent.value=d.sid;if(d.date)cDate.value=d.date;if(d.time)cTime.value=d.time;if(d.problemType)cProblemType.value=d.problemType;cProblemDesc.value=d.problemDesc||"";cContent.value=d.content||"";cHandling.value=d.handling||"";cSourceBox.textContent=`來源：${d.source||"學生事件"}${d.sourceId?`（${d.sourceId}）`:""}`;cSourceBox.dataset.source=d.source||"學生事件";cSourceBox.dataset.sourceId=d.sourceId||"";renderProblemGuides();sessionStorage.removeItem("counselDraft")}catch(e){}}
+function saveCounsel(){let desc=cProblemDesc.value.trim(),content=cContent.value.trim();if(!desc&&!content)return alert("請至少填寫問題描述或晤談內容");let risky=RISKY.filter(w=>(desc+" "+content+" "+cHandling.value).includes(w));if(risky.length&&!confirm(`偵測到較容易造成誤解的用語：${risky.join("、")}。\n建議先改寫為具體行為與情境。仍要儲存嗎？`))return;let h=[...document.querySelectorAll(".cHandle:checked")].map(x=>x.value);if(cHandling.value.trim())h.push(cHandling.value.trim());D.counseling.push({id:"coun"+Date.now(),classId:D.currentClassId,date:cDate.value,time:cTime.value,sid:cStudent.value,object:cObject.value,location:cLocation.value,problemType:cProblemType.value,problemDesc:desc,content,handling:h.join("、"),follow:cFollow.value.trim(),source:cSourceBox.dataset.source||"教師手動建立",sourceId:cSourceBox.dataset.sourceId||"",teacher:"Meng"});save();alert("已儲存")}
+function clearCounsel(){document.querySelectorAll("#counseling input[type=checkbox]").forEach(x=>x.checked=false);cProblemDesc.value="";cContent.value="";cHandling.value="";cFollow.value="";cSourceBox.textContent="來源：教師手動建立";cSourceBox.dataset.source="教師手動建立";cSourceBox.dataset.sourceId=""}
+
+function renderPreview(){
+ let ss=students();preview.innerHTML=`<div class="card panel"><div class="head"><h2>家長預覽</h2><select id="pv" onchange="previewCard(this.value)">${ss.map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div id="pvbox"></div></div>`;if(ss[0])setTimeout(()=>previewCard(ss[0].id),0)
+}
+function previewCard(id){let s=S(id),hw=D.homework.filter(x=>x.classId===D.currentClassId&&x.date===T()),an=D.announcements.filter(x=>x.classId===D.currentClassId),ns=D.notices.filter(x=>x.sid===id&&x.parentVisible&&x.date.startsWith(T()));pvbox.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${x.url?`<a href="${E(x.url)}" target="_blank">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea disabled placeholder="家長有需要反應或提問時再填寫"></textarea><label class="checkitem" style="margin-top:10px"><input type="checkbox" disabled><span>我已詳閱今日聯絡簿內容</span></label>`}
+
+function renderReports(){
+ reports.innerHTML=`<div class="card panel"><div class="head"><h2>Excel 匯入／匯出</h2></div><p class="muted">所有歷程匯出皆保留日期、時間、對象、地點、問題描述、內容、處理方式與來源。</p><div class="grid2"><div class="field"><label>學生</label><select id="rs">${students().map(s=>`<option value="${s.id}">${s.seat}號 ${E(s.name)}</option>`).join("")}</select></div><div class="field"><label>匯出</label><div class="toolbar"><button class="btn" onclick="exp([rs.value],S(rs.value).name+'_學生三年歷程.xlsx')">個別學生</button><button class="btn secondary" onclick="exp(students().map(x=>x.id),'全班學生歷程.xlsx')">全班</button></div></div></div></div>`;
+}
+function exp(ids,name){let wb=XLSX.utils.book_new(),basic=D.students.filter(x=>ids.includes(x.id));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(basic),"學生家長資料");
+let attendance=D.attendance.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time,"學生":S(x.sid)?.name,"到校狀態":x.status,"請假別":x.leave,"到校時間":x.arrival,"離校／請假時間":x.leaveTime,"請假方式":x.method}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(attendance),"出缺勤");
+let notices=D.notices.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time||"","學生":S(x.sid)?.name,"類型":x.type,"課程":(x.courses||[]).join("、"),"內容":x.content,"處理方式":(x.handling||[]).join?x.handling.join("、"):x.handling,"家長可見":x.parentVisible?"是":"否"}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(notices),"學生事件與提醒");
+let contacts=D.contacts.filter(x=>ids.includes(x.sid)).map(x=>({"日期時間":x.date,"學生":S(x.sid)?.name,"對象":"家長","內容":x.content,"處理狀態":x.status||""}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(contacts),"親師聯繫");
+let counseling=D.counseling.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"時間":x.time,"學生":S(x.sid)?.name,"晤談對象":x.object,"地點":x.location,"問題類型":x.problemType,"問題描述":x.problemDesc,"晤談內容":x.content,"處理方式":x.handling,"後續追蹤":x.follow,"來源":x.source,"建立教師":x.teacher}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(counseling),"輔導晤談");
+let sign=D.signatures.filter(x=>ids.includes(x.sid)).map(x=>({"日期":x.date,"簽閱時間":x.time,"學生":S(x.sid)?.name}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(sign),"家長簽閱");
+let anns=D.announcements.filter(x=>x.classId===D.currentClassId).map(x=>({"日期時間":x.date,"類型":x.type,"標題":x.title,"內容":x.text,"附件":x.file,"連結":x.url}));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(anns),"學校班級公告");
+let history=D.classes.filter(c=>c.id===D.currentClassId).flatMap(c=>(c.history||[]).map(h=>({"學年度":h.schoolYear,"年級":h.grade,"班級":h.classNo,"班名":c.name,"狀態":c.status})));XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(history),"班級學年歷程");
+XLSX.writeFile(wb,name)}
+function exportTimetable(){let days=["星期一","星期二","星期三","星期四","星期五"],rows=[1,2,3,4,5,6,7].map(p=>{let r={"節次":`第${p}節`};days.forEach(d=>r[d]=D.timetable[D.currentClassId+"|"+d+"-"+p]||"");return r}),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),"功課表");XLSX.writeFile(wb,"班級功課表.xlsx")}
+
+function renderParent(){let s=CP,c=D.classes.find(x=>x.id===s.classId)||C();D.currentClassId=c.id;let hw=D.homework.filter(x=>x.classId===c.id&&x.date===T()),an=D.announcements.filter(x=>x.classId===c.id),ns=D.notices.filter(x=>x.sid===s.id&&x.parentVisible&&x.date.startsWith(T())),sg=D.signatures.find(x=>x.sid===s.id&&x.date===T());parentView.innerHTML=`<h3>${s.seat}號 ${E(s.name)}家長</h3><h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject)}</b>｜${E(x.content)}</div>`).join("")||"無"}<h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type)}｜${E(x.title||"")}</b><div>${E(x.text)}</div>${x.url?`<a target="_blank" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||"無"}<h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content)}</div>`).join("")||"無"}<h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea><label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label><button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>${sg?`<div class="muted small">簽閱時間：${E(sg.time)}</div>`:""}`}
+function submitP(){if(!ps.checked)return alert("請先勾選已詳閱");if(pm.value.trim())D.contacts.unshift({id:"pc"+Date.now(),date:N(),sid:CP.id,content:pm.value.trim(),status:"尚未處理"});D.signatures.push({date:T(),time:N(),sid:CP.id});save();renderParent();alert("已完成今日簽閱")}
+
 renderAll();
 </script>
 </body>

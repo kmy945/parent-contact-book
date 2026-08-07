@@ -1,5 +1,5 @@
 {
-  "name": "親師聯絡簿 V12.1 手機穩定版",
+  "name": "親師聯絡簿 V13 導師專業版",
   "short_name": "親師聯絡簿",
   "start_url": "./",
   "scope": "./",
@@ -7,5 +7,5 @@
   "background_color": "#edf8fc",
   "theme_color": "#178aa8",
   "lang": "zh-Hant",
-  "description": "可透過手機或平板直接部署至 Firebase Hosting 的親師聯絡簿"
+  "description": "三年不中斷的國中導師親師聯絡、學生事件與輔導晤談管理系統"
 }
