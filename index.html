@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15.5 家長頁穩定修正版</title>
+<title>親師聯絡簿 V15.6 家長頁穩定修正版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
@@ -28,12 +28,22 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 @media(max-width:1100px){.stats,.checkgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.login{justify-content:flex-end;align-items:flex-start;padding:16px 10px 20px}.loginCard{width:min(350px,calc(100% - 10px));margin:0;background:rgba(255,255,255,.80);padding:16px 18px}.app{display:block}.side{display:none}.content{padding:0 11px 82px}.header{padding:16px 15px 40px}.headerRow{display:block}.grid2,.grid3,.checkgrid{grid-template-columns:1fr}.bottom{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--line)}.bottom button{border:0;background:#fff;padding:10px 3px;font-size:12px;color:var(--ink)}}
 .grade-table input{min-width:72px;text-align:center}.grade-table th{position:sticky;top:0;background:#f5fbfe;z-index:2}.grade-table th:first-child,.grade-table td:first-child{position:sticky;left:0;background:#fff;z-index:1}.grade-table th:nth-child(2),.grade-table td:nth-child(2){position:sticky;left:58px;background:#fff;z-index:1}.score-bad{background:#fff1f1!important}.score-warn{background:#fff8df!important}.score-good{background:#edf9f2!important}.mini-chart{width:180px;height:54px}.account-off{opacity:.55}.modal-mask{position:fixed;inset:0;background:rgba(0,0,0,.38);display:grid;place-items:center;z-index:100;padding:16px}.modal-box{max-width:650px;width:100%;max-height:85vh;overflow:auto;background:#fff;border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+
+.parent-shell{min-height:100vh;background:linear-gradient(180deg,#dff6fb 0,#eefbff 220px,#f7fbfd 100%);padding:18px 18px 40px}
+.parent-topbar{max-width:1100px;margin:0 auto 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand-title{font-size:30px;font-weight:800;color:#17384c}
+.parent-hero{max-width:1100px;margin:0 auto 16px;padding:24px 28px;border-radius:28px;background:linear-gradient(135deg,rgba(141,222,239,.86),rgba(196,240,249,.9));display:flex;justify-content:space-between;align-items:center;box-shadow:0 12px 28px rgba(32,97,123,.12)}
+.parent-hero h2{margin:0 0 6px;font-size:32px;color:#16384c}
+.parent-status{padding:10px 16px;border-radius:999px;background:rgba(255,255,255,.75);font-weight:700}
+.parent-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.parent-grid .card{margin:0}
+@media(max-width:760px){.parent-shell{padding:12px}.parent-topbar{align-items:flex-start;flex-direction:column}.parent-grid{grid-template-columns:1fr}.parent-hero{padding:20px;align-items:flex-start;gap:12px;flex-direction:column}.parent-hero h2{font-size:26px}.brand-title{font-size:26px}}
 </style>
 </head>
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.5</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.6</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入</button><button class="btn secondary" style="width:100%" onclick="enterTeacher()">訪客體驗</button></div>
@@ -44,7 +54,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15.5</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.6</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -60,7 +70,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.5</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.6</div></div><button class="btn secondary" onclick="location.reload()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -226,7 +236,7 @@ function initialData(){return{
  homework:[],announcements:[],notices:[],attendance:[],signatures:[],contacts:[],counseling:[],timetable:{},customPhrases:[]
 }}
 let D=JSON.parse(localStorage.getItem("pcb_v15")||"null")||JSON.parse(localStorage.getItem("pcb_v14")||"null")||JSON.parse(localStorage.getItem("pcb_v13")||"null")||initialData(), CP=null, currentSentences=[], editCounselId=null, pendingAnnAttachments=[];
-D.version="15.5"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
+D.version="15.6"; for(const c of D.classes){if(!c.status)c.status="active"}; for(const s of D.students){if(s.archived)continue; const r=findBestClassForStudent?findBestClassForStudent(s):null; if(r){s.classId=r.id;s.classCode=classCode(r)}}
 D.classes ||= []; D.students ||= []; D.homework ||= []; D.announcements ||= []; D.notices ||= []; D.attendance ||= []; D.signatures ||= []; D.contacts ||= []; D.counseling ||= []; D.timetable ||= {}; D.customPhrases ||= [];
 D.gradeConfigs ||= {}; D.gradeScores ||= {}; D.examStatus ||= {}; D.gradeNotes ||= {}; D.gradeShare ||= {}; D.loginLogs ||= []; D.auditLogs ||= [];
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -1032,7 +1042,13 @@ function parentPasswordForm(forced=false){
 function renderParentFallback(err){
  const pv=document.getElementById("parentView");
  if(!pv)return;
- pv.innerHTML=`<div class="card panel"><div class="head"><h2>家長專區</h2><button class="btn secondary" onclick="exitParent()">登出</button></div><div class="warn">登入成功，但部分資料載入時發生錯誤。帳號與學生資料仍保留。</div><div class="safe" style="margin-top:10px">學生：<b>${E(CP?.name||"")}</b><br>座號：${E(CP?.seat||"")}<br>班級：${E(CP?.classCode||"")}</div><button class="btn" style="margin-top:12px" onclick="tryRenderParentAgain()">重新載入家長頁</button><details style="margin-top:12px"><summary>錯誤資訊</summary><pre style="white-space:pre-wrap">${E(String(err?.message||err||"未知錯誤"))}</pre></details></div>`;
+ pv.innerHTML=`<div class="parent-shell">
+   <div class="parent-topbar"><div><div class="brand-title">親師聯絡簿 <span class="tag">V15.6</span></div><div class="muted">家長專區</div></div><button class="btn secondary" onclick="exitParent()">登出</button></div>
+   <div class="card panel"><div class="warn">登入成功，但部分資料載入時發生錯誤。帳號與學生資料仍保留。</div>
+   <div class="safe" style="margin-top:10px">學生：<b>${E(CP?.name||"")}</b><br>座號：${E(CP?.seat||"")}<br>班級：${E(CP?.classCode||"")}</div>
+   <button class="btn" style="margin-top:12px" onclick="tryRenderParentAgain()">重新載入家長頁</button>
+   <details style="margin-top:12px"><summary>錯誤資訊</summary><pre style="white-space:pre-wrap">${E(String(err?.message||err||"未知錯誤"))}</pre></details></div>
+ </div>`;
 }
 function tryRenderParentAgain(){try{renderParent()}catch(err){renderParentFallback(err)}}
 function exitParent(){CP=null;parent.classList.add("hidden");login.classList.remove("hidden")}
@@ -1046,34 +1062,81 @@ function renderParent(){
    c=c || (D.classes||[]).find(x=>x.id===s.classId&&x.status!=="deleted"&&x.status!=="disabled")
        || (D.classes||[]).find(x=>x.status!=="deleted"&&x.status!=="disabled");
    if(!c)throw new Error("找不到目前有效班級");
+
    if(s.classId!==c.id){s.classId=c.id;s.classCode=classCode(c)}
    D.currentClassId=c.id;
-   try{localStorage.setItem("pcb_v15",JSON.stringify(D));}catch(e){console.warn("parent save skipped",e);}
+   try{localStorage.setItem("pcb_v15",JSON.stringify(D))}catch(e){console.warn("parent save skipped",e)}
 
    const pv=document.getElementById("parentView");
    if(!pv)throw new Error("找不到家長頁容器");
 
    if(s.forcePasswordChange){
-     pv.innerHTML=`<div class="card panel"><div class="head"><h2>${E(s.seat)}號 ${E(s.name)}家長</h2><button class="btn secondary" onclick="exitParent()">登出</button></div><div class="warn"><b>首次登入／密碼已重設</b><br>為保護帳號，請先修改密碼後再使用聯絡簿。</div>${parentPasswordForm(true)}</div>`;
+     pv.innerHTML=`<div class="parent-shell">
+       <div class="parent-topbar">
+         <div><div class="brand-title">親師聯絡簿 <span class="tag">V15.6</span></div><div class="muted">家長專區</div></div>
+         <button class="btn secondary" onclick="exitParent()">登出</button>
+       </div>
+       <div class="parent-hero">
+         <div><h2>${E(classCode(c))}${c.name?`（${E(c.name)}）`:""}</h2><div>${E(c.schoolYear)}學年度｜${E(s.seat)}號 ${E(s.name)}</div></div>
+       </div>
+       <div class="card panel"><div class="warn"><b>首次登入／密碼已重設</b><br>為保護帳號，請先修改密碼後再使用聯絡簿。</div>${parentPasswordForm(true)}</div>
+     </div>`;
      return;
    }
 
    const today=T();
-   let hw=(D.homework||[]).filter(x=>x.classId===c.id&&x.date===today);
-   let an=(D.announcements||[]).filter(x=>x.classId===c.id);
-   let ns=(D.notices||[]).filter(x=>x.sid===s.id&&x.parentVisible&&String(x.date||"").startsWith(today));
-   let sg=(D.signatures||[]).find(x=>x.sid===s.id&&x.date===today);
+   const hw=(D.homework||[]).filter(x=>x.classId===c.id&&x.date===today);
+   const an=(D.announcements||[]).filter(x=>x.classId===c.id);
+   const ns=(D.notices||[]).filter(x=>x.sid===s.id&&x.parentVisible&&String(x.date||"").startsWith(today));
+   const sg=(D.signatures||[]).find(x=>x.sid===s.id&&x.date===today);
+   const latestContacts=(D.contacts||[]).filter(x=>x.sid===s.id).slice(-5).reverse();
 
-   pv.innerHTML=`<div class="card panel"><div class="head"><h2>${E(s.seat)}號 ${E(s.name)}家長</h2><div><button class="btn secondary" onclick="showParentSettings()">帳號／聯絡資料設定</button> <button class="btn secondary" onclick="exitParent()">登出</button></div></div>
-   <div class="safe">班級：${E(classCode(c))}${c.name?`（${E(c.name)}）`:""}｜${E(c.schoolYear)}學年度</div>
-   <h4>今日功課與提醒</h4>${hw.map(x=>`<div class="item"><b>${E(x.subject||"提醒事項")}</b>｜${E(x.content||"")}</div>`).join("")||'<div class="muted">今日尚無功課／提醒。</div>'}
-   <h4>學校／班級公告</h4>${an.map(x=>`<div class="item"><b>${E(x.type||"公告")}｜${E(x.title||"")}</b><div>${E(x.text||"")}</div>${typeof attachmentButtons==="function"?attachmentButtons(x):""}${(x.links||[]).map(l=>`<div><a target="_blank" rel="noopener" href="${E(l.url)}">${E(l.label||"連結")}</a></div>`).join("")}${x.url?`<a target="_blank" rel="noopener" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||'<div class="muted">目前沒有公告。</div>'}
-   <h4>學習與生活提醒</h4>${ns.map(x=>`<div class="item">${E(x.content||"")}</div>`).join("")||'<div class="muted">今日沒有個別提醒。</div>'}
-   ${parentSharedGradesHtml(s,c)}
-   <h4>親師聯繫（選填）</h4><textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea>
-   <label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label>
-   <button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>
-   ${sg?`<div class="muted small">簽閱時間：${E(sg.time||"")}</div>`:""}</div>`;
+   pv.innerHTML=`<div class="parent-shell">
+     <div class="parent-topbar">
+       <div>
+         <div class="brand-title">親師聯絡簿 <span class="tag">V15.6</span></div>
+         <div class="muted">家長專區｜${E(s.seat)}號 ${E(s.name)}</div>
+       </div>
+       <div class="toolbar"><button class="btn secondary" onclick="showParentSettings()">帳號／聯絡資料設定</button><button class="btn secondary" onclick="exitParent()">登出</button></div>
+     </div>
+
+     <div class="parent-hero">
+       <div><h2>${E(classCode(c))}${c.name?`（${E(c.name)}）`:""}</h2><div>${E(c.schoolYear)}學年度｜${E(s.seat)}號 ${E(s.name)}</div></div>
+       <div class="parent-status">${sg?"✓ 今日已簽閱":"今日尚未簽閱"}</div>
+     </div>
+
+     <div class="parent-grid">
+       <section class="card panel">
+         <div class="head"><h3>今日功課與提醒</h3><span class="tag">${today}</span></div>
+         ${hw.map(x=>`<div class="item"><b>${E(x.subject||"提醒事項")}</b><div>${E(x.content||"")}</div></div>`).join("")||'<div class="muted">今日尚無功課／提醒。</div>'}
+       </section>
+
+       <section class="card panel">
+         <div class="head"><h3>學校／班級公告</h3><span class="tag">${an.length} 則</span></div>
+         ${an.map(x=>`<div class="item"><b>${E(x.type||"公告")}｜${E(x.title||"")}</b><div>${E(x.text||"")}</div>${typeof attachmentButtons==="function"?attachmentButtons(x):""}${(x.links||[]).map(l=>`<div><a target="_blank" rel="noopener" href="${E(l.url)}">${E(l.label||"連結")}</a></div>`).join("")}${x.url?`<a target="_blank" rel="noopener" href="${E(x.url)}">${E(x.file||"附件")}</a>`:""}</div>`).join("")||'<div class="muted">目前沒有公告。</div>'}
+       </section>
+
+       <section class="card panel">
+         <div class="head"><h3>學習與生活提醒</h3><span class="tag">${ns.length} 則</span></div>
+         ${ns.map(x=>`<div class="item">${E(x.content||"")}</div>`).join("")||'<div class="muted">今日沒有個別提醒。</div>'}
+       </section>
+
+       <section class="card panel">
+         <div class="head"><h3>親師聯繫</h3><span class="tag">選填</span></div>
+         <textarea id="pm" placeholder="有需要反應或提問時再填寫"></textarea>
+         <label class="checkitem"><input id="ps" type="checkbox" ${sg?"checked disabled":""}><span>我已詳閱今日聯絡簿內容</span></label>
+         <button class="btn" onclick="submitP()" ${sg?"disabled":""} style="margin-top:9px">${sg?"今日已簽閱":"送出並簽閱"}</button>
+         ${sg?`<div class="muted small">簽閱時間：${E(sg.time||"")}</div>`:""}
+       </section>
+
+       ${parentSharedGradesHtml(s,c)?`<section class="card panel"><div class="head"><h3>老師分享的成績</h3></div>${parentSharedGradesHtml(s,c).replace('<h4>老師分享的成績</h4>','')}</section>`:""}
+
+       <section class="card panel">
+         <div class="head"><h3>近期親師紀錄</h3></div>
+         ${latestContacts.map(x=>`<div class="item"><b>${E(x.date||"")}</b><div>${E(x.content||x.text||"")}</div></div>`).join("")||'<div class="muted">目前沒有近期紀錄。</div>'}
+       </section>
+     </div>
+   </div>`;
  }catch(err){
    console.error("renderParent",err);
    renderParentFallback(err);
