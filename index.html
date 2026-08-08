@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#178aa8">
-<title>親師聯絡簿 V15.7 教師雲端同步版</title>
+<title>親師聯絡簿 V15.8 教師雲端同步版</title>
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -48,7 +48,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <section id="login" class="login">
  <div class="card loginCard">
-  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.7</span></h1>
+  <h1 style="margin:0">親師聯絡簿 <span class="badge good">V15.8</span></h1>
   <p class="muted">三年不中斷・客觀紀錄・親師合作・Designed by Meng</p>
   <div class="tabs"><button id="tt" class="on" onclick="tab('t')">教師登入</button><button id="pt" onclick="tab('p')">家長登入</button></div>
   <div id="tlogin"><button class="btn" style="width:100%;margin-bottom:9px" onclick="enterTeacher()">使用 Google 帳號登入（雲端同步）</button><button class="btn secondary" style="width:100%" onclick="enterVisitor()">訪客體驗（僅此瀏覽器）</button><div id="loginCloudHint" class="muted small" style="margin-top:8px">Google 教師模式會從 Firebase 讀取同一份資料；訪客模式仍只保存在目前瀏覽器。</div></div>
@@ -59,7 +59,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
 
 <section id="teacher" class="app hidden">
  <aside class="side">
-  <div class="brand">親師聯絡簿 <span class="badge">V15.7</span><em>Meng</em></div>
+  <div class="brand">親師聯絡簿 <span class="badge">V15.8</span><em>Meng</em></div>
   <button class="nav on" data-p="home" onclick="go('home')">首頁</button>
   <button class="nav" data-p="daily" onclick="go('daily')">今日聯絡簿</button>
   <button class="nav" data-p="schedule" onclick="go('schedule')">課表與功課</button>
@@ -75,7 +75,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:
  </aside>
  <main>
   <header class="header">
-   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div id="cloudStatus" class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.7｜雲端尚未連線</div> <button id="cloudSyncBtn" class="btn secondary" style="margin-top:8px;padding:7px 10px" onclick="manualCloudSync()">立即同步</button> <button id="cloudToolsBtn" class="btn secondary" style="margin-top:8px;padding:7px 10px" onclick="showCloudTools()">同步設定</button></div><button class="btn secondary" onclick="logoutTeacher()">登出</button></div>
+   <div class="headerRow"><div><select id="classSelect" onchange="changeClass()"></select><div id="cloudStatus" class="safe" style="display:inline-block;margin-top:8px;padding:7px 10px">教師模式｜V15.8｜雲端尚未連線</div> <button id="cloudSyncBtn" class="btn secondary" style="margin-top:8px;padding:7px 10px" onclick="manualCloudSync()">立即同步</button> <button id="cloudToolsBtn" class="btn secondary" style="margin-top:8px;padding:7px 10px" onclick="showCloudTools()">同步設定</button> <button class="btn secondary" style="margin-top:8px;padding:7px 10px" onclick="showRecoveryCenter()">資料救援</button></div><button class="btn secondary" onclick="logoutTeacher()">登出</button></div>
    <h1 id="classTitle">706班</h1><div id="yearTitle">115學年度｜Meng老師</div>
   </header>
   <div class="content">
@@ -252,6 +252,56 @@ function normalizeState(x){
  return x;
 }
 D=normalizeState(D);
+function studentCountOf(x){return (x?.students||[]).filter(s=>!s.archived).length}
+function classCountOf(x){return (x?.classes||[]).filter(c=>c.status!=="deleted").length}
+function readLocalCandidate(key){
+ try{
+   const raw=localStorage.getItem(key);
+   if(!raw)return null;
+   const data=normalizeState(JSON.parse(raw));
+   return {key,data,students:studentCountOf(data),classes:classCountOf(data)};
+ }catch(e){return null}
+}
+function bestLocalCandidate(){
+ const keys=["pcb_v15","pcb_v14","pcb_v13","pcb_v12","pcb_v11"];
+ const list=keys.map(readLocalCandidate).filter(Boolean);
+ // Also inspect recovery snapshots created by V15.8.
+ for(let i=0;i<localStorage.length;i++){
+   const k=localStorage.key(i);
+   if(k&&k.startsWith("pcb_recovery_")){
+     const c=readLocalCandidate(k); if(c)list.push(c);
+   }
+ }
+ return list.sort((a,b)=>b.students-a.students || b.classes-a.classes)[0]||null;
+}
+function createRecoverySnapshot(label="auto"){
+ try{
+   const key=`pcb_recovery_${Date.now()}_${label}`;
+   localStorage.setItem(key,JSON.stringify(D));
+   return key;
+ }catch(e){console.warn("snapshot failed",e);return null}
+}
+function listRecoveryCandidates(){
+ const keys=[];
+ for(let i=0;i<localStorage.length;i++){
+   const k=localStorage.key(i);
+   if(k&&/^pcb_(v1[1-5]|recovery_)/.test(k))keys.push(k);
+ }
+ return keys.map(readLocalCandidate).filter(Boolean).sort((a,b)=>b.students-a.students);
+}
+function restoreCandidate(key){
+ const c=readLocalCandidate(key);if(!c)return alert("找不到可還原資料");
+ if(!confirm(`要還原 ${c.students} 位學生、${c.classes} 個班級的本機資料嗎？\n\n目前資料會先再備份一次。`))return;
+ createRecoverySnapshot("before_restore");
+ D=normalizeState(c.data);persistLocal();renderAll();queueCloudSave();
+ alert(`已還原 ${c.students} 位學生。`);
+}
+function showRecoveryCenter(){
+ const list=listRecoveryCandidates();
+ showModal("資料救援中心",`<div class="warn"><b>安全模式：</b>任何雲端載入前都會先保留本機快照，不再直接覆蓋。</div>
+ <div class="list" style="margin-top:12px">${list.map(c=>`<div class="item"><b>${E(c.key)}</b><div>${c.students} 位學生｜${c.classes} 個班級</div><button class="btn secondary" onclick="restoreCandidate('${E(c.key)}')">還原這份</button></div>`).join("")||"目前找不到舊資料快照"}</div>`);
+}
+
 
 const T=()=>new Date().toISOString().slice(0,10), N=()=>new Date().toLocaleString("zh-TW"), E=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const C=()=>D.classes.find(x=>x.id===D.currentClassId&&x.status!=="deleted"&&x.status!=="disabled")||D.classes.find(x=>(x.status===undefined||x.status==="active")&&x.status!=="deleted"&&x.status!=="disabled")||D.classes.find(x=>x.status!=="deleted"&&x.status!=="disabled")||null, classStudents=()=>D.students.filter(s=>s.classId===D.currentClassId&&!s.archived).sort((a,b)=>Number(a.seat)-Number(b.seat)), S=id=>D.students.find(x=>x.id===id);
@@ -270,7 +320,7 @@ function cloudStatus(text,type="safe"){
  const el=document.getElementById("cloudStatus");if(!el)return;
  el.className=type==="warn"?"warn":"safe";
  el.style.display="inline-block";el.style.marginTop="8px";el.style.padding="7px 10px";
- el.textContent=`教師模式｜V15.7｜${text}`;
+ el.textContent=`教師模式｜V15.8｜${text}`;
 }
 function cleanForCloud(v){return JSON.parse(JSON.stringify(v))}
 const CLOUD_ARRAY_KEYS=["classes","students","homework","announcements","notices","attendance","signatures","contacts","counseling","customPhrases","loginLogs","auditLogs"];
@@ -358,26 +408,44 @@ async function startCloudTeacher(user){
  CLOUD.mode="cloud";CLOUD.uid=user.uid;CLOUD.user=user;CLOUD.db=firebase.firestore();CLOUD.ready=false;
  cloudStatus("連線中…");
  try{
-   for(const s of D.students){let c=D.classes.find(x=>x.id===s.classId);if(c)await ensureStudentCredential(s,c,false)}
+   createRecoverySnapshot("before_cloud_login");
+   const localBest=bestLocalCandidate();
    const meta=await getCloudMeta();
+
    if(meta){
      const cloudData=await downloadCloudState();
+     const cloudStudents=studentCountOf(cloudData);
+     const localStudents=localBest?.students||0;
+
+     if(localStudents>cloudStudents){
+       const useLocal=confirm(`偵測到資料數量不一致：\n\n這台瀏覽器可救援：${localStudents} 位學生\nFirebase 雲端目前：${cloudStudents} 位學生\n\n為避免資料被較少的雲端版本覆蓋，系統已停止自動載入雲端。\n\n按「確定」＝使用本機較完整資料，並上傳成新的雲端主資料。\n按「取消」＝保留雲端 ${cloudStudents} 位，但本機救援快照仍保留。`);
+       if(useLocal){
+         D=normalizeState(localBest.data);persistLocal();
+         CLOUD.ready=true;
+         login.classList.add("hidden");teacher.classList.remove("hidden");renderAll();
+         await uploadCloudState(true);
+         cloudStatus(`已以本機 ${localStudents} 位學生重建雲端`);
+         return;
+       }
+     }
+
      if(cloudData){
-       D=cloudData;persistLocal();
+       D=normalizeState(cloudData);persistLocal();
        CLOUD.ready=true;
-       login.classList.add("hidden");teacher.classList.remove("hidden");
-       renderAll();
-       cloudStatus(`雲端已載入｜${(D.students||[]).filter(s=>!s.archived).length} 位學生`);
+       login.classList.add("hidden");teacher.classList.remove("hidden");renderAll();
+       cloudStatus(`雲端已載入｜${cloudStudents} 位學生`);
        return;
      }
    }
 
-   // First cloud initialization: make the current browser explicit source of truth.
-   const yes=confirm(`這個 Google 帳號目前沒有親師聯絡簿雲端資料。\n\n${localSummary()}\n\n要把「這個瀏覽器目前的資料」設為雲端主資料嗎？\n\n請只在資料正確的瀏覽器按「確定」。`);
+   // No cloud data yet: prefer the richest local candidate.
+   if(localBest && localBest.students>studentCountOf(D)){
+     D=normalizeState(localBest.data);persistLocal();
+   }
+   const yes=confirm(`這個 Google 帳號目前沒有親師聯絡簿雲端資料。\n\n目前可用本機資料：${studentCountOf(D)} 位學生、${classCountOf(D)} 個班級。\n\n要把這份資料設為雲端主資料嗎？`);
    if(!yes){
      CLOUD.mode="local";CLOUD.ready=false;
-     alert("尚未建立雲端主資料。現在仍使用本機資料，不會覆蓋任何雲端內容。");
-     login.classList.add("hidden");teacher.classList.remove("hidden");renderAll();cloudStatus("本機模式","warn");
+     login.classList.add("hidden");teacher.classList.remove("hidden");renderAll();cloudStatus("本機安全模式","warn");
      return;
    }
    CLOUD.ready=true;
@@ -439,11 +507,16 @@ function showCloudTools(){
 }
 async function reloadFromCloud(){
  if(CLOUD.mode!=="cloud"||!CLOUD.ready)return alert("目前不是雲端模式");
- if(!confirm("要放棄此瀏覽器尚未同步的變更，重新讀取雲端主資料嗎？"))return;
+ createRecoverySnapshot("before_manual_cloud_reload");
  try{
    const data=await downloadCloudState();
    if(!data)return alert("雲端尚無資料");
-   D=data;persistLocal();renderAll();closeModal();cloudStatus("已重新載入雲端資料");
+   const localN=studentCountOf(D),cloudN=studentCountOf(data);
+   if(localN>cloudN && !confirm(`警告：目前本機有 ${localN} 位學生，但雲端只有 ${cloudN} 位。
+
+仍要載入較少的雲端資料嗎？
+本機資料已先建立救援快照。`))return;
+   D=normalizeState(data);persistLocal();renderAll();closeModal();cloudStatus(`已重新載入雲端資料｜${cloudN} 位學生`);
  }catch(err){alert("重新載入失敗："+(err?.message||err))}
 }
 setTimeout(resumeTeacherRedirect,0);
@@ -1252,7 +1325,7 @@ function renderParentFallback(err){
  const pv=document.getElementById("parentView");
  if(!pv)return;
  pv.innerHTML=`<div class="parent-shell">
-   <div class="parent-topbar"><div><div class="brand-title">親師聯絡簿 <span class="tag">V15.7</span></div><div class="muted">家長專區</div></div><button class="btn secondary" onclick="exitParent()">登出</button></div>
+   <div class="parent-topbar"><div><div class="brand-title">親師聯絡簿 <span class="tag">V15.8</span></div><div class="muted">家長專區</div></div><button class="btn secondary" onclick="exitParent()">登出</button></div>
    <div class="card panel"><div class="warn">登入成功，但部分資料載入時發生錯誤。帳號與學生資料仍保留。</div>
    <div class="safe" style="margin-top:10px">學生：<b>${E(CP?.name||"")}</b><br>座號：${E(CP?.seat||"")}<br>班級：${E(CP?.classCode||"")}</div>
    <button class="btn" style="margin-top:12px" onclick="tryRenderParentAgain()">重新載入家長頁</button>
@@ -1282,7 +1355,7 @@ function renderParent(){
    if(s.forcePasswordChange){
      pv.innerHTML=`<div class="parent-shell">
        <div class="parent-topbar">
-         <div><div class="brand-title">親師聯絡簿 <span class="tag">V15.7</span></div><div class="muted">家長專區</div></div>
+         <div><div class="brand-title">親師聯絡簿 <span class="tag">V15.8</span></div><div class="muted">家長專區</div></div>
          <button class="btn secondary" onclick="exitParent()">登出</button>
        </div>
        <div class="parent-hero">
@@ -1303,7 +1376,7 @@ function renderParent(){
    pv.innerHTML=`<div class="parent-shell">
      <div class="parent-topbar">
        <div>
-         <div class="brand-title">親師聯絡簿 <span class="tag">V15.7</span></div>
+         <div class="brand-title">親師聯絡簿 <span class="tag">V15.8</span></div>
          <div class="muted">家長專區｜${E(s.seat)}號 ${E(s.name)}</div>
        </div>
        <div class="toolbar"><button class="btn secondary" onclick="showParentSettings()">帳號／聯絡資料設定</button><button class="btn secondary" onclick="exitParent()">登出</button></div>
